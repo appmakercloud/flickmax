@@ -3,7 +3,10 @@
     "app/api/domain/search/route.ts": {
       "maxDuration": 30
     },
-    "app/api/domain/direct/route.ts": {
+    "app/api/domain/search/exact/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/domain/search/crosssell/route.ts": {
       "maxDuration": 30
     }
   },

@@ -106,21 +106,9 @@ if (currencyType === 'GBP') marketId = 'en-GB'
 // etc.
 ```
 
-## Development Mode Solution
+## Production-Only Implementation
 
-Since the GoDaddy API blocks local development, we implemented a hybrid approach:
-
-```typescript
-// In development, when API returns 500 error
-if (isDevelopment && response.status >= 500) {
-  return mockDataResponse({
-    domain: query,
-    available: !query.includes('flickmax'),
-    listPrice: getMockPrice(extension),
-    disclaimer: 'Development mode - Mock data'
-  })
-}
-```
+The domain search now exclusively uses the real GoDaddy API. Mock data has been completely removed to ensure consistent behavior across all environments.
 
 ## Production Considerations
 

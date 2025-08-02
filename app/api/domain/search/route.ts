@@ -15,9 +15,6 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = request.nextUrl
     
-    // Check if we're in development and having issues with GoDaddy API
-    const isDevelopment = process.env.NODE_ENV === 'development'
-    const useMockApi = process.env.NEXT_PUBLIC_USE_MOCK_API === 'true'
     
     // Build the target URL with all query parameters except 't' (timestamp)
     const targetUrl = new URL('https://www.secureserver.net/api/v1/domains/590175')
@@ -62,55 +59,6 @@ export async function GET(request: NextRequest) {
       console.error('Response headers:', Object.fromEntries(response.headers.entries()))
       console.error('Response data:', data)
       
-      // In development or when explicitly using mock API, provide mock data for testing
-      if (isDevelopment || useMockApi) {
-        const mockAvailable = !query.includes('flickmax') && !query.includes('google') && !query.includes('facebook')
-        const baseName = query.split('.')[0]
-        const extension = query.substring(baseName.length)
-        
-        return NextResponse.json({
-          exactMatchDomain: {
-            domain: query,
-            available: mockAvailable,
-            id: 'domain',
-            productId: mockAvailable ? 12101 : 0,
-            listPrice: mockAvailable ? (
-              extension === '.org' ? '$19.99' : 
-              extension === '.com' ? '$12.99' :
-              extension === '.net' ? '$14.99' :
-              extension === '.co.in' ? '$10.99' :
-              extension === '.in' ? '$8.99' :
-              extension === '.ai' ? '$124.99' :
-              '$15.99'
-            ) : null,
-            salePrice: mockAvailable ? (
-              extension === '.org' ? '$19.99' : 
-              extension === '.com' ? '$12.99' :
-              extension === '.net' ? '$14.99' :
-              extension === '.co.in' ? '$10.99' :
-              extension === '.in' ? '$8.99' :
-              extension === '.ai' ? '$124.99' :
-              '$15.99'
-            ) : null,
-            disclaimer: 'Development mode - Mock data'
-          },
-          suggestedDomains: [
-            { domain: `${baseName}.com`, available: true, listPrice: '$12.99', salePrice: '$12.99', productId: 101 },
-            { domain: `${baseName}.net`, available: true, listPrice: '$14.99', salePrice: '$14.99', productId: 12001 },
-            { domain: `${baseName}.org`, available: true, listPrice: '$19.99', salePrice: '$19.99', productId: 12101 }
-          ],
-          disclaimer: 'Development mode - Using mock data due to API restrictions'
-        }, {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-          'Cache-Control': 'no-store, no-cache, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-        }
-      })
-      }
     }
     
     // Return the response with CORS headers

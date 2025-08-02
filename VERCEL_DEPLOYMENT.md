@@ -14,9 +14,7 @@
 
 ### Production Environment Variables
 
-| Variable | Value | Description |
-|----------|-------|-------------|
-| `NEXT_PUBLIC_USE_MOCK_API` | `false` | Uses real GoDaddy API in production |
+No environment variables are required. The application exclusively uses the real GoDaddy API.
 
 ### Build Configuration
 
@@ -48,11 +46,7 @@ vercel --prod
 ```
 
 ### Environment Variables Setup
-```bash
-# Add production environment variable
-vercel env add NEXT_PUBLIC_USE_MOCK_API production
-# Enter: false
-```
+No environment variables are needed anymore. The application uses only the real API.
 
 ### Redeployment
 ```bash
@@ -154,9 +148,7 @@ vercel logs flickmax --prod --filter=api/domain/search
 # Start dev server
 npm run dev
 
-# Use mock API locally
-# .env.local
-NEXT_PUBLIC_USE_MOCK_API=true
+# Note: Local development may experience API issues due to GoDaddy's security measures
 ```
 
 ### Preview Deployments
