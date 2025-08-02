@@ -1,0 +1,634 @@
+'use client'
+
+import React, { useState } from 'react'
+import { motion } from 'framer-motion'
+import { Check, Star, Server, Zap, Database, Cpu, HardDrive, Gauge, Shield, Clock, Headphones, RefreshCw, MousePointer, Activity, Lock, Save, Settings } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { useCPanelPlans } from '@/hooks/useCPanelPlans'
+import { useBusinessHosting } from '@/hooks/useBusinessHosting'
+import { useCountry } from '@/contexts/CountryContext'
+import { formatCurrency } from '@/lib/countries'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import ErrorMessage from '@/components/ui/ErrorMessage'
+import type { HostingPlan } from '@/types/hosting-plans'
+
+// Fallback plans for Standard Performance (cPanel)
+const fallbackStandardPlans: HostingPlan[] = [
+  {
+    id: 'cpanel-starter',
+    name: 'Web Hosting Economy',
+    description: "cPanel that's easy, reliable and lightning-fast",
+    price: {
+      monthly: 5.99,
+      yearly: 3.99,
+      currency: 'USD'
+    },
+    features: [
+      '1 website',
+      '25 GB NVMe storage',
+      'cPanel',
+      'Free domain*',
+      'Free email',
+      'Free SSL Certificate, 1 year²',
+      '30-day, money-back guarantee³',
+      'Site security trial offer⁶'
+    ],
+    recommended: false,
+    limits: {
+      websites: 1,
+      storage: '25 GB NVMe storage',
+      bandwidth: 'Unmetered',
+      databases: 10,
+      ssl: 'Free SSL Certificate, 1 year'
+    }
+  },
+  {
+    id: 'wordpress-basic',
+    name: 'Hosting for WordPress Basic',
+    description: 'BEST FOR WORDPRESS',
+    price: {
+      monthly: 5.99,
+      yearly: 5.99,
+      currency: 'USD'
+    },
+    features: [
+      '1 website',
+      '10 GB NVMe storage',
+      'GoDaddy Managed Hosting for WordPress control panel',
+      'Free domain*',
+      'Free email',
+      'Free SSL Certificate, no renewal fees',
+      '30-day, money-back guarantee³',
+      'Site Security Included',
+      'Up to 2x faster performance with CDN⁷',
+      'WordPress pre-installed',
+      'Weekly backups',
+      'Airo Plus Site Optimizer',
+      'Automatic WordPress core software updates',
+      'WordPress migration tool'
+    ],
+    recommended: true,
+    badge: 'BEST FOR WORDPRESS',
+    limits: {
+      websites: 1,
+      storage: '10 GB NVMe storage',
+      bandwidth: 'Unmetered',
+      databases: 1,
+      ssl: 'Free SSL Certificate, no renewal fees'
+    }
+  },
+  {
+    id: 'cpanel-deluxe',
+    name: 'Web Hosting Deluxe',
+    description: "cPanel Hosting that's easy, reliable and lightning-fast",
+    price: {
+      monthly: 7.99,
+      yearly: 7.99,
+      currency: 'USD'
+    },
+    features: [
+      '10 websites',
+      '50 GB NVMe storage',
+      'cPanel',
+      'Free domain*',
+      'Free email',
+      'Free, unlimited SSL for all your websites⁵',
+      '30-day, money-back guarantee³',
+      'Site security trial offer⁶'
+    ],
+    recommended: false,
+    limits: {
+      websites: 10,
+      storage: '50 GB NVMe storage',
+      bandwidth: 'Unmetered',
+      databases: 25,
+      ssl: 'Free, unlimited SSL for all your websites'
+    }
+  },
+  {
+    id: 'cpanel-ultimate',
+    name: 'Web Hosting Ultimate',
+    description: "cPanel Hosting that's easy, reliable and lightning-fast",
+    price: {
+      monthly: 12.99,
+      yearly: 12.99,
+      currency: 'USD'
+    },
+    features: [
+      '25 websites',
+      '75 GB NVMe storage',
+      'cPanel',
+      'Free domain*',
+      'Free email',
+      'Free, unlimited SSL for all your websites⁵',
+      '30-day, money-back guarantee³',
+      'Site security trial offer⁶'
+    ],
+    recommended: false,
+    limits: {
+      websites: 25,
+      storage: '75 GB NVMe storage',
+      bandwidth: 'Unmetered',
+      databases: 50,
+      ssl: 'Free, unlimited SSL for all your websites'
+    }
+  }
+]
+
+// Fallback plans for High Performance (Business)
+const fallbackBusinessPlans: HostingPlan[] = [
+  {
+    id: 'business-launch',
+    name: 'Web Hosting Plus Launch',
+    description: 'High performance hosting for growing sites',
+    price: {
+      monthly: 30.99,
+      yearly: 30.99,
+      currency: 'USD'
+    },
+    features: [
+      '50 websites',
+      'Unlimited databases',
+      '100 GB NVMe storage',
+      'cPanel',
+      '4 GB RAM, 2 vCPUs',
+      'Free dedicated IP',
+      'Free domain*',
+      'Free, unlimited SSL for all your websites⁵',
+      '30-day, money-back guarantee³',
+      'Site security trial offer⁶'
+    ],
+    recommended: false,
+    limits: {
+      websites: 50,
+      storage: '100 GB NVMe storage',
+      databases: 'unlimited',
+      ram: '4 GB RAM',
+      cpu: '2 CPUs',
+      ssl: 'Free, unlimited SSL for all your websites'
+    }
+  },
+  {
+    id: 'business-enhance',
+    name: 'Web Hosting Plus Enhance',
+    description: 'Enhanced performance for busy sites',
+    price: {
+      monthly: 49.99,
+      yearly: 49.99,
+      currency: 'USD'
+    },
+    features: [
+      '100 websites',
+      'Unlimited databases',
+      '200 GB NVMe storage',
+      'cPanel',
+      '8 GB RAM, 4 vCPUs',
+      'Free dedicated IP',
+      'Free domain*',
+      'Free, unlimited SSL for all your websites⁵',
+      '30-day, money-back guarantee³',
+      'Site security trial offer⁶'
+    ],
+    recommended: false,
+    limits: {
+      websites: 100,
+      storage: '200 GB NVMe storage',
+      databases: 'unlimited',
+      ram: '8 GB RAM',
+      cpu: '4 CPUs',
+      ssl: 'Free, unlimited SSL for all your websites'
+    }
+  },
+  {
+    id: 'business-grow',
+    name: 'Web Hosting Plus Grow',
+    description: 'Powerful hosting for high-traffic sites',
+    price: {
+      monthly: 69.99,
+      yearly: 69.99,
+      currency: 'USD'
+    },
+    features: [
+      '150 websites',
+      'Unlimited databases',
+      '300 GB NVMe storage',
+      'cPanel',
+      '16 GB RAM, 8 vCPUs',
+      'Free dedicated IP',
+      'Free domain*',
+      'Free, unlimited SSL for all your websites⁵',
+      '30-day, money-back guarantee³',
+      'Site security trial offer⁶'
+    ],
+    recommended: true,
+    badge: 'BEST VALUE',
+    limits: {
+      websites: 150,
+      storage: '300 GB NVMe storage',
+      databases: 'unlimited',
+      ram: '16 GB RAM',
+      cpu: '8 CPUs',
+      ssl: 'Free, unlimited SSL for all your websites'
+    }
+  },
+  {
+    id: 'business-expand',
+    name: 'Web Hosting Plus Expand',
+    description: 'Maximum resources for enterprise sites',
+    price: {
+      monthly: 99.99,
+      yearly: 99.99,
+      currency: 'USD'
+    },
+    features: [
+      '200 websites',
+      'Unlimited databases',
+      '400 GB NVMe storage',
+      'cPanel',
+      '32 GB RAM, 16 vCPUs',
+      'Free dedicated IP',
+      'Free domain*',
+      'Free, unlimited SSL for all your websites⁵',
+      '30-day, money-back guarantee³',
+      'Site security trial offer⁶'
+    ],
+    recommended: false,
+    limits: {
+      websites: 200,
+      storage: '400 GB NVMe storage',
+      databases: 'unlimited',
+      ram: '32 GB RAM',
+      cpu: '16 CPUs',
+      ssl: 'Free, unlimited SSL for all your websites'
+    }
+  }
+]
+
+export default function TabbedHostingPlans() {
+  const [activeTab, setActiveTab] = useState<'standard' | 'business'>('standard')
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('yearly')
+  const [hoveredPlan, setHoveredPlan] = useState<string | null>(null)
+  const { currency, locale } = useCountry()
+  
+  const { plans: standardPlans, loading: standardLoading, error: standardError } = useCPanelPlans()
+  const { plans: businessPlans, loading: businessLoading, error: businessError } = useBusinessHosting()
+
+  // Use API plans if available, otherwise use fallbacks
+  const displayStandardPlans = standardPlans.length > 0 ? standardPlans : fallbackStandardPlans
+  const displayBusinessPlans = businessPlans.length > 0 ? businessPlans : fallbackBusinessPlans
+
+  const loading = activeTab === 'standard' ? standardLoading : businessLoading
+  const error = activeTab === 'standard' ? standardError : businessError
+  const plans = activeTab === 'standard' ? displayStandardPlans : displayBusinessPlans
+
+  return (
+    <section id="plans" className="py-20 bg-gray-50">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+            Choose Your Perfect Hosting Plan
+          </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+            All plans include free domain, SSL certificate, 24/7 support, one-click install, 
+            99.9% uptime, daily backups, and easy-to-use control panel. Upgrade or downgrade anytime.
+          </p>
+
+          {/* Tab Navigation */}
+          <div className="flex justify-center mb-8">
+            <div className="inline-flex p-1 bg-gray-100 rounded-full">
+              <button
+                onClick={() => setActiveTab('standard')}
+                className={cn(
+                  'px-6 py-3 rounded-full text-sm transition-all duration-200',
+                  activeTab === 'standard'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 hover:text-gray-900'
+                )}
+              >
+                <div className="text-center">
+                  <div className="font-semibold">Standard Performance</div>
+                  <div className="text-xs mt-0.5">
+                    Ideal for getting started with simple websites.
+                  </div>
+                </div>
+              </button>
+              <button
+                onClick={() => setActiveTab('business')}
+                className={cn(
+                  'px-6 py-3 rounded-full text-sm transition-all duration-200 ml-1',
+                  activeTab === 'business'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 hover:text-gray-900'
+                )}
+              >
+                <div className="text-center">
+                  <div className="font-semibold">High Performance</div>
+                  <div className="text-xs mt-0.5">
+                    Great for multi-site, high traffic or resource-heavy sites.
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* Billing Toggle */}
+          <div className="flex justify-center">
+            <div className="bg-gray-200 p-1 rounded-lg inline-flex">
+              <button
+                onClick={() => setBillingPeriod('monthly')}
+                className={cn(
+                  'px-6 py-2 rounded-md text-sm font-medium transition-all duration-200',
+                  billingPeriod === 'monthly'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                )}
+              >
+                Monthly
+              </button>
+              <button
+                onClick={() => setBillingPeriod('yearly')}
+                className={cn(
+                  'px-6 py-2 rounded-md text-sm font-medium transition-all duration-200',
+                  billingPeriod === 'yearly'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                )}
+              >
+                Yearly
+                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                  Save up to 50%
+                </span>
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
+        {loading && (
+          <div className="flex flex-col items-center justify-center py-20">
+            <LoadingSpinner size="lg" />
+            <p className="mt-4 text-gray-600">Loading hosting plans...</p>
+          </div>
+        )}
+
+        {error && !loading && (
+          <ErrorMessage error={error} />
+        )}
+
+        {!loading && !error && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {plans.map((plan, index) => (
+              <motion.div
+                key={plan.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                onHoverStart={() => setHoveredPlan(plan.id)}
+                onHoverEnd={() => setHoveredPlan(null)}
+                className={cn(
+                  'relative bg-white rounded-2xl transition-all duration-300 overflow-hidden',
+                  plan.recommended 
+                    ? 'shadow-2xl border-2 border-blue-500 scale-105' 
+                    : 'shadow-lg border border-gray-200 hover:shadow-xl hover:border-gray-300',
+                  hoveredPlan === plan.id && 'border-blue-400'
+                )}
+              >
+                {(plan.recommended || plan.badge) && (
+                  <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center py-2">
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                      ⭐ {plan.badge || 'MOST POPULAR'}
+                    </span>
+                  </div>
+                )}
+
+                <div className="p-6 pt-8">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{plan.name}</h3>
+                  {plan.description && (
+                    <p className="text-sm text-gray-600 mb-4">{plan.description}</p>
+                  )}
+                  
+                  <div className="mb-6">
+                    {billingPeriod === 'yearly' && (
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="inline-flex items-center bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 text-xs font-bold px-3 py-1.5 rounded-full mb-3 border border-green-200"
+                      >
+                        💰 SAVE {activeTab === 'standard' ? '40%' : '50%'}
+                      </motion.div>
+                    )}
+                    <div className="flex items-baseline mb-2">
+                      <span className="text-5xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                        {formatCurrency(billingPeriod === 'yearly' ? plan.price.yearly : plan.price.monthly, plan.price.currency, locale)}
+                      </span>
+                      <span className="text-gray-500 ml-2 text-lg">/mo</span>
+                    </div>
+                    {billingPeriod === 'yearly' && (
+                      <p className="text-xs text-gray-500">
+                        Billed annually at {formatCurrency(plan.price.yearly * 12, plan.price.currency, locale)}
+                      </p>
+                    )}
+                  </div>
+
+                  <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={cn(
+                      'w-full py-3.5 px-6 rounded-xl font-semibold transition-all duration-200 mb-6 relative overflow-hidden group',
+                      plan.recommended
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                    )}
+                  >
+                    <span className="relative z-10">Get Started</span>
+                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                  </motion.button>
+
+                  <div className="border-t border-gray-100 pt-4">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">What&apos;s Included:</p>
+                    <div className="space-y-3">
+                    {/* Standard Performance - cPanel plans */}
+                    {activeTab === 'standard' && (
+                      <>
+                        {/* Websites */}
+                        {plan.limits?.websites && (
+                          <div className="flex items-center text-sm text-gray-700">
+                            <Server className="w-4 h-4 mr-3 text-blue-500 flex-shrink-0" />
+                            <span>
+                              {typeof plan.limits.websites === 'number' 
+                                ? `${plan.limits.websites} website${plan.limits.websites > 1 ? 's' : ''}` 
+                                : 'Unlimited websites'}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {/* Storage */}
+                        {plan.limits?.storage && (
+                          <div className="flex items-center text-sm text-gray-700">
+                            <HardDrive className="w-4 h-4 mr-3 text-blue-500 flex-shrink-0" />
+                            <span>{plan.limits.storage}</span>
+                          </div>
+                        )}
+                        
+                        {/* Databases */}
+                        {plan.limits?.databases !== undefined && (
+                          <div className="flex items-center text-sm text-gray-700">
+                            <Database className="w-4 h-4 mr-3 text-blue-500 flex-shrink-0" />
+                            <span>
+                              {typeof plan.limits.databases === 'number' 
+                                ? `${plan.limits.databases} database${plan.limits.databases > 1 ? 's' : ''}` 
+                                : 'Unlimited databases'}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {/* SSL Certificate */}
+                        {plan.limits?.ssl && (
+                          <div className="flex items-center text-sm text-gray-700">
+                            <Shield className="w-4 h-4 mr-3 text-green-500 flex-shrink-0" />
+                            <span>{plan.limits.ssl}</span>
+                          </div>
+                        )}
+                      </>
+                    )}
+                    
+                    {/* High Performance - Business plans */}
+                    {activeTab === 'business' && (
+                      <>
+                        {/* Storage */}
+                        {plan.limits?.storage && (
+                          <div className="flex items-center text-sm text-gray-700">
+                            <HardDrive className="w-4 h-4 mr-3 text-blue-500 flex-shrink-0" />
+                            <span>{plan.limits.storage}</span>
+                          </div>
+                        )}
+                        
+                        {/* RAM */}
+                        {plan.limits?.ram && (
+                          <div className="flex items-center text-sm text-gray-700">
+                            <Zap className="w-4 h-4 mr-3 text-orange-500 flex-shrink-0" />
+                            <span>{plan.limits.ram}</span>
+                          </div>
+                        )}
+                        
+                        {/* CPUs */}
+                        {plan.limits?.cpu && (
+                          <div className="flex items-center text-sm text-gray-700">
+                            <Cpu className="w-4 h-4 mr-3 text-indigo-500 flex-shrink-0" />
+                            <span>{plan.limits.cpu}</span>
+                          </div>
+                        )}
+                        
+                        {/* Traffic */}
+                        <div className="flex items-center text-sm text-gray-700">
+                          <Gauge className="w-4 h-4 mr-3 text-indigo-500 flex-shrink-0" />
+                          <span>Unmetered traffic</span>
+                        </div>
+                        
+                        {/* Websites */}
+                        {plan.limits?.websites && (
+                          <div className="flex items-center text-sm text-gray-700">
+                            <Server className="w-4 h-4 mr-3 text-blue-500 flex-shrink-0" />
+                            <span>
+                              {typeof plan.limits.websites === 'number' 
+                                ? `${plan.limits.websites} website${plan.limits.websites > 1 ? 's' : ''}` 
+                                : 'Unlimited websites'}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {/* Databases */}
+                        {plan.limits?.databases !== undefined && (
+                          <div className="flex items-center text-sm text-gray-700">
+                            <Database className="w-4 h-4 mr-3 text-blue-500 flex-shrink-0" />
+                            <span>
+                              {typeof plan.limits.databases === 'number' 
+                                ? `${plan.limits.databases} database${plan.limits.databases > 1 ? 's' : ''}` 
+                                : 'Unlimited databases'}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {/* SSL Certificate */}
+                        {plan.limits?.ssl && (
+                          <div className="flex items-center text-sm text-gray-700">
+                            <Shield className="w-4 h-4 mr-3 text-green-500 flex-shrink-0" />
+                            <span>{plan.limits.ssl}</span>
+                          </div>
+                        )}
+                      </>
+                    )}
+                    
+                    {/* Common Features for All Plans */}
+                    <div className="border-t border-gray-100 mt-3 pt-3 space-y-2">
+                      <div className="flex items-center text-sm text-gray-700">
+                        <MousePointer className="w-4 h-4 mr-3 text-blue-500 flex-shrink-0" />
+                        <span>One-click install</span>
+                      </div>
+                      
+                      <div className="flex items-center text-sm text-gray-700">
+                        <Activity className="w-4 h-4 mr-3 text-green-500 flex-shrink-0" />
+                        <span>99.9% uptime guarantee</span>
+                      </div>
+                      
+                      <div className="flex items-center text-sm text-gray-700">
+                        <Lock className="w-4 h-4 mr-3 text-red-500 flex-shrink-0" />
+                        <span>24/7 security monitoring</span>
+                      </div>
+                      
+                      <div className="flex items-center text-sm text-gray-700">
+                        <Save className="w-4 h-4 mr-3 text-indigo-500 flex-shrink-0" />
+                        <span>Daily backups</span>
+                      </div>
+                      
+                      <div className="flex items-center text-sm text-gray-700">
+                        <Settings className="w-4 h-4 mr-3 text-gray-500 flex-shrink-0" />
+                        <span>Easy-to-use control panel</span>
+                      </div>
+                    </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+
+        {/* Additional Info */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="mt-16"
+        >
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 text-center">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Need a custom solution?</h3>
+            <p className="text-gray-600 mb-4">
+              Get enterprise-grade hosting with custom resources, dedicated support, and SLA guarantees.
+            </p>
+            <a 
+              href="/contact" 
+              className="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold group"
+            >
+              Talk to sales team
+              <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+          </div>
+          <p className="text-xs text-gray-500 text-center mt-6">
+            All prices shown in {currency}. Prices exclude applicable taxes. Features subject to availability.
+          </p>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
