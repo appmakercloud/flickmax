@@ -47,13 +47,13 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
         const updatedItems = await Promise.all(
           cart.items.map(async (item) => {
             if (item.domain) {
-              // Fetch new price for domain with the new market
-              // Search with full domain name to get exact match
+              // Fetch new price for domain with the new market using GoDaddy's exact API
+              const plid = '590175'
               const searchParams = new URLSearchParams({
-                q: item.domain, // Use full domain name for exact match
-                marketId: country.marketId,
                 currencyType: currency,
-                pageSize: '10'
+                marketId: country.marketId,
+                pageSize: '1',
+                q: item.domain
               })
               
               console.log('Fetching price for domain:', item.domain, 'with params:', {
@@ -63,6 +63,7 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
               })
               
               try {
+                // Call the exact GoDaddy API endpoint through our proxy
                 const response = await fetch(`/api/domain/search?${searchParams}`)
                 const data = await response.json()
                 
@@ -358,7 +359,7 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                                     </h3>
                                     {item.domain && (
                                       <p className="text-sm text-gray-500 mt-1">
-                                        .ORG Domain Registration
+                                        {item.domain.substring(item.domain.lastIndexOf('.'))} Domain Registration
                                       </p>
                                     )}
                                     {item.period && (

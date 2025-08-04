@@ -1,6 +1,7 @@
 // Client-side cart implementation for GoDaddy integration
 import { Cart, CartItem, CartItemDetail } from '@/types/cart'
 import { pricingService } from './pricing-service'
+import { countries } from '@/lib/countries'
 
 class ClientCartService {
   private plid = process.env.NEXT_PUBLIC_PLID || '590175'
@@ -56,26 +57,9 @@ class ClientCartService {
     console.log('clientCartService.addToCart called with:', { cartId, items })
     const cart = await this.getCart(cartId)
     
-    // Fetch real-time prices for new items
-    const priceRequests = items.map(item => ({
-      productId: item.pfid || item.id,
-      quantity: item.quantity,
-      period: item.period,
-      periodUnit: item.periodUnit,
-      currency: cart.currency || 'USD'
-    }))
-    
-    let prices: Array<{productId: string, listPrice: number, salePrice: number}> = []
-    // Since we're on the client, pricing service will use fallback prices
-    // No need to catch errors as fallback is always returned
-    prices = await pricingService.getBulkPrices(priceRequests)
-    
-    // Add items to cart with real prices
+    // For domain items, fetch exact prices from GoDaddy API
     for (let i = 0; i < items.length; i++) {
       const item = items[i]
-      const priceInfo = prices.find(p => p?.productId === (item.pfid || item.id)?.toString())
-      
-      console.log('Processing item:', item, 'Price info:', priceInfo)
       
       const existingItem = cart.items.find(i => 
         i.domain === item.domain || i.productId === item.pfid?.toString()
@@ -85,8 +69,56 @@ class ClientCartService {
         existingItem.quantity += item.quantity || 1
         existingItem.subtotal = existingItem.price * existingItem.quantity
       } else {
-        const rawPrice = priceInfo?.salePrice || 10.99
-        const price = typeof rawPrice === 'string' ? parseFloat(rawPrice) : rawPrice
+        let price = 19.99 // Default fallback price
+        
+        // If it's a domain, fetch the exact price from GoDaddy
+        if (item.domain) {
+          try {
+            // Get current country from localStorage
+            let marketId = 'en-US'
+            let currencyType = 'USD'
+            
+            const storedCountry = localStorage.getItem('selectedCountry')
+            if (storedCountry) {
+              try {
+                const countryCode = JSON.parse(storedCountry)
+                const country = countries.find(c => c.code === countryCode)
+                if (country) {
+                  marketId = country.marketId
+                  currencyType = country.currency
+                }
+              } catch (e) {
+                console.error('Error parsing stored country:', e)
+              }
+            }
+            
+            const searchParams = new URLSearchParams({
+              q: item.domain,
+              currencyType: currencyType,
+              marketId: marketId,
+              pageSize: '1'
+            })
+            
+            const response = await fetch(`/api/domain/search?${searchParams}`)
+            if (response.ok) {
+              const data = await response.json()
+              console.log('Domain price lookup response:', data)
+              
+              if (data.domains && data.domains.length > 0) {
+                const domainMatch = data.domains.find((d: any) => 
+                  d.domain.toLowerCase() === item.domain?.toLowerCase()
+                )
+                if (domainMatch) {
+                  price = parseFloat(String(domainMatch.salePrice || domainMatch.listPrice)) || price
+                  console.log('Found exact price for', item.domain, ':', price)
+                }
+              }
+            }
+          } catch (error) {
+            console.error('Error fetching domain price:', error)
+          }
+        }
+        
         const cartItem: CartItemDetail = {
           id: item.id,
           label: item.domain || `Product ${item.id}`,
@@ -95,13 +127,27 @@ class ClientCartService {
           subtotal: price * (item.quantity || 1),
           domain: item.domain,
           productId: item.pfid?.toString(),
-          period: item.period,
-          periodUnit: item.periodUnit,
+          period: item.period || 1,
+          periodUnit: item.periodUnit || 'YEAR',
           renewalPrice: price,
           isDiscounted: false,
           discountAmount: undefined
         }
         cart.items.push(cartItem)
+      }
+    }
+    
+    // Update cart currency if needed
+    const storedCountry = localStorage.getItem('selectedCountry')
+    if (storedCountry) {
+      try {
+        const countryCode = JSON.parse(storedCountry)
+        const country = countries.find(c => c.code === countryCode)
+        if (country) {
+          cart.currency = country.currency
+        }
+      } catch (e) {
+        console.error('Error parsing stored country:', e)
       }
     }
     
