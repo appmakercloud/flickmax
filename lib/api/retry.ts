@@ -20,10 +20,11 @@ export async function withRetry<T>(
       if (error instanceof TypeError && error.message.includes('fetch')) {
         return true
       }
-      if (error.status >= 500 && error.status < 600) {
+      const err = error as Error & { status?: number; code?: string }
+      if (err.status && err.status >= 500 && err.status < 600) {
         return true
       }
-      if (error.code === 'ECONNRESET' || error.code === 'ETIMEDOUT') {
+      if (err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT') {
         return true
       }
       return false

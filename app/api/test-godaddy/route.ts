@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getDomainSearchService } from '@/lib/api/domain-service'
 
 export async function GET() {

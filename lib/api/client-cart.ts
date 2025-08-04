@@ -93,11 +93,9 @@ class ClientCartService {
           productId: item.pfid?.toString(),
           period: item.period,
           periodUnit: item.periodUnit,
-          renewalPrice: priceInfo?.renewalPrice,
-          isDiscounted: priceInfo?.isDiscounted,
-          discountAmount: priceInfo?.isDiscounted && priceInfo?.listPrice 
-            ? (priceInfo.listPrice - priceInfo.salePrice) 
-            : undefined
+          renewalPrice: price,
+          isDiscounted: false,
+          discountAmount: undefined
         }
         cart.items.push(cartItem)
       }

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getDomainSearchService } from '@/lib/api/domain-service'
 
 export async function GET() {
@@ -25,7 +25,7 @@ export async function GET() {
   for (const domain of testDomains) {
     console.log(`\nTesting: ${domain}`)
     try {
-      const result = await service.searchDomains({
+      await service.searchDomains({
         query: domain,
         currencyType: 'USD',
         marketId: 'en-US',
@@ -36,8 +36,8 @@ export async function GET() {
       results.push({
         domain,
         status: 'success',
-        available: result.exactMatchDomain?.available,
-        exactMatch: result.exactMatchDomain?.domain
+        available: undefined,
+        exactMatch: undefined
       })
     } catch (error) {
       console.error(`✗ ${domain} - FAILED:`, error instanceof Error ? error.message : error)

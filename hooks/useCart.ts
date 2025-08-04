@@ -82,7 +82,7 @@ export function useCart() {
   const addProductToCart = useCallback(async (productId: string, period?: number, periodUnit?: string) => {
     const item: CartItem = {
       id: productId,
-      pfid: productId,
+      pfid: parseInt(productId) || undefined,
       quantity: 1,
       period,
       periodUnit

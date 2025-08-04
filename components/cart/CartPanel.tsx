@@ -31,11 +31,7 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
     if (isOpen && cartId && refreshCart) {
       refreshCart()
       // Load cross-sell recommendations when cart opens
-      loadCrossSellProducts()
-    }
-  }, [isOpen, cartId, refreshCart, loadCrossSellProducts])
-
-  const loadCrossSellProducts = () => {
+      const loadCrossSellProducts = () => {
     // Mock cross-sell products - in production, these would come from API
     const mockCrossSell: CrossSellProduct[] = [
       {
@@ -61,11 +57,15 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
       }
     ]
     
-    // Only show cross-sell if cart has domains
-    if (cart?.items.some(item => item.domain)) {
-      setCrossSellProducts(mockCrossSell)
+        // Only show cross-sell if cart has domains
+        if (cart?.items.some(item => item.domain)) {
+          setCrossSellProducts(mockCrossSell)
+        }
+      }
+      
+      loadCrossSellProducts()
     }
-  }
+  }, [isOpen, cartId, refreshCart, cart])
 
   const formatPrice = (price: number) => {
     const symbol = currency === 'INR' ? '₹' : currency === 'EUR' ? '€' : '$'

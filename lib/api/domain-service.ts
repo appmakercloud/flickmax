@@ -102,7 +102,7 @@ export class DomainSearchService {
       const headers = this.getAuthHeaders()
       console.log('Request headers:', {
         ...headers,
-        'Authorization': headers['Authorization'] ? 'sso-key [REDACTED]' : 'NOT SET'
+        'Authorization': 'sso-key [REDACTED]'
       })
       
       console.log('Making test request...')
@@ -293,13 +293,10 @@ export class DomainSearchService {
 
     return {
       domains: data.CrossSellDomains.map((domain) => ({
-        domain: domain.Domain || domain.domain,
-        available: domain.Available !== false,
-        price: domain.Price ? {
-          current: typeof domain.Price === 'object' ? domain.Price.Current : domain.Price,
-          currency: typeof domain.Price === 'object' ? domain.Price.Currency : 'USD'
-        } : undefined,
-        period: domain.Period || 'year'
+        domain: domain.domain,
+        available: true,
+        price: undefined,
+        period: 'year'
       }))
     }
   }
@@ -320,8 +317,8 @@ export const domainSearchService = {
   searchDomains: async (options: DomainSearchOptions) => {
     return getDomainSearchService().searchDomains(options)
   },
-  searchExactDomain: async (domain: string, currencyType?: string) => {
-    return getDomainSearchService().searchExactDomain(domain, currencyType)
+  searchExactDomain: async (domain: string, currencyType?: string, marketId?: string, pageSize?: number) => {
+    return getDomainSearchService().searchExactDomain(domain, currencyType || 'USD', marketId || 'en-US', pageSize || 5)
   },
   searchCrossSellDomains: async (sld: string, currencyType?: string) => {
     return getDomainSearchService().searchCrossSellDomains(sld, currencyType)

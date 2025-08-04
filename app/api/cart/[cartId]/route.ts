@@ -152,7 +152,9 @@ export async function OPTIONS() {
 }
 
 // Export methods with rate limiting
-export const GET = async (request: NextRequest, context: { params: { cartId: string } }) => {
+export const GET = async (request: NextRequest, { params }: { params: Promise<{ cartId: string }> }) => {
+  const { cartId } = await params
+  const context = { params: { cartId } }
   const handler = withRateLimit(
     withAuth((req) => handleGetCart(req, context), { requireAuth: false }),
     { windowMs: 60000, maxRequests: 60 }
@@ -160,7 +162,9 @@ export const GET = async (request: NextRequest, context: { params: { cartId: str
   return handler(request)
 }
 
-export const POST = async (request: NextRequest, context: { params: { cartId: string } }) => {
+export const POST = async (request: NextRequest, { params }: { params: Promise<{ cartId: string }> }) => {
+  const { cartId } = await params
+  const context = { params: { cartId } }
   const handler = withRateLimit(
     withAuth((req) => handleAddToCart(req, context), { requireAuth: false }),
     { windowMs: 60000, maxRequests: 30 }
@@ -168,7 +172,9 @@ export const POST = async (request: NextRequest, context: { params: { cartId: st
   return handler(request)
 }
 
-export const DELETE = async (request: NextRequest, context: { params: { cartId: string } }) => {
+export const DELETE = async (request: NextRequest, { params }: { params: Promise<{ cartId: string }> }) => {
+  const { cartId } = await params
+  const context = { params: { cartId } }
   const handler = withRateLimit(
     withAuth((req) => handleDeleteCart(req, context), { requireAuth: false }),
     { windowMs: 60000, maxRequests: 30 }

@@ -97,7 +97,7 @@ class CartService {
       if (response.status === 302) {
         const location = response.headers.get('Location')
         console.log('Redirect location:', location)
-        return { orderUrl: location }
+        return { orderUrl: location || undefined }
       }
       
       const data = await response.json()

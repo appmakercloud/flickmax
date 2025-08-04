@@ -1,4 +1,3 @@
-import { API_CONFIG } from './config'
 
 interface PriceRequest {
   productId: string | number
@@ -25,12 +24,15 @@ class PricingService {
   
   private async makeRequest(url: string, options: RequestInit = {}) {
     // For now, skip API calls if credentials are not set
-    if (!API_CONFIG.apiKey || !API_CONFIG.apiSecret) {
+    const apiKey = process.env.GODADDY_API_KEY
+    const apiSecret = process.env.GODADDY_API_SECRET
+    
+    if (!apiKey || !apiSecret) {
       throw new Error('API credentials not configured')
     }
     
     const headers = {
-      'Authorization': `sso-key ${API_CONFIG.apiKey}:${API_CONFIG.apiSecret}`,
+      'Authorization': `sso-key ${apiKey}:${apiSecret}`,
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       ...options.headers
