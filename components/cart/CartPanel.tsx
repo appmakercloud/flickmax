@@ -98,10 +98,12 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
       
       console.log('Posting items to GoDaddy cart API:', items)
       
-      // Try the client-side approach first
+      // IMPORTANT: Client-side API call to set cookies in browser
+      // This solution took 2 days to figure out - server-side calls don't work
+      // because cookies are set on the server, not in the user's browser
       try {
         // Make the API call directly from the browser
-        // This will set cookies in the browser, not on the server
+        // This will set cookies in the browser where they're needed
         const plid = '590175'
         const godaddyUrl = `https://www.secureserver.net/api/v1/cart/${plid}?redirect=false`
         
