@@ -27,6 +27,7 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
   const [crossSellProducts, setCrossSellProducts] = useState<CrossSellProduct[]>([])
   const [isLoadingCheckout, setIsLoadingCheckout] = useState(false)
   const [isUpdatingPrices, setIsUpdatingPrices] = useState(false)
+  const [previousCountry, setPreviousCountry] = useState<string | null>(null)
 
   useEffect(() => {
     if (isOpen && cartId && refreshCart) {
@@ -46,24 +47,51 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
         const updatedItems = await Promise.all(
           cart.items.map(async (item) => {
             if (item.domain) {
-              // Fetch new price for domain
+              // Fetch new price for domain with the new market
+              // Search with full domain name to get exact match
               const searchParams = new URLSearchParams({
-                q: item.domain,
-                currencyType: currency,
+                q: item.domain, // Use full domain name for exact match
                 marketId: country.marketId,
-                pageSize: '1'
+                currencyType: currency,
+                pageSize: '10'
               })
               
-              const response = await fetch(`/api/domain/search/exact?${searchParams}`)
-              const data = await response.json()
+              console.log('Fetching price for domain:', item.domain, 'with params:', {
+                q: item.domain,
+                marketId: country.marketId,
+                currencyType: currency
+              })
               
-              if (data.exactMatchDomain) {
-                const newPrice = parseFloat(data.exactMatchDomain.listPrice) || parseFloat(String(item.price)) || 0
-                return {
-                  ...item,
-                  price: newPrice,
-                  subtotal: newPrice * item.quantity
+              try {
+                const response = await fetch(`/api/domain/search?${searchParams}`)
+                const data = await response.json()
+                
+                console.log('Price API response:', data)
+                
+                if (data.domains && data.domains.length > 0) {
+                  // Find the exact domain match
+                  const domainMatch = data.domains.find((d: any) => 
+                    d.domain.toLowerCase() === item.domain.toLowerCase()
+                  )
+                  
+                  if (domainMatch) {
+                    // Parse price from response (could be string or number)
+                    const newPrice = parseFloat(String(domainMatch.salePrice || domainMatch.listPrice)) || parseFloat(String(item.price)) || 0
+                    console.log('Found new price:', newPrice, currency, 'for domain:', item.domain)
+                    return {
+                      ...item,
+                      price: newPrice,
+                      subtotal: newPrice * item.quantity,
+                      renewalPrice: newPrice
+                    }
+                  } else {
+                    console.log('No exact match found for domain:', item.domain)
+                  }
+                } else {
+                  console.log('No domains returned in API response')
                 }
+              } catch (error) {
+                console.error('Error fetching domain price:', error)
               }
             }
             return item
@@ -80,18 +108,11 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
           currency
         }
         
-        // Save updated cart to API
-        const response = await fetch(`/api/cart/${cartId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedCart)
-        })
+        // Save updated cart to localStorage
+        localStorage.setItem('flickmax_cart', JSON.stringify(updatedCart))
         
-        if (response.ok) {
-          // Update localStorage directly
-          localStorage.setItem('flickmax_cart', JSON.stringify(updatedCart))
-          refreshCart()
-        }
+        // Trigger cart refresh
+        refreshCart()
       } catch (error) {
         console.error('Error updating prices:', error)
       } finally {
@@ -99,10 +120,18 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
       }
     }
     
-    if (isOpen && cart && cart.currency !== currency) {
+    // Only update if country actually changed and cart panel is open
+    if (isOpen && cart && cart.items.length > 0 && previousCountry !== null && country.code !== previousCountry) {
+      console.log('Country changed from', previousCountry, 'to', country.code)
+      console.log('Currency changed to', currency)
       updatePricesForCountry()
     }
-  }, [country, currency, cart, isOpen, cartId, refreshCart])
+    
+    // Set the previous country after checking
+    if (isOpen && previousCountry !== country.code) {
+      setPreviousCountry(country.code)
+    }
+  }, [country.code, currency, cart, isOpen, refreshCart, previousCountry])
   
   useEffect(() => {
     // Load cross-sell recommendations when cart has items
