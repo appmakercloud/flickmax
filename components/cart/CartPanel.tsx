@@ -98,7 +98,43 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
       
       console.log('Posting items to GoDaddy cart API:', items)
       
-      // Call our API endpoint
+      // Try the client-side approach first
+      try {
+        // Make the API call directly from the browser
+        // This will set cookies in the browser, not on the server
+        const plid = '590175'
+        const godaddyUrl = `https://www.secureserver.net/api/v1/cart/${plid}?redirect=false`
+        
+        const godaddyResponse = await fetch(godaddyUrl, {
+          method: 'POST',
+          headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          mode: 'cors',
+          credentials: 'include',
+          body: JSON.stringify({
+            items: items,
+            skipCrossSell: true
+          })
+        })
+        
+        const godaddyResult = await godaddyResponse.json()
+        console.log('Direct GoDaddy API response:', godaddyResult)
+        
+        if (godaddyResult.cartCount > 0) {
+          // Cart created successfully, redirect to checkout
+          const checkoutUrl = `https://cart.secureserver.net/go/checkout?pl_id=${plid}`
+          console.log('Cart created with items:', godaddyResult.cartCount)
+          console.log('Redirecting to:', checkoutUrl)
+          window.location.href = checkoutUrl
+          return
+        }
+      } catch (corsError) {
+        console.log('Direct API call failed (likely CORS), trying server-side approach')
+      }
+      
+      // Fallback to server-side approach
       const response = await fetch('/api/cart/create', {
         method: 'POST',
         headers: {
@@ -111,14 +147,13 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
       })
       
       const result = await response.json()
-      console.log('API response:', result)
+      console.log('Server API response:', result)
       
       // Check for redirect URL in response
       const redirectUrl = result.nextStepUrl || result.NextStepUrl || result.orderUrl
       
       if (redirectUrl) {
         console.log('Redirecting to GoDaddy checkout:', redirectUrl)
-        // Open in same window to maintain session
         window.location.href = redirectUrl
       } else {
         console.error('No redirect URL in response:', result)

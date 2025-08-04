@@ -87,10 +87,7 @@ export class GoDaddyCartService {
     if (result.cartCount && result.cartCount > 0) {
       console.log('Cart created successfully with items:', result.cartCount)
       
-      // Since we can't transfer the session, we need to use a different approach
-      // The cart API works but the session doesn't transfer to the browser
-      // This is a limitation of cross-domain cookie security
-      
+      // Use the checkout URL from the response or default
       const checkoutUrl = result.nextStepUrl || result.NextStepUrl || 
                          `https://cart.secureserver.net/go/checkout?pl_id=${this.plid}`
       
