@@ -68,11 +68,6 @@ export class GoDaddyCartService {
     console.log('GoDaddy response status:', response.status)
     console.log('GoDaddy response:', responseText)
     
-    // Extract session info from headers
-    const headers = response.headers
-    let shopperId: string | undefined
-    let pathway: string | undefined
-    
     // In Next.js, headers are already parsed, so we can't access set-cookie directly
     // The session info would be in the cookies but we can't access them from server-side
     

@@ -96,6 +96,47 @@ async function handleAddToCart(
   }
 }
 
+// PUT /api/cart/[cartId]
+async function handleUpdateCart(
+  request: NextRequest,
+  context?: { params: { cartId: string } }
+) {
+  try {
+    const cartId = context?.params?.cartId || request.nextUrl.pathname.split('/').pop() || ''
+    
+    if (!cartId) {
+      return NextResponse.json(
+        { error: 'Cart ID is required' },
+        { status: 400 }
+      )
+    }
+    
+    const updatedCart = await request.json()
+    
+    // For now, just save to localStorage via client
+    // In production, this would update server-side storage
+    return NextResponse.json(updatedCart, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, X-API-Key'
+      }
+    })
+  } catch (error) {
+    console.error('Update cart error:', error)
+    
+    return NextResponse.json({
+      error: error instanceof Error ? error.message : 'Failed to update cart',
+      timestamp: new Date().toISOString()
+    }, {
+      status: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*'
+      }
+    })
+  }
+}
+
 // DELETE /api/cart/[cartId]
 async function handleDeleteCart(
   request: NextRequest,
@@ -145,7 +186,7 @@ export async function OPTIONS() {
     status: 200,
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, X-API-Key'
     }
   })
@@ -167,6 +208,16 @@ export const POST = async (request: NextRequest, { params }: { params: Promise<{
   const context = { params: { cartId } }
   const handler = withRateLimit(
     withAuth((req) => handleAddToCart(req, context), { requireAuth: false }),
+    { windowMs: 60000, maxRequests: 30 }
+  )
+  return handler(request)
+}
+
+export const PUT = async (request: NextRequest, { params }: { params: Promise<{ cartId: string }> }) => {
+  const { cartId } = await params
+  const context = { params: { cartId } }
+  const handler = withRateLimit(
+    withAuth((req) => handleUpdateCart(req, context), { requireAuth: false }),
     { windowMs: 60000, maxRequests: 30 }
   )
   return handler(request)

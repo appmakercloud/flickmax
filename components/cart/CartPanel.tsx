@@ -23,15 +23,86 @@ interface CrossSellProduct {
 
 export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
   const { cart, cartId, isLoading, refreshCart, removeFromCart, updateQuantity, addProductToCart } = useCart()
-  const { currency } = useCountry()
+  const { currency, country } = useCountry()
   const [crossSellProducts, setCrossSellProducts] = useState<CrossSellProduct[]>([])
   const [isLoadingCheckout, setIsLoadingCheckout] = useState(false)
+  const [isUpdatingPrices, setIsUpdatingPrices] = useState(false)
 
   useEffect(() => {
     if (isOpen && cartId && refreshCart) {
       refreshCart()
     }
   }, [isOpen, cartId, refreshCart])
+  
+  // Update cart prices when country changes
+  useEffect(() => {
+    const updatePricesForCountry = async () => {
+      if (!cart || cart.items.length === 0) return
+      
+      setIsUpdatingPrices(true)
+      
+      try {
+        // Update prices for all cart items based on new country
+        const updatedItems = await Promise.all(
+          cart.items.map(async (item) => {
+            if (item.domain) {
+              // Fetch new price for domain
+              const searchParams = new URLSearchParams({
+                q: item.domain,
+                currencyType: currency,
+                marketId: country.marketId,
+                pageSize: '1'
+              })
+              
+              const response = await fetch(`/api/domain/search/exact?${searchParams}`)
+              const data = await response.json()
+              
+              if (data.exactMatchDomain) {
+                const newPrice = data.exactMatchDomain.listPrice || item.price
+                return {
+                  ...item,
+                  price: newPrice,
+                  subtotal: newPrice * item.quantity
+                }
+              }
+            }
+            return item
+          })
+        )
+        
+        // Update cart with new prices
+        const subtotal = updatedItems.reduce((sum, item) => sum + item.subtotal, 0)
+        const updatedCart = {
+          ...cart,
+          items: updatedItems,
+          subtotal,
+          total: subtotal,
+          currency
+        }
+        
+        // Save updated cart to API
+        const response = await fetch(`/api/cart/${cartId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedCart)
+        })
+        
+        if (response.ok) {
+          // Update localStorage directly
+          localStorage.setItem('flickmax_cart', JSON.stringify(updatedCart))
+          refreshCart()
+        }
+      } catch (error) {
+        console.error('Error updating prices:', error)
+      } finally {
+        setIsUpdatingPrices(false)
+      }
+    }
+    
+    if (isOpen && cart && cart.currency !== currency) {
+      updatePricesForCountry()
+    }
+  }, [country, currency, cart, isOpen, cartId, refreshCart])
   
   useEffect(() => {
     // Load cross-sell recommendations when cart has items
@@ -132,7 +203,7 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
           window.location.href = checkoutUrl
           return
         }
-      } catch (corsError) {
+      } catch {
         console.log('Direct API call failed (likely CORS), trying server-side approach')
       }
       
@@ -220,9 +291,12 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
 
                     {/* Cart Items */}
                     <div className="flex-1 overflow-y-auto">
-                      {isLoading ? (
-                        <div className="flex items-center justify-center h-32">
+                      {isLoading || isUpdatingPrices ? (
+                        <div className="flex flex-col items-center justify-center h-32">
                           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                          {isUpdatingPrices && (
+                            <p className="mt-2 text-sm text-gray-500">Updating prices for {currency}...</p>
+                          )}
                         </div>
                       ) : !cart || cart.items.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full px-6 py-8">

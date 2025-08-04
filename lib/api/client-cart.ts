@@ -24,6 +24,11 @@ class ClientCartService {
     localStorage.setItem('flickmax_cart', JSON.stringify(cart))
   }
   
+  async updateCart(cart: Cart): Promise<Cart> {
+    await this.saveLocalCart(cart)
+    return cart
+  }
+  
   async getCart(cartId: string): Promise<Cart> {
     // Try to get cart from localStorage first
     const localCart = this.getLocalCart()
