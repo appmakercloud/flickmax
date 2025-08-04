@@ -246,8 +246,8 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
         console.log('Direct GoDaddy API response:', godaddyResult)
         
         if (godaddyResult.cartCount > 0) {
-          // Cart created successfully, redirect to checkout
-          const checkoutUrl = `https://cart.secureserver.net/go/checkout?pl_id=${plid}`
+          // Cart created successfully, redirect to checkout with market info
+          const checkoutUrl = `https://cart.secureserver.net/go/checkout?pl_id=${plid}&currencyType=${currency}&marketId=${country.marketId}`
           console.log('Cart created with items:', godaddyResult.cartCount)
           console.log('Redirecting to:', checkoutUrl)
           window.location.href = checkoutUrl
@@ -278,8 +278,14 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
       const redirectUrl = result.nextStepUrl || result.NextStepUrl || result.orderUrl
       
       if (redirectUrl) {
-        console.log('Redirecting to GoDaddy checkout:', redirectUrl)
-        window.location.href = redirectUrl
+        // Add market parameters to the redirect URL
+        const url = new URL(redirectUrl)
+        url.searchParams.set('currencyType', currency)
+        url.searchParams.set('marketId', country.marketId)
+        
+        const finalUrl = url.toString()
+        console.log('Redirecting to GoDaddy checkout:', finalUrl)
+        window.location.href = finalUrl
       } else {
         console.error('No redirect URL in response:', result)
         alert('Unable to proceed to checkout. Please try again.')
