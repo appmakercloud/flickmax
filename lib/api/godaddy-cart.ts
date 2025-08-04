@@ -31,6 +31,7 @@ export class GoDaddyCartService {
   }
 
   async createCart(items: GoDaddyCartItem[]): Promise<GoDaddyCartResponse> {
+    // First, try the cart API
     const url = `${this.baseUrl}/cart/${this.plid}?redirect=false`
     
     // Format items exactly as the curl command
@@ -73,6 +74,25 @@ export class GoDaddyCartService {
       result = { response: responseText }
     }
 
+    // Check if cart was created successfully
+    if (result.cartCount && result.cartCount > 0) {
+      console.log('Cart created successfully with items:', result.cartCount)
+      
+      // For domains, we need to use a special URL format
+      const domainItems = items.filter(item => item.domain)
+      if (domainItems.length > 0) {
+        // Use the registration URL that should pick up the cart session
+        const checkoutUrl = result.nextStepUrl || result.NextStepUrl || 
+                           `https://www.secureserver.net/dpx/registration?pl_id=${this.plid}`
+        
+        return {
+          nextStepUrl: checkoutUrl,
+          orderUrl: checkoutUrl,
+          cartCount: result.cartCount
+        }
+      }
+    }
+    
     // Extract the redirect URL from various possible response formats
     const redirectUrl = result.nextStepUrl || 
                        result.NextStepUrl || 
