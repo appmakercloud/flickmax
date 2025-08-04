@@ -79,8 +79,7 @@ class CartService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Origin': 'https://www.flickmax.com' // Add origin header
+          'Accept': 'application/json'
         },
         credentials: 'include', // Include cookies for session
         body: JSON.stringify({

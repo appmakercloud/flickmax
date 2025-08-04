@@ -15,6 +15,11 @@ export function createAuthMiddleware(config: AuthConfig = {}) {
   } = config
 
   return async function authenticate(req: NextRequest): Promise<NextResponse | null> {
+    // Skip all checks if auth is not required
+    if (!requireAuth) {
+      return null
+    }
+    
     // Check origin
     const origin = req.headers.get('origin') || req.headers.get('referer')
     if (origin && !isAllowedOrigin(origin, allowedOrigins)) {
@@ -23,11 +28,6 @@ export function createAuthMiddleware(config: AuthConfig = {}) {
         { error: 'Unauthorized origin' },
         { status: 403 }
       )
-    }
-
-    // Skip auth in development unless explicitly required
-    if (!requireAuth && process.env.NODE_ENV !== 'production') {
-      return null
     }
 
     // Check for API key in header
