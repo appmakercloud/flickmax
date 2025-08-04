@@ -50,47 +50,65 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
               // Fetch new price for domain with the new market using GoDaddy's exact API
               const plid = '590175'
               const searchParams = new URLSearchParams({
+                plid: plid,
+                q: item.domain,
                 currencyType: currency,
-                marketId: country.marketId,
-                pageSize: '1',
-                q: item.domain
+                marketId: country.marketId
               })
               
               console.log('Fetching price for domain:', item.domain, 'with params:', {
                 q: item.domain,
                 marketId: country.marketId,
-                currencyType: currency
+                currencyType: currency,
+                plid: plid
               })
               
               try {
-                // Call the exact GoDaddy API endpoint through our proxy
-                const response = await fetch(`/api/domain/search?${searchParams}`)
+                // Use the exact domain search endpoint for accurate pricing
+                console.log('Fetching from URL:', `/api/domain/search/exact?${searchParams}`)
+                const response = await fetch(`/api/domain/search/exact?${searchParams}`)
+                
+                if (!response.ok) {
+                  console.error('API response not OK:', response.status, response.statusText)
+                  const errorData = await response.text()
+                  console.error('Error response:', errorData)
+                  return item
+                }
+                
                 const data = await response.json()
+                console.log('Exact domain API response:', data)
                 
-                console.log('Price API response:', data)
-                
-                if (data.domains && data.domains.length > 0) {
-                  // Find the exact domain match
+                // Handle exact domain search response format
+                if (data.exactMatchDomain) {
+                  const domainData = data.exactMatchDomain
+                  // Parse price from response (could be string or number)
+                  const newPrice = parseFloat(String(domainData.salePrice || domainData.listPrice)) || parseFloat(String(item.price)) || 0
+                  console.log('Found exact match price:', newPrice, currency, 'for domain:', item.domain)
+                  return {
+                    ...item,
+                    price: newPrice,
+                    subtotal: newPrice * item.quantity,
+                    renewalPrice: newPrice
+                  }
+                } else if (data.domains && data.domains.length > 0) {
+                  // Fallback to domains array if exactMatchDomain is not available
                   const domainMatch = data.domains.find((d: any) => 
                     d.domain.toLowerCase() === item.domain.toLowerCase()
                   )
                   
                   if (domainMatch) {
-                    // Parse price from response (could be string or number)
                     const newPrice = parseFloat(String(domainMatch.salePrice || domainMatch.listPrice)) || parseFloat(String(item.price)) || 0
-                    console.log('Found new price:', newPrice, currency, 'for domain:', item.domain)
+                    console.log('Found price from domains array:', newPrice, currency, 'for domain:', item.domain)
                     return {
                       ...item,
                       price: newPrice,
                       subtotal: newPrice * item.quantity,
                       renewalPrice: newPrice
                     }
-                  } else {
-                    console.log('No exact match found for domain:', item.domain)
                   }
-                } else {
-                  console.log('No domains returned in API response')
                 }
+                
+                console.log('No price found in API response for domain:', item.domain)
               } catch (error) {
                 console.error('Error fetching domain price:', error)
               }
@@ -121,16 +139,15 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
       }
     }
     
-    // Only update if country actually changed and cart panel is open
-    if (isOpen && cart && cart.items.length > 0 && previousCountry !== null && country.code !== previousCountry) {
-      console.log('Country changed from', previousCountry, 'to', country.code)
-      console.log('Currency changed to', currency)
-      updatePricesForCountry()
-    }
-    
-    // Set the previous country after checking
-    if (isOpen && previousCountry !== country.code) {
-      setPreviousCountry(country.code)
+    // Update prices when country changes
+    if (isOpen && cart && cart.items.length > 0) {
+      // First time opening cart or country changed
+      if (previousCountry === null || country.code !== previousCountry) {
+        console.log('Updating prices - Country:', previousCountry, '->', country.code)
+        console.log('Currency:', currency)
+        setPreviousCountry(country.code)
+        updatePricesForCountry()
+      }
     }
   }, [country.code, currency, cart, isOpen, refreshCart, previousCountry])
   

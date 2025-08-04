@@ -99,24 +99,36 @@ class ClientCartService {
             }
             
             const searchParams = new URLSearchParams({
+              plid: '590175',
               q: item.domain,
               currencyType: currencyType,
-              marketId: marketId,
-              pageSize: '1'
+              marketId: marketId
             })
             
-            const response = await fetch(`/api/domain/search?${searchParams}`)
+            console.log('Adding to cart - fetching price with params:', {
+              domain: item.domain,
+              currencyType,
+              marketId
+            })
+            
+            const response = await fetch(`/api/domain/search/exact?${searchParams}`)
             if (response.ok) {
               const data = await response.json()
               console.log('Domain price lookup response:', data)
               
-              if (data.domains && data.domains.length > 0) {
+              // Handle exact domain search response format
+              if (data.exactMatchDomain) {
+                const domainData = data.exactMatchDomain
+                price = parseFloat(String(domainData.salePrice || domainData.listPrice)) || price
+                console.log('Found exact match price for', item.domain, ':', price, currencyType)
+              } else if (data.domains && data.domains.length > 0) {
+                // Fallback to domains array
                 const domainMatch = data.domains.find((d: any) => 
                   d.domain.toLowerCase() === item.domain?.toLowerCase()
                 )
                 if (domainMatch) {
                   price = parseFloat(String(domainMatch.salePrice || domainMatch.listPrice)) || price
-                  console.log('Found exact price for', item.domain, ':', price)
+                  console.log('Found price from domains array for', item.domain, ':', price, currencyType)
                 }
               }
             }
