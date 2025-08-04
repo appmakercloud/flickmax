@@ -41,13 +41,7 @@ const navigation = {
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [cartPanelOpen, setCartPanelOpen] = useState(false)
-  const { getCartItemsCount, cart } = useCart()
-  const [cartCount, setCartCount] = useState(0)
-
-  useEffect(() => {
-    const count = getCartItemsCount()
-    setCartCount(count)
-  }, [cart, getCartItemsCount])
+  const { cartItemsCount } = useCart()
 
   return (
     <header className="bg-white border-b border-gray-200">
@@ -111,9 +105,9 @@ export default function Header() {
               className="relative text-gray-700 hover:text-gray-900"
             >
               <ShoppingCart className="h-5 w-5" />
-              {cartCount > 0 && (
+              {cartItemsCount > 0 && (
                 <span className="absolute -top-2 -right-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-blue-600 rounded-full">
-                  {cartCount}
+                  {cartItemsCount}
                 </span>
               )}
             </button>

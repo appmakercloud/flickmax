@@ -111,10 +111,7 @@ export function useCart() {
     }
   }, [cartId])
 
-  const getCartItemsCount = useCallback(() => {
-    if (!cart || !cart.items) return 0
-    return cart.items.reduce((total, item) => total + (item.quantity || 1), 0)
-  }, [cart])
+  const cartItemsCount = cart?.items?.reduce((total, item) => total + (item.quantity || 1), 0) || 0
 
   const removeFromCart = useCallback(async (itemId: string) => {
     if (!cartId || !cart) return
@@ -186,6 +183,12 @@ export function useCart() {
     }
   }, [cart, cartId])
 
+  const refreshCart = useCallback(() => {
+    if (cartId) {
+      fetchCart(cartId)
+    }
+  }, [cartId, fetchCart])
+
   return {
     cart,
     cartId,
@@ -195,9 +198,10 @@ export function useCart() {
     addDomainToCart,
     addProductToCart,
     clearCart,
-    getCartItemsCount,
+    getCartItemsCount: () => cartItemsCount,
+    cartItemsCount,
     removeFromCart,
     updateQuantity,
-    refreshCart: () => cartId && fetchCart(cartId)
+    refreshCart
   }
 }
