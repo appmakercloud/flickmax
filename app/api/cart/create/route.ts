@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     // Use the GoDaddy cart service
     const result = await godaddyCartService.createCart(body.items)
     
-    console.log('Cart creation result:', result)
+    console.log('Cart creation result:', JSON.stringify(result, null, 2))
     
     // Always return success with the checkout URL
     return NextResponse.json({

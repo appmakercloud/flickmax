@@ -81,12 +81,17 @@ export class GoDaddyCartService {
                        result.url
 
     if (redirectUrl) {
-      return {
+      const response: GoDaddyCartResponse = {
         nextStepUrl: redirectUrl,
-        orderUrl: redirectUrl,
-        cartId: result.cartId,
-        sessionId: result.sessionId
+        orderUrl: redirectUrl
       }
+      
+      // Only add cartId, sessionId, and cartCount if they exist
+      if (result.cartId) response.cartId = result.cartId
+      if (result.sessionId) response.sessionId = result.sessionId
+      if (result.cartCount) response.cartCount = result.cartCount
+      
+      return response
     }
 
     // If no redirect URL, construct one
