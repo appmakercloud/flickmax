@@ -13,9 +13,13 @@ export interface GoDaddyCartRequest {
 
 export interface GoDaddyCartResponse {
   nextStepUrl?: string
+  NextStepUrl?: string
   orderUrl?: string
+  redirectUrl?: string
+  url?: string
   cartId?: string
   sessionId?: string
+  cartCount?: number
 }
 
 export class GoDaddyCartService {
@@ -62,7 +66,7 @@ export class GoDaddyCartService {
     console.log('GoDaddy response status:', response.status)
     console.log('GoDaddy response:', responseText)
 
-    let result: any
+    let result: GoDaddyCartResponse & { response?: string }
     try {
       result = JSON.parse(responseText)
     } catch {

@@ -68,7 +68,7 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
         setCrossSellProducts([])
       }
     }
-  }, [isOpen, cart?.items?.length])
+  }, [isOpen, cart?.items?.length, cart?.items])
 
   const formatPrice = (price: number) => {
     const symbol = currency === 'INR' ? '₹' : currency === 'EUR' ? '€' : '$'

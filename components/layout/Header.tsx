@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Menu, X, ChevronDown, ShoppingCart, User } from 'lucide-react'
 import { Menu as HeadlessMenu, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
