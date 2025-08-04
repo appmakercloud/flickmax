@@ -30,42 +30,45 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
   useEffect(() => {
     if (isOpen && cartId && refreshCart) {
       refreshCart()
-      // Load cross-sell recommendations when cart opens
-      const loadCrossSellProducts = () => {
-    // Mock cross-sell products - in production, these would come from API
-    const mockCrossSell: CrossSellProduct[] = [
-      {
-        id: 'ssl-cert',
-        name: 'SSL Certificate',
-        description: 'Secure your website with HTTPS',
-        price: 79.99,
-        discountedPrice: 49.99,
-        recommended: true
-      },
-      {
-        id: 'email-pro',
-        name: 'Professional Email',
-        description: 'Get professional email for your domain',
-        price: 5.99,
-        discountedPrice: 3.99
-      },
-      {
-        id: 'website-backup',
-        name: 'Website Backup',
-        description: 'Daily automatic backups',
-        price: 2.99
-      }
-    ]
-    
-        // Only show cross-sell if cart has domains
-        if (cart?.items.some(item => item.domain)) {
-          setCrossSellProducts(mockCrossSell)
-        }
-      }
-      
-      loadCrossSellProducts()
     }
-  }, [isOpen, cartId, refreshCart, cart])
+  }, [isOpen, cartId, refreshCart])
+  
+  useEffect(() => {
+    // Load cross-sell recommendations when cart has items
+    if (isOpen && cart?.items && cart.items.length > 0) {
+      // Mock cross-sell products - in production, these would come from API
+      const mockCrossSell: CrossSellProduct[] = [
+        {
+          id: 'ssl-cert',
+          name: 'SSL Certificate',
+          description: 'Secure your website with HTTPS',
+          price: 79.99,
+          discountedPrice: 49.99,
+          recommended: true
+        },
+        {
+          id: 'email-pro',
+          name: 'Professional Email',
+          description: 'Get professional email for your domain',
+          price: 5.99,
+          discountedPrice: 3.99
+        },
+        {
+          id: 'website-backup',
+          name: 'Website Backup',
+          description: 'Daily automatic backups',
+          price: 2.99
+        }
+      ]
+      
+      // Only show cross-sell if cart has domains
+      if (cart.items.some(item => item.domain)) {
+        setCrossSellProducts(mockCrossSell)
+      } else {
+        setCrossSellProducts([])
+      }
+    }
+  }, [isOpen, cart?.items?.length])
 
   const formatPrice = (price: number) => {
     const symbol = currency === 'INR' ? '₹' : currency === 'EUR' ? '€' : '$'
