@@ -21,30 +21,6 @@ interface CrossSellProduct {
   recommended?: boolean
 }
 
-async function detectIncognitoMode(): Promise<boolean> {
-  try {
-    // Try to use storage quota API
-    if ('storage' in navigator && 'estimate' in navigator.storage) {
-      const estimate = await navigator.storage.estimate()
-      if (estimate.quota && estimate.quota < 120000000) {
-        return true // Likely incognito
-      }
-    }
-  } catch {
-    // Storage API not available
-  }
-  
-  // Check if third-party cookies are blocked (common in incognito)
-  try {
-    document.cookie = 'test=1; SameSite=None; Secure'
-    const cookieEnabled = document.cookie.includes('test=1')
-    document.cookie = 'test=; expires=Thu, 01 Jan 1970 00:00:00 GMT'
-    return !cookieEnabled
-  } catch {
-    return false
-  }
-}
-
 export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
   const { cart, cartId, isLoading, refreshCart, removeFromCart, updateQuantity, addProductToCart } = useCart()
   const { currency, country } = useCountry()
@@ -225,12 +201,6 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
     
     setIsLoadingCheckout(true)
     
-    // Detect if we're in incognito/private browsing mode
-    const isIncognito = await detectIncognitoMode()
-    if (isIncognito) {
-      console.log('Detected incognito/private browsing mode')
-    }
-    
     try {
       // Prepare items for GoDaddy API
       const items = cart.items.map(item => {
@@ -249,70 +219,70 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
       
       console.log('Posting items to GoDaddy cart API:', items)
       
-      // Skip client-side API call in incognito mode
-      if (!isIncognito) {
-        // IMPORTANT: Client-side API call to set cookies in browser
-        // This solution took 2 days to figure out - server-side calls don't work
-        // because cookies are set on the server, not in the user's browser
-        try {
-          // Make the API call directly from the browser
-          // This will set cookies in the browser where they're needed
-          const plid = '590175'
-          const godaddyUrl = `https://www.secureserver.net/api/v1/cart/${plid}?redirect=false`
-          
-          const godaddyResponse = await fetch(godaddyUrl, {
-            method: 'POST',
-            headers: {
-              'accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            mode: 'cors',
-            credentials: 'include',
-            body: JSON.stringify({
-              items: items,
-              skipCrossSell: true
-            })
+      // IMPORTANT: Client-side API call to set cookies in browser
+      // This solution took 2 days to figure out - server-side calls don't work
+      // because cookies are set on the server, not in the user's browser
+      try {
+        // Make the API call directly from the browser
+        // This will set cookies in the browser where they're needed
+        const plid = '590175'
+        const godaddyUrl = `https://www.secureserver.net/api/v1/cart/${plid}?redirect=false`
+        
+        const godaddyResponse = await fetch(godaddyUrl, {
+          method: 'POST',
+          headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          mode: 'cors',
+          credentials: 'include',
+          body: JSON.stringify({
+            items: items,
+            skipCrossSell: true
           })
-          
-          const godaddyResult = await godaddyResponse.json()
-          console.log('Direct GoDaddy API response:', godaddyResult)
-          
-          if (godaddyResult.cartCount > 0) {
-            // Cart created successfully, redirect to checkout
-            const checkoutUrl = `https://cart.secureserver.net/go/checkout?pl_id=${plid}`
-            console.log('Cart created with items:', godaddyResult.cartCount)
-            console.log('Redirecting to:', checkoutUrl)
-            window.location.href = checkoutUrl
-            return
-          }
-        } catch (error) {
-          console.log('Direct API call failed:', error)
+        })
+        
+        const godaddyResult = await godaddyResponse.json()
+        console.log('Direct GoDaddy API response:', godaddyResult)
+        
+        if (godaddyResult.cartCount > 0) {
+          // Cart created successfully, redirect to checkout
+          const checkoutUrl = `https://cart.secureserver.net/go/checkout?pl_id=${plid}`
+          console.log('Cart created with items:', godaddyResult.cartCount)
+          console.log('Redirecting to:', checkoutUrl)
+          window.location.href = checkoutUrl
+          return
         }
+      } catch (error) {
+        console.log('Direct API call failed (likely CORS or incognito mode):', error)
       }
       
-      // For incognito mode, redirect to GoDaddy domain search with cart items
-      console.log('Using direct redirect approach for incognito/private browsing')
+      // Fallback to server-side approach
+      console.log('Using server-side API approach')
       
-      // Build the URL with domains to add to cart
-      const plid = '590175'
+      const response = await fetch('/api/cart/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          items: items,
+          skipCrossSell: true
+        })
+      })
       
-      // For single domain, redirect to domain search page with the domain
-      if (items.length === 1 && items[0].domain) {
-        const domain = items[0].domain
-        const domainParts = domain.split('.')
-        const sld = domainParts[0]
-        const tld = domainParts.slice(1).join('.')
-        
-        // Redirect to GoDaddy's domain search which will auto-add to cart
-        const searchUrl = `https://www.godaddy.com/domainsearch/find?checkAvail=1&domainToCheck=${sld}&tld=.${tld}&pl_id=${plid}`
-        console.log('Redirecting to GoDaddy domain search:', searchUrl)
-        window.location.href = searchUrl
+      const result = await response.json()
+      console.log('Server API response:', result)
+      
+      // Check for redirect URL in response
+      const redirectUrl = result.nextStepUrl || result.NextStepUrl || result.orderUrl
+      
+      if (redirectUrl) {
+        console.log('Redirecting to GoDaddy checkout:', redirectUrl)
+        window.location.href = redirectUrl
       } else {
-        // For multiple items, try the bulk domain search
-        const domains = items.filter(item => item.domain).map(item => item.domain).join(',')
-        const bulkUrl = `https://www.godaddy.com/domains/domain-name-search?pl_id=${plid}&domains=${encodeURIComponent(domains)}`
-        console.log('Redirecting to GoDaddy bulk search:', bulkUrl)
-        window.location.href = bulkUrl
+        console.error('No redirect URL in response:', result)
+        alert('Unable to proceed to checkout. Please try again.')
       }
       
     } catch (error) {
