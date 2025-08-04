@@ -25,15 +25,9 @@ export function CountryProvider({ children }: { children: React.ReactNode }) {
         setCountryState(savedCountry)
       }
     } else {
-      // Try to detect user's country based on browser locale
-      const browserLocale = navigator.language
-      const countryCode = browserLocale.split('-')[1]?.toUpperCase()
-      if (countryCode) {
-        const detectedCountry = getCountryByCode(countryCode)
-        if (detectedCountry) {
-          setCountryState(detectedCountry)
-        }
-      }
+      // Always use US as default for new visitors
+      console.log('No saved country preference, using default:', defaultCountry.name)
+      setCountryState(defaultCountry)
     }
   }, [])
 
