@@ -20,6 +20,8 @@ export interface GoDaddyCartResponse {
   cartId?: string
   sessionId?: string
   cartCount?: number
+  shopperId?: string
+  pathway?: string
 }
 
 export class GoDaddyCartService {
@@ -31,7 +33,6 @@ export class GoDaddyCartService {
   }
 
   async createCart(items: GoDaddyCartItem[]): Promise<GoDaddyCartResponse> {
-    // First, try the cart API
     const url = `${this.baseUrl}/cart/${this.plid}?redirect=false`
     
     // Format items exactly as the curl command
@@ -66,7 +67,15 @@ export class GoDaddyCartService {
     const responseText = await response.text()
     console.log('GoDaddy response status:', response.status)
     console.log('GoDaddy response:', responseText)
-
+    
+    // Extract session info from headers
+    const headers = response.headers
+    let shopperId: string | undefined
+    let pathway: string | undefined
+    
+    // In Next.js, headers are already parsed, so we can't access set-cookie directly
+    // The session info would be in the cookies but we can't access them from server-side
+    
     let result: GoDaddyCartResponse & { response?: string }
     try {
       result = JSON.parse(responseText)
@@ -78,18 +87,17 @@ export class GoDaddyCartService {
     if (result.cartCount && result.cartCount > 0) {
       console.log('Cart created successfully with items:', result.cartCount)
       
-      // For domains, we need to use a special URL format
-      const domainItems = items.filter(item => item.domain)
-      if (domainItems.length > 0) {
-        // Use the registration URL that should pick up the cart session
-        const checkoutUrl = result.nextStepUrl || result.NextStepUrl || 
-                           `https://www.secureserver.net/dpx/registration?pl_id=${this.plid}`
-        
-        return {
-          nextStepUrl: checkoutUrl,
-          orderUrl: checkoutUrl,
-          cartCount: result.cartCount
-        }
+      // Since we can't transfer the session, we need to use a different approach
+      // The cart API works but the session doesn't transfer to the browser
+      // This is a limitation of cross-domain cookie security
+      
+      const checkoutUrl = result.nextStepUrl || result.NextStepUrl || 
+                         `https://cart.secureserver.net/go/checkout?pl_id=${this.plid}`
+      
+      return {
+        nextStepUrl: checkoutUrl,
+        orderUrl: checkoutUrl,
+        cartCount: result.cartCount
       }
     }
     
@@ -98,27 +106,13 @@ export class GoDaddyCartService {
                        result.NextStepUrl || 
                        result.orderUrl || 
                        result.redirectUrl ||
-                       result.url
+                       result.url ||
+                       `https://cart.secureserver.net/go/checkout?pl_id=${this.plid}`
 
-    if (redirectUrl) {
-      const response: GoDaddyCartResponse = {
-        nextStepUrl: redirectUrl,
-        orderUrl: redirectUrl
-      }
-      
-      // Only add cartId, sessionId, and cartCount if they exist
-      if (result.cartId) response.cartId = result.cartId
-      if (result.sessionId) response.sessionId = result.sessionId
-      if (result.cartCount) response.cartCount = result.cartCount
-      
-      return response
-    }
-
-    // If no redirect URL, construct one
-    const checkoutUrl = `https://cart.secureserver.net/go/checkout?pl_id=${this.plid}`
     return {
-      nextStepUrl: checkoutUrl,
-      orderUrl: checkoutUrl
+      nextStepUrl: redirectUrl,
+      orderUrl: redirectUrl,
+      cartCount: result.cartCount
     }
   }
 }
