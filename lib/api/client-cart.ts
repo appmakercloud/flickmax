@@ -81,7 +81,13 @@ class ClientCartService {
             const storedCountry = localStorage.getItem('selectedCountry')
             if (storedCountry) {
               try {
-                const countryCode = JSON.parse(storedCountry)
+                // Handle both JSON and plain string formats
+                let countryCode = storedCountry
+                try {
+                  countryCode = JSON.parse(storedCountry)
+                } catch {
+                  // Already a plain string, use as-is
+                }
                 const country = countries.find(c => c.code === countryCode)
                 if (country) {
                   marketId = country.marketId
@@ -141,7 +147,13 @@ class ClientCartService {
     const storedCountry = localStorage.getItem('selectedCountry')
     if (storedCountry) {
       try {
-        const countryCode = JSON.parse(storedCountry)
+        // Handle both JSON and plain string formats
+        let countryCode = storedCountry
+        try {
+          countryCode = JSON.parse(storedCountry)
+        } catch {
+          // Already a plain string, use as-is
+        }
         const country = countries.find(c => c.code === countryCode)
         if (country) {
           cart.currency = country.currency
