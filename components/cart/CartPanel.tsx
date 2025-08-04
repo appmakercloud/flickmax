@@ -93,8 +93,8 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                   }
                 } else if (data.domains && data.domains.length > 0) {
                   // Fallback to domains array if exactMatchDomain is not available
-                  const domainMatch = data.domains.find((d: any) => 
-                    d.domain.toLowerCase() === item.domain.toLowerCase()
+                  const domainMatch = data.domains.find((d: { domain: string; salePrice?: string; listPrice?: string }) => 
+                    d.domain.toLowerCase() === item.domain?.toLowerCase()
                   )
                   
                   if (domainMatch) {
@@ -151,7 +151,7 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
         updatePricesForCountry()
       }
     }
-  }, [country.code, currency, cart, isOpen, refreshCart, previousCountry])
+  }, [country.code, country.marketId, currency, cart, isOpen, refreshCart, previousCountry])
   
   useEffect(() => {
     // Load cross-sell recommendations when cart has items

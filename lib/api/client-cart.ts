@@ -1,6 +1,5 @@
 // Client-side cart implementation for GoDaddy integration
 import { Cart, CartItem, CartItemDetail } from '@/types/cart'
-import { pricingService } from './pricing-service'
 import { countries } from '@/lib/countries'
 
 class ClientCartService {
@@ -125,7 +124,7 @@ class ClientCartService {
                 console.log('Found exact match price for', item.domain, ':', price, currencyType, '(original:', priceString, ')')
               } else if (data.domains && data.domains.length > 0) {
                 // Fallback to domains array
-                const domainMatch = data.domains.find((d: any) => 
+                const domainMatch = data.domains.find((d: { domain: string; salePrice?: string; listPrice?: string }) => 
                   d.domain.toLowerCase() === item.domain?.toLowerCase()
                 )
                 if (domainMatch) {
