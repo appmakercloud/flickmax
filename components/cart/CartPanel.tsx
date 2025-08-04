@@ -290,30 +290,30 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
         }
       }
       
-      // Fallback approach for incognito mode - build URL with items
-      console.log('Building direct checkout URL with items for incognito mode')
+      // For incognito mode, redirect to GoDaddy domain search with cart items
+      console.log('Using direct redirect approach for incognito/private browsing')
       
-      // Build URL parameters with cart items
-      const checkoutParams = new URLSearchParams()
-      checkoutParams.append('pl_id', '590175')
+      // Build the URL with domains to add to cart
+      const plid = '590175'
       
-      // Add each domain as a separate item
-      items.forEach((item, index) => {
-        if (item.domain) {
-          checkoutParams.append(`items[${index}][id]`, 'domain')
-          checkoutParams.append(`items[${index}][domain]`, item.domain)
-        } else if (item.id) {
-          checkoutParams.append(`items[${index}][id]`, item.id)
-          if (item.quantity && item.quantity > 1) {
-            checkoutParams.append(`items[${index}][quantity]`, item.quantity.toString())
-          }
-        }
-      })
-      
-      // Try the registration page first (handles domain-specific requirements)
-      const registrationUrl = `https://www.secureserver.net/dpx/registration?${checkoutParams.toString()}`
-      console.log('Redirecting to GoDaddy with items in URL:', registrationUrl)
-      window.location.href = registrationUrl
+      // For single domain, redirect to domain search page with the domain
+      if (items.length === 1 && items[0].domain) {
+        const domain = items[0].domain
+        const domainParts = domain.split('.')
+        const sld = domainParts[0]
+        const tld = domainParts.slice(1).join('.')
+        
+        // Redirect to GoDaddy's domain search which will auto-add to cart
+        const searchUrl = `https://www.godaddy.com/domainsearch/find?checkAvail=1&domainToCheck=${sld}&tld=.${tld}&pl_id=${plid}`
+        console.log('Redirecting to GoDaddy domain search:', searchUrl)
+        window.location.href = searchUrl
+      } else {
+        // For multiple items, try the bulk domain search
+        const domains = items.filter(item => item.domain).map(item => item.domain).join(',')
+        const bulkUrl = `https://www.godaddy.com/domains/domain-name-search?pl_id=${plid}&domains=${encodeURIComponent(domains)}`
+        console.log('Redirecting to GoDaddy bulk search:', bulkUrl)
+        window.location.href = bulkUrl
+      }
       
     } catch (error) {
       console.error('Checkout error:', error)
