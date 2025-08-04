@@ -3,7 +3,7 @@ export interface RetryOptions {
   initialDelay?: number
   maxDelay?: number
   backoffMultiplier?: number
-  shouldRetry?: (error: any) => boolean
+  shouldRetry?: (error: unknown) => boolean
 }
 
 export async function withRetry<T>(
@@ -30,7 +30,7 @@ export async function withRetry<T>(
     }
   } = options
 
-  let lastError: any
+  let lastError: unknown
   let delay = initialDelay
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -65,8 +65,8 @@ export function createRetryFetch(options: RetryOptions = {}) {
       
       // Throw error for 5xx responses to trigger retry
       if (response.status >= 500) {
-        const error = new Error(`HTTP ${response.status}: ${response.statusText}`)
-        ;(error as any).status = response.status
+        const error = new Error(`HTTP ${response.status}: ${response.statusText}`) as Error & { status?: number }
+        error.status = response.status
         throw error
       }
       

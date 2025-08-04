@@ -1,5 +1,11 @@
 // GoDaddy checkout URL builder
-export function buildGoDaddyCheckoutUrl(items: any[], plid: string = '590175'): string {
+interface CheckoutItem {
+  domain?: string
+  id?: string
+  quantity?: number
+}
+
+export function buildGoDaddyCheckoutUrl(items: CheckoutItem[], plid: string = '590175'): string {
   // Base URL for GoDaddy cart
   const baseUrl = 'https://www.secureserver.net/products/domain-registration/find'
   

@@ -23,8 +23,6 @@ export function createRateLimiter(config: RateLimitConfig = {}) {
   const {
     windowMs = parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000'), // 1 minute default
     maxRequests = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'),
-    skipSuccessfulRequests = process.env.RATE_LIMIT_SKIP_SUCCESSFUL_REQUESTS === 'true',
-    skipFailedRequests = process.env.RATE_LIMIT_SKIP_FAILED_REQUESTS === 'true',
     keyGenerator = (req: NextRequest) => {
       // Use IP address as key, fallback to a default
       const ip = req.headers.get('x-forwarded-for') || 
@@ -32,7 +30,7 @@ export function createRateLimiter(config: RateLimitConfig = {}) {
                  'unknown'
       return ip.split(',')[0].trim()
     },
-    handler = (req: NextRequest) => {
+    handler = () => {
       return NextResponse.json(
         {
           error: 'Too many requests',
@@ -79,8 +77,7 @@ export function createRateLimiter(config: RateLimitConfig = {}) {
     }
 
     // Add rate limit headers to help clients
-    const remaining = Math.max(0, maxRequests - entry.count)
-    const reset = entry.resetTime
+    // Headers will be added in the response
 
     // Return null to continue processing, but we'll add headers in the route
     return null

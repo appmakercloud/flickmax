@@ -51,7 +51,6 @@ class PricingService {
   async getDomainPrice(domain: string, productId: number, currency: string = 'USD'): Promise<PriceResponse> {
     try {
       // For domains, we can use the domain availability endpoint which includes pricing
-      const tld = domain.split('.').pop()
       const response = await this.makeRequest(
         `${this.baseUrl}/domains/available?domain=${domain}&checkType=FAST&forTransfer=false`
       )
