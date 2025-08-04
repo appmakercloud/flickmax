@@ -117,7 +117,8 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
       const redirectUrl = result.nextStepUrl || result.NextStepUrl || result.orderUrl
       
       if (redirectUrl) {
-        console.log('Redirecting to:', redirectUrl)
+        console.log('Redirecting to GoDaddy checkout:', redirectUrl)
+        // Open in same window to maintain session
         window.location.href = redirectUrl
       } else {
         console.error('No redirect URL in response:', result)
