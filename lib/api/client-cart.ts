@@ -101,8 +101,8 @@ class ClientCartService {
     
     // Recalculate totals
     cart.subtotal = cart.items.reduce((sum, item) => sum + item.subtotal, 0)
-    cart.taxes = cart.subtotal * 0.08 // Estimated tax
-    cart.total = cart.subtotal + cart.taxes
+    cart.taxes = 0 // No tax calculation
+    cart.total = cart.subtotal // Total equals subtotal
     cart.updatedAt = new Date().toISOString()
     
     console.log('Saving cart with items:', cart.items.length)

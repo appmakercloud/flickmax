@@ -303,35 +303,6 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                                   </div>
                                 )}
 
-                                {/* Additional options */}
-                                {item.domain && (
-                                  <div className="mt-3 space-y-2">
-                                    <label className="flex items-start gap-3 cursor-pointer">
-                                      <input
-                                        type="checkbox"
-                                        className="mt-1 rounded border-gray-300"
-                                        defaultChecked
-                                      />
-                                      <div className="flex-1">
-                                        <p className="font-medium text-sm text-gray-900">
-                                          Full Domain Protection at {formatPrice(11.99)}/mo
-                                        </p>
-                                        <p className="text-xs text-gray-500 mt-1">
-                                          RECOMMENDED
-                                        </p>
-                                        <ul className="text-xs text-gray-600 mt-1 space-y-1">
-                                          <li>• Prevents hackers from stealing your domain or making any other unauthorized changes.</li>
-                                          <li>• Requires your approval via 2-factor verification for vital changes like deleting or transferring a domain.</li>
-                                        </ul>
-                                      </div>
-                                      <div className="text-right">
-                                        <p className="font-medium text-sm">{formatPrice(11.99)}/yr</p>
-                                        <p className="text-xs text-gray-500 line-through">{formatPrice(12.99)}/yr</p>
-                                        <p className="text-xs text-green-600">7% off</p>
-                                      </div>
-                                    </label>
-                                  </div>
-                                )}
                               </motion.div>
                             ))}
                           </AnimatePresence>
@@ -402,19 +373,9 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                     {cart && cart.items.length > 0 && (
                       <div className="border-t">
                         <div className="px-6 py-4 space-y-3">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">Subtotal:</span>
-                            <span className="font-medium">{formatPrice(cart.subtotal)}</span>
-                          </div>
-                          {cart.taxes > 0 && (
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-600">Taxes:</span>
-                              <span className="font-medium">{formatPrice(cart.taxes)}</span>
-                            </div>
-                          )}
-                          <div className="flex justify-between text-lg font-bold pt-3 border-t">
-                            <span>Total:</span>
-                            <span>{formatPrice(cart.total)}</span>
+                          <div className="flex justify-between text-lg font-bold">
+                            <span>Subtotal:</span>
+                            <span>{formatPrice(cart.subtotal)}</span>
                           </div>
                         </div>
 
@@ -430,7 +391,7 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                                 Processing...
                               </>
                             ) : (
-                              'Continue to GoDaddy Checkout'
+                              'Continue to Checkout'
                             )}
                           </button>
                           <button
@@ -440,7 +401,7 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                             Continue Shopping
                           </button>
                           <p className="text-xs text-gray-500 text-center mt-3">
-                            You&apos;ll be redirected to GoDaddy to complete your purchase
+                            Pricing excludes applicable taxes and ICANN fees.
                           </p>
                         </div>
                       </div>

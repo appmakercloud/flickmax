@@ -126,7 +126,7 @@ export function useCart() {
         ...cart,
         items: updatedItems,
         subtotal: updatedItems.reduce((sum, item) => sum + item.subtotal, 0),
-        total: updatedItems.reduce((sum, item) => sum + item.subtotal, 0) * 1.08 // Include estimated tax
+        total: updatedItems.reduce((sum, item) => sum + item.subtotal, 0) // No tax
       }
       
       setCart(updatedCart)
@@ -166,7 +166,7 @@ export function useCart() {
         ...cart,
         items: updatedItems,
         subtotal: updatedItems.reduce((sum, item) => sum + item.subtotal, 0),
-        total: updatedItems.reduce((sum, item) => sum + item.subtotal, 0) * 1.08 // Include estimated tax
+        total: updatedItems.reduce((sum, item) => sum + item.subtotal, 0) // No tax
       }
       
       setCart(updatedCart)
