@@ -148,7 +148,7 @@ export default function FeaturedDeals() {
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600"> Deals</span>
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Don't miss out on these exclusive offers - limited time only!
+            Don&apos;t miss out on these exclusive offers - limited time only!
           </p>
         </motion.div>
 

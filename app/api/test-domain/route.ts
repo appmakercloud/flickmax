@@ -20,7 +20,7 @@ export async function GET() {
     let data
     try {
       data = JSON.parse(responseText)
-    } catch (e) {
+    } catch {
       data = { rawResponse: responseText }
     }
 

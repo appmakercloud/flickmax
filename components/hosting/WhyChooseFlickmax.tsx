@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Award, Zap, Shield, Headphones, Server, RefreshCw, TrendingUp, Users, Globe, Lock, Sparkles, Activity, Hexagon } from 'lucide-react'
+import { Zap, Shield, Headphones, Server, RefreshCw, TrendingUp, Users, Globe, Sparkles } from 'lucide-react'
 
 const features = [
   {

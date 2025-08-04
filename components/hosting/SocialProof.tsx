@@ -1,8 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Star, Quote, Award, Shield, BadgeCheck, TrendingUp, Headphones, Sparkles, Activity } from 'lucide-react'
-import Image from 'next/image'
+import { Star, Quote, Award, Shield, BadgeCheck, TrendingUp, Headphones } from 'lucide-react'
 
 const testimonials = [
   {

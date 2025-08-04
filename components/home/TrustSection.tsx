@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, useInView } from 'framer-motion'
-import { Globe, Phone, Shield, Users, Server, Award, CheckCircle, TrendingUp, HeadphonesIcon } from 'lucide-react'
+import { Globe, Shield, Users, Server, Award, CheckCircle, TrendingUp, HeadphonesIcon } from 'lucide-react'
 import { useRef, useState, useEffect } from 'react'
 
 const stats = [

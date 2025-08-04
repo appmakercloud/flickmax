@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     let result
     try {
       result = JSON.parse(responseText)
-    } catch (e) {
+    } catch {
       // If not JSON, return as is
       result = { 
         message: responseText,
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
     headers: {

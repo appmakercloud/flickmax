@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Minus, HelpCircle, MessageCircle, Book, CreditCard, Sparkles, Activity } from 'lucide-react'
+import { Plus, HelpCircle, MessageCircle, Book, CreditCard, Sparkles } from 'lucide-react'
 
 const categoryIcons = {
   General: HelpCircle,

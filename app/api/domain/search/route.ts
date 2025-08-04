@@ -3,7 +3,7 @@ import { domainSearchService } from '@/lib/api/domain-service'
 import { withRateLimit } from '@/lib/middleware/rate-limit'
 import { withAuth } from '@/lib/middleware/auth'
 
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
     headers: {

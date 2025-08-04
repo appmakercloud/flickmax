@@ -1,5 +1,4 @@
-import { API_CONFIG } from './config'
-import { Cart, AddToCartRequest, CartResponse, CartErrorResponse, CartItem, CartItemDetail } from '@/types/cart'
+import { Cart, AddToCartRequest, CartResponse, CartErrorResponse } from '@/types/cart'
 
 class CartService {
   private baseUrl = 'https://www.secureserver.net/api/v1/cart'
@@ -69,7 +68,7 @@ class CartService {
     }
   }
 
-  async createServerCart(items: any[]): Promise<any> {
+  async createServerCart(items: Array<{id: string, domain?: string, quantity?: number}>): Promise<{orderUrl?: string, checkoutUrl?: string}> {
     try {
       // Use the correct GoDaddy cart API URL format
       const url = `https://www.secureserver.net/api/v1/cart/${this.plid}`
@@ -129,7 +128,7 @@ class CartService {
   }
   
   // Helper method to get checkout URL
-  getCheckoutUrl(cartId: string): string {
+  getCheckoutUrl(): string {
     return `https://cart.secureserver.net/go/checkout?plid=${this.plid}#/basket`
   }
 }

@@ -6,7 +6,7 @@ import { useDomainSearch } from '@/hooks/useDomainSearch'
 export default function TestGoDaddyAuthPage() {
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<string[]>([])
-  const { search, isSearching, searchResults, suggestions, error, reset } = useDomainSearch()
+  const { search, isSearching, searchResults, error } = useDomainSearch()
 
   const addStatus = (message: string) => {
     setStatus(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${message}`])
@@ -122,7 +122,7 @@ export default function TestGoDaddyAuthPage() {
         <div className="bg-yellow-50 rounded-lg p-6 mt-8">
           <h3 className="text-lg font-semibold mb-2">⚠️ Important Security Notice</h3>
           <p className="text-sm text-gray-700 mb-4">
-            Never share your GoDaddy API credentials publicly. If you've accidentally exposed them:
+            Never share your GoDaddy API credentials publicly. If you&apos;ve accidentally exposed them:
           </p>
           <ol className="list-decimal list-inside space-y-1 text-sm text-gray-700">
             <li>Log into your GoDaddy account immediately</li>

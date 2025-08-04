@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Globe, Server, Mail, Shield, Zap, HeadphonesIcon, Database, Palette, ShoppingCart, Lock, Wifi, CreditCard, Award, Rocket, Activity, Sparkles } from 'lucide-react'
+import { Globe, Server, Mail, Shield, Zap, HeadphonesIcon, Database, Palette, Lock, Award, Rocket, Activity, Sparkles } from 'lucide-react'
 
 const categories = [
   { id: 'hosting-domains', name: 'Hosting & Domains', icon: Server },

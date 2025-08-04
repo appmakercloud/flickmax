@@ -1,5 +1,5 @@
 import { API_CONFIG, API_ENDPOINTS } from './config'
-import type { Product, CatalogResponse, Tag, ApiError, Feature } from '@/types/catalog'
+import type { Product, Tag, ApiError, Feature } from '@/types/catalog'
 import type { APIProduct, APIPricing, APIFeature, APITag } from '@/types/api-responses'
 
 interface FetchOptions {

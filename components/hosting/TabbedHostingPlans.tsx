@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Check, Star, Server, Zap, Database, Cpu, HardDrive, Gauge, Shield, Clock, Headphones, RefreshCw, MousePointer, Activity, Lock, Save, Settings, Sparkles, Globe, Mail } from 'lucide-react'
+import { Check, Server, Zap, Database, Cpu, HardDrive, Gauge, Shield, MousePointer, Activity, Lock, Save, Settings, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useCPanelPlans } from '@/hooks/useCPanelPlans'
 import { useBusinessHosting } from '@/hooks/useBusinessHosting'

@@ -148,8 +148,7 @@ export async function searchDomainExact(query: string, currencyType: string = 'U
 
 export async function checkDomainAvailability(domain: string, currencyType: string = 'USD'): Promise<DomainSearchResult> {
   try {
-    const [sld, ...tldParts] = domain.split('.')
-    const tld = tldParts.join('.')
+    const [sld] = domain.split('.')
     
     const response = await searchDomain(sld, currencyType)
     

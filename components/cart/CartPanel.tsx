@@ -5,7 +5,6 @@ import { Dialog, Transition } from '@headlessui/react'
 import { X, ShoppingCart, Trash2, Plus, Minus } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useCountry } from '@/contexts/CountryContext'
-import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface CartPanelProps {
@@ -23,7 +22,7 @@ interface CrossSellProduct {
 }
 
 export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
-  const { cart, cartId, isLoading, clearCart, refreshCart, removeFromCart, updateQuantity, addProductToCart } = useCart()
+  const { cart, cartId, isLoading, refreshCart, removeFromCart, updateQuantity, addProductToCart } = useCart()
   const { currency } = useCountry()
   const [crossSellProducts, setCrossSellProducts] = useState<CrossSellProduct[]>([])
   const [isLoadingCheckout, setIsLoadingCheckout] = useState(false)
@@ -34,7 +33,7 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
       // Load cross-sell recommendations when cart opens
       loadCrossSellProducts()
     }
-  }, [isOpen, cartId])
+  }, [isOpen, cartId, refreshCart, loadCrossSellProducts])
 
   const loadCrossSellProducts = () => {
     // Mock cross-sell products - in production, these would come from API
@@ -400,7 +399,7 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                             Continue Shopping
                           </button>
                           <p className="text-xs text-gray-500 text-center mt-3">
-                            You'll be redirected to GoDaddy to complete your purchase
+                            You&apos;ll be redirected to GoDaddy to complete your purchase
                           </p>
                         </div>
                       </div>

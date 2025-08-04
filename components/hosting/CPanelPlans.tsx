@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Check, Star, Server, Shield, Zap, Database } from 'lucide-react'
+import { Check, Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useCPanelPlans } from '@/hooks/useCPanelPlans'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'

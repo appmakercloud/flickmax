@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDomainSearchService } from '@/lib/api/domain-service'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   console.log('=== DOMAIN DEBUG TEST ===')
   
   const testDomains = [
@@ -13,7 +13,13 @@ export async function GET(request: NextRequest) {
     'flickmax.org'    // Original failing domain
   ]
   
-  const results: any[] = []
+  const results: Array<{
+    domain: string
+    status: string
+    available?: boolean
+    exactMatch?: string
+    error?: string
+  }> = []
   const service = getDomainSearchService()
   
   for (const domain of testDomains) {

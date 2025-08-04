@@ -60,7 +60,7 @@ class ClientCartService {
       currency: cart.currency || 'USD'
     }))
     
-    let prices: any[] = []
+    let prices: Array<{productId: string, listPrice: number, salePrice: number}> = []
     try {
       prices = await pricingService.getBulkPrices(priceRequests)
     } catch (error) {

@@ -281,18 +281,18 @@ export class DomainSearchService {
       .slice(0, 253) // Max domain length
   }
 
-  private transformResponse(data: any) {
+  private transformResponse(data: unknown) {
     // Transform the API response to a consistent format
     return data
   }
 
-  private transformCrossSellResponse(data: any) {
+  private transformCrossSellResponse(data: {CrossSellDomains?: Array<{domain: string, listPrice: string}>}) {
     if (!data || !data.CrossSellDomains) {
       return { domains: [] }
     }
 
     return {
-      domains: data.CrossSellDomains.map((domain: any) => ({
+      domains: data.CrossSellDomains.map((domain) => ({
         domain: domain.Domain || domain.domain,
         available: domain.Available !== false,
         price: domain.Price ? {

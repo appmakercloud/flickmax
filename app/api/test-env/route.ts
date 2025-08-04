@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   // Check environment variables (without exposing sensitive data)
   const envCheck = {
     NODE_ENV: process.env.NODE_ENV,

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDomainSearchService } from '@/lib/api/domain-service'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   console.log('=== TEST GODADDY API CONNECTION ===')
   
   try {

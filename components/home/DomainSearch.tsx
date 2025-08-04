@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, ShoppingCart, Check, X, Sparkles, TrendingUp, Shield, Zap, Globe, Loader2, Star, Rocket, Award, Hexagon, Activity } from 'lucide-react'
+import { Search, ShoppingCart, Check, X, Sparkles, TrendingUp, Shield, Zap, Globe, Loader2, Award, Hexagon, Activity } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { validateDomain } from '@/lib/utils'
@@ -27,9 +27,8 @@ const trendingDomains = [
 export default function DomainSearch() {
   const [domainSearch, setDomainSearch] = useState('')
   const [autoSearch, setAutoSearch] = useState(true)
-  const [rememberSearch, setRememberSearch] = useState(true)
   const [inputFocused, setInputFocused] = useState(false)
-  const { currency, locale, country } = useCountry()
+  const { currency } = useCountry()
   const { search, reset, isSearching, searchResults, suggestions, error } = useDomainSearch()
   const { addDomainToCart, isLoading: isAddingToCart } = useCart()
 
@@ -80,12 +79,6 @@ export default function DomainSearch() {
     return `${symbol}${price.toFixed(2)}/y`
   }
   
-  const extractPriceValue = (price?: string | number): number | undefined => {
-    if (!price) return undefined
-    if (typeof price === 'number') return price
-    const match = price.match(/[\d.]+/)
-    return match ? parseFloat(match[0]) : undefined
-  }
 
   return (
     <section className="relative min-h-[750px] overflow-hidden">

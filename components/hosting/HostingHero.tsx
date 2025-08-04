@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Check, Star, Shield, Zap, Server, TrendingUp, Users, Award, Clock, Activity, Hexagon } from 'lucide-react'
+import { Check, Shield, Zap, TrendingUp, Users, Award, Clock, Activity, Hexagon } from 'lucide-react'
 import Link from 'next/link'
 
 const stats = [
