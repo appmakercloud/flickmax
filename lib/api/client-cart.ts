@@ -85,7 +85,8 @@ class ClientCartService {
         existingItem.quantity += item.quantity || 1
         existingItem.subtotal = existingItem.price * existingItem.quantity
       } else {
-        const price = priceInfo?.salePrice || 10.99
+        const rawPrice = priceInfo?.salePrice || 10.99
+        const price = typeof rawPrice === 'string' ? parseFloat(rawPrice) : rawPrice
         const cartItem: CartItemDetail = {
           id: item.id,
           label: item.domain || `Product ${item.id}`,

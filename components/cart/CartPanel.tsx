@@ -58,7 +58,7 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
               const data = await response.json()
               
               if (data.exactMatchDomain) {
-                const newPrice = data.exactMatchDomain.listPrice || item.price
+                const newPrice = parseFloat(data.exactMatchDomain.listPrice) || parseFloat(String(item.price)) || 0
                 return {
                   ...item,
                   price: newPrice,
@@ -141,9 +141,10 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
     }
   }, [isOpen, cart?.items?.length, cart?.items])
 
-  const formatPrice = (price: number) => {
+  const formatPrice = (price: number | string | undefined) => {
     const symbol = currency === 'INR' ? '₹' : currency === 'EUR' ? '€' : '$'
-    return `${symbol}${price.toFixed(2)}`
+    const numPrice = typeof price === 'string' ? parseFloat(price) : (price || 0)
+    return `${symbol}${numPrice.toFixed(2)}`
   }
 
   const handleCheckout = async () => {
