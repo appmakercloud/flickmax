@@ -61,11 +61,9 @@ class ClientCartService {
     }))
     
     let prices: Array<{productId: string, listPrice: number, salePrice: number}> = []
-    try {
-      prices = await pricingService.getBulkPrices(priceRequests)
-    } catch (error) {
-      console.error('Failed to fetch prices:', error)
-    }
+    // Since we're on the client, pricing service will use fallback prices
+    // No need to catch errors as fallback is always returned
+    prices = await pricingService.getBulkPrices(priceRequests)
     
     // Add items to cart with real prices
     for (let i = 0; i < items.length; i++) {

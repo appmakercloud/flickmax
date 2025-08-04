@@ -23,6 +23,11 @@ class PricingService {
   private baseUrl = 'https://api.secureserver.net/v1'
   
   private async makeRequest(url: string, options: RequestInit = {}) {
+    // Skip API calls on client side - use fallback prices
+    if (typeof window !== 'undefined') {
+      throw new Error('Cannot make API calls from client side')
+    }
+    
     // For now, skip API calls if credentials are not set
     const apiKey = process.env.GODADDY_API_KEY
     const apiSecret = process.env.GODADDY_API_SECRET
@@ -51,6 +56,11 @@ class PricingService {
   }
   
   async getDomainPrice(domain: string, productId: number, currency: string = 'USD'): Promise<PriceResponse> {
+    // Always use fallback pricing on client side
+    if (typeof window !== 'undefined') {
+      return this.getFallbackPrice(productId, currency)
+    }
+    
     try {
       // For domains, we can use the domain availability endpoint which includes pricing
       const response = await this.makeRequest(
@@ -77,6 +87,11 @@ class PricingService {
   }
   
   async getProductPrice(request: PriceRequest): Promise<PriceResponse> {
+    // Always use fallback pricing on client side
+    if (typeof window !== 'undefined') {
+      return this.getFallbackPrice(request.productId, request.currency || 'USD')
+    }
+    
     try {
       // For products, try to get pricing from the products endpoint
       const response = await this.makeRequest(
@@ -134,6 +149,16 @@ class PricingService {
   }
   
   async getBulkPrices(items: PriceRequest[]): Promise<PriceResponse[]> {
+    // Always use fallback pricing on client side
+    if (typeof window !== 'undefined') {
+      return items.map(item => {
+        if (item.productId) {
+          return this.getFallbackPrice(item.productId, item.currency || 'USD')
+        }
+        return null
+      }).filter((price): price is PriceResponse => price !== null)
+    }
+    
     const pricePromises = items.map(item => {
       if (item.productId) {
         return this.getProductPrice(item)
