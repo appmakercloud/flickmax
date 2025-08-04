@@ -40,15 +40,32 @@ export async function searchDomain(sld: string, currencyType: string = 'USD'): P
     const response = await fetch(url.toString(), {
       method: 'GET',
       headers: {
-        'accept': 'application/json'
+        'accept': 'application/json',
+        // Add API key if configured (for production)
+        ...(process.env.NEXT_PUBLIC_API_KEY && {
+          'X-API-Key': process.env.NEXT_PUBLIC_API_KEY
+        })
       }
     })
 
     if (!response.ok) {
-      throw new Error(`Domain search failed: ${response.statusText}`)
+      let errorData
+      try {
+        errorData = await response.json()
+      } catch {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+      throw new Error(errorData.error || `Domain search failed: ${response.statusText}`)
     }
 
     const data = await response.json()
+    
+    // Validate response has domains array
+    if (!data || !Array.isArray(data.domains)) {
+      console.warn('Invalid crosssell response, returning empty array')
+      return { domains: [] }
+    }
+    
     return data
   } catch (error) {
     console.error('Domain search error:', error)
@@ -56,53 +73,70 @@ export async function searchDomain(sld: string, currencyType: string = 'USD'): P
   }
 }
 
-export async function searchDomainExact(query: string, currencyType: string = 'USD'): Promise<ExactSearchResponse> {
+export async function searchDomainExact(query: string, currencyType: string = 'USD', marketId?: string): Promise<ExactSearchResponse> {
   try {
     // Clean the query - remove any extra spaces or special characters
     const cleanQuery = query.trim().toLowerCase()
     
-    // Determine the correct marketId based on currency
-    let marketId = 'en-US'
-    switch(currencyType) {
-      case 'INR': marketId = 'en-IN'; break
-      case 'GBP': marketId = 'en-GB'; break
-      case 'EUR': marketId = 'en-EU'; break
-      case 'AUD': marketId = 'en-AU'; break
-      case 'CAD': marketId = 'en-CA'; break
+    // Use provided marketId or determine based on currency
+    if (!marketId) {
+      switch(currencyType) {
+        case 'INR': marketId = 'en-IN'; break
+        case 'GBP': marketId = 'en-GB'; break
+        case 'EUR': marketId = 'en-EU'; break
+        case 'AUD': marketId = 'en-AU'; break
+        case 'CAD': marketId = 'en-CA'; break
+        case 'BRL': marketId = 'pt-BR'; break
+        case 'MXN': marketId = 'es-MX'; break
+        case 'JPY': marketId = 'ja-JP'; break
+        default: marketId = 'en-US'; break
+      }
     }
     
-    // Build the URL path
-    const path = `/api/domain/search?q=${encodeURIComponent(cleanQuery)}&currencyType=${currencyType}&marketId=${marketId}&pageSize=100`
+    // Build the URL path - use the exact search endpoint with smaller pageSize
+    const path = `/api/domain/search/exact?q=${encodeURIComponent(cleanQuery)}&currencyType=${currencyType}&marketId=${marketId}&pageSize=5`
     
-    console.log('Frontend calling domain search API for:', cleanQuery)
+    console.log('Frontend calling EXACT domain search API for:', cleanQuery)
     console.log('API path:', path)
 
     const response = await fetch(path, {
       method: 'GET',
       headers: {
         'accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        // Add API key if configured (for production)
+        ...(process.env.NEXT_PUBLIC_API_KEY && {
+          'X-API-Key': process.env.NEXT_PUBLIC_API_KEY
+        })
       }
     })
 
     console.log('Response status:', response.status)
     console.log('Response ok:', response.ok)
 
-    // Always try to parse the response, even if not ok
+    // Check if response is ok before parsing
+    if (!response.ok) {
+      let errorData
+      try {
+        errorData = await response.json()
+      } catch {
+        // If JSON parsing fails, use status text
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+      
+      // Throw error with API message or default
+      throw new Error(errorData.error || errorData.message || `Domain search failed: ${response.statusText}`)
+    }
+
+    // Parse successful response
     const data = await response.json()
     console.log('Domain search API data received:', JSON.stringify(data, null, 2))
     console.log('Exact match domain available:', data.exactMatchDomain?.available)
     console.log('Exact match domain:', data.exactMatchDomain?.domain)
     
-    // If we have valid data structure, return it
-    if (data && (data.exactMatchDomain || data.suggestedDomains)) {
-      return data
-    }
-    
-    // If response is not ok and no valid data, throw error
-    if (!response.ok) {
-      console.error('API Error Response:', data)
-      throw new Error(data.error || `Domain search failed: ${response.statusText}`)
+    // Validate response structure
+    if (!data || (!data.exactMatchDomain && !data.suggestedDomains)) {
+      throw new Error('Invalid response format from domain search API')
     }
     
     return data

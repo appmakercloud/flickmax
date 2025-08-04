@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Check, X } from 'lucide-react'
+import { Check, X, Sparkles, Activity } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 
@@ -229,8 +229,14 @@ export default function HostingComparison() {
   const activeFeatures = activeTab === 'standard' ? standardFeatures : businessFeatures
 
   return (
-    <section className="py-20 bg-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="py-24 relative overflow-hidden">
+      {/* Modern gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50">
+        <div className="absolute inset-0 bg-grid-pattern opacity-[0.02]" />
+      </div>
+      
+      <div className="relative">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -238,22 +244,33 @@ export default function HostingComparison() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            Compare All Features
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600/10 to-cyan-600/10 backdrop-blur-sm rounded-full text-blue-700 text-sm font-medium mb-6 border border-blue-200/30"
+          >
+            <Activity className="w-4 h-4" />
+            <span>Feature Comparison</span>
+          </motion.div>
+          
+          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-4">
+            Compare All
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600"> Features</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
             See exactly what&apos;s included in each plan to make the best choice for your needs.
           </p>
 
           {/* Tab Navigation */}
           <div className="flex justify-center">
-            <div className="inline-flex p-1 bg-gray-100 rounded-full">
+            <div className="inline-flex p-1.5 bg-gray-100/80 backdrop-blur-sm rounded-2xl shadow-inner">
               <button
                 onClick={() => setActiveTab('standard')}
                 className={cn(
-                  'px-6 py-2 rounded-full text-sm font-medium transition-all duration-200',
+                  'px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300',
                   activeTab === 'standard'
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg'
                     : 'bg-white text-gray-700 hover:text-gray-900'
                 )}
               >
@@ -262,9 +279,9 @@ export default function HostingComparison() {
               <button
                 onClick={() => setActiveTab('business')}
                 className={cn(
-                  'px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 ml-1',
+                  'px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 ml-1',
                   activeTab === 'business'
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg'
                     : 'bg-white text-gray-700 hover:text-gray-900'
                 )}
               >
@@ -279,7 +296,7 @@ export default function HostingComparison() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true }}
-          className="overflow-x-auto"
+          className="overflow-x-auto bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-gray-100/50"
         >
           <table className="w-full">
             <thead>
@@ -288,12 +305,20 @@ export default function HostingComparison() {
                 {activePlans.map((plan) => (
                   <th key={plan.id} className={cn(
                     "text-center py-4 px-4 min-w-[150px]",
-                    plan.recommended && "bg-blue-50 rounded-t-xl"
+                    plan.recommended && "bg-gradient-to-br from-blue-50 to-cyan-50 rounded-t-xl"
                   )}>
                     <div className="font-semibold text-gray-900 text-lg">{plan.name}</div>
                     <div className="text-sm text-gray-600 mt-1">{plan.price}/mo</div>
                     {plan.recommended && (
-                      <div className="text-xs text-blue-600 font-semibold mt-2">BEST VALUE</div>
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3 }}
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full text-xs text-white font-semibold mt-2"
+                      >
+                        <Sparkles className="w-3 h-3" />
+                        BEST VALUE
+                      </motion.div>
                     )}
                   </th>
                 ))}
@@ -301,12 +326,19 @@ export default function HostingComparison() {
             </thead>
             <tbody>
               {activeFeatures.map((feature, index) => (
-                <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
+                <motion.tr
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  viewport={{ once: true }}
+                  className="border-b border-gray-200 hover:bg-gray-50/50 transition-colors"
+                >
                   <td className="py-4 px-4 font-medium text-gray-900">{feature.name}</td>
                   {activePlans.map((plan) => (
                     <td key={plan.id} className={cn(
                       "py-4 px-4 text-center",
-                      plan.recommended && "bg-blue-50"
+                      plan.recommended && "bg-gradient-to-br from-blue-50/50 to-cyan-50/50"
                     )}>
                       {typeof feature[plan.id as keyof typeof feature] === 'boolean' ? (
                         feature[plan.id as keyof typeof feature] ? (
@@ -322,7 +354,7 @@ export default function HostingComparison() {
                       )}
                     </td>
                   ))}
-                </tr>
+                </motion.tr>
               ))}
             </tbody>
             <tfoot>
@@ -331,22 +363,27 @@ export default function HostingComparison() {
                 {activePlans.map((plan) => (
                   <td key={plan.id} className={cn(
                     "py-6 text-center",
-                    plan.recommended && "bg-blue-50"
+                    plan.recommended && "bg-gradient-to-br from-blue-50 to-cyan-50 rounded-b-xl"
                   )}>
-                    <button className={cn(
-                      "px-6 py-2 rounded-lg transition-colors font-semibold",
-                      plan.recommended
-                        ? "bg-blue-600 text-white hover:bg-blue-700"
-                        : "bg-blue-500 text-white hover:bg-blue-600"
-                    )}>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={cn(
+                        "px-6 py-3 rounded-xl font-semibold transition-all duration-300",
+                        plan.recommended
+                          ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:from-blue-700 hover:to-cyan-700 shadow-lg hover:shadow-xl"
+                          : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                      )}
+                    >
                       Get Started
-                    </button>
+                    </motion.button>
                   </td>
                 ))}
               </tr>
             </tfoot>
           </table>
         </motion.div>
+        </div>
       </div>
     </section>
   )

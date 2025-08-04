@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Minus, HelpCircle, MessageCircle, Book, CreditCard } from 'lucide-react'
+import { Plus, Minus, HelpCircle, MessageCircle, Book, CreditCard, Sparkles, Activity } from 'lucide-react'
 
 const categoryIcons = {
   General: HelpCircle,
@@ -97,8 +97,40 @@ export default function HostingFAQ() {
   const activeFaqs = faqs.find(cat => cat.category === activeCategory)?.questions || []
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+    <section className="py-24 relative overflow-hidden">
+      {/* Modern gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50">
+        <div className="absolute inset-0 bg-grid-pattern opacity-[0.02]" />
+      </div>
+      
+      {/* Animated gradient orbs */}
+      <motion.div
+        animate={{
+          x: [0, 100, 0],
+          y: [0, -50, 0],
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        className="absolute top-20 left-0 w-96 h-96 bg-blue-200 rounded-full filter blur-3xl opacity-20"
+      />
+      <motion.div
+        animate={{
+          x: [0, -100, 0],
+          y: [0, 50, 0],
+        }}
+        transition={{
+          duration: 25,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        className="absolute bottom-20 right-0 w-96 h-96 bg-cyan-200 rounded-full filter blur-3xl opacity-20"
+      />
+      
+      <div className="relative">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -111,16 +143,17 @@ export default function HostingFAQ() {
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="inline-flex items-center bg-blue-100 text-blue-800 text-sm font-medium px-4 py-2 rounded-full mb-4"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600/10 to-cyan-600/10 backdrop-blur-sm rounded-full text-blue-700 text-sm font-medium mb-6 border border-blue-200/30"
           >
-            <HelpCircle className="w-4 h-4 mr-2" />
+            <Sparkles className="w-4 h-4" />
             <span>Got Questions? We&apos;ve Got Answers</span>
           </motion.div>
           
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Frequently Asked Questions
+          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-4">
+            Frequently Asked
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600"> Questions</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Find answers to common questions about our hosting services
           </p>
         </motion.div>
@@ -146,8 +179,8 @@ export default function HostingFAQ() {
                 transition={{ duration: 0.3, delay: index * 0.1 }}
                 className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
                   activeCategory === category.category
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
-                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg'
+                    : 'bg-white/80 backdrop-blur-sm text-gray-700 hover:bg-white/90 border border-gray-200/50'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -173,7 +206,7 @@ export default function HostingFAQ() {
                 >
                   <motion.div
                     whileHover={{ scale: 1.01 }}
-                    className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 overflow-hidden"
+                    className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100/50 overflow-hidden group"
                   >
                     <button
                       onClick={() => toggleItem(itemId)}
@@ -189,8 +222,8 @@ export default function HostingFAQ() {
                       >
                         <div className={`p-2 rounded-full transition-colors duration-200 ${
                           openItems.includes(itemId) 
-                            ? 'bg-blue-100 text-blue-600' 
-                            : 'bg-gray-100 text-gray-400 group-hover:bg-gray-200'
+                            ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white' 
+                            : 'bg-gray-100 text-gray-400 group-hover:bg-blue-100 group-hover:text-blue-600'
                         }`}>
                           {openItems.includes(itemId) ? (
                             <Plus className="h-4 w-4 rotate-45" />
@@ -235,7 +268,7 @@ export default function HostingFAQ() {
           viewport={{ once: true }}
           className="mt-16"
         >
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden">
+          <div className="bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden border border-blue-800/30">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute inset-0" style={{
@@ -249,7 +282,7 @@ export default function HostingFAQ() {
                 whileInView={{ scale: 1 }}
                 transition={{ duration: 0.5, type: "spring" }}
                 viewport={{ once: true }}
-                className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full mb-4"
+                className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600/20 to-cyan-600/20 backdrop-blur-sm rounded-full mb-4 border border-blue-400/30"
               >
                 <MessageCircle className="w-8 h-8 text-white" />
               </motion.div>
@@ -265,7 +298,7 @@ export default function HostingFAQ() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   href="/contact"
-                  className="inline-flex items-center justify-center px-8 py-3 rounded-xl bg-white text-blue-600 font-semibold hover:bg-gray-100 transition-colors shadow-lg"
+                  className="inline-flex items-center justify-center px-8 py-3 rounded-xl bg-white text-blue-600 font-semibold hover:bg-blue-50 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
                 >
                   <MessageCircle className="w-5 h-5 mr-2" />
                   Live Chat
@@ -283,6 +316,7 @@ export default function HostingFAQ() {
             </div>
           </div>
         </motion.div>
+        </div>
       </div>
     </section>
   )

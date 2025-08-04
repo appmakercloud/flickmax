@@ -19,7 +19,7 @@ export function useDomainSearch() {
   const [searchResults, setSearchResults] = useState<DomainSearchResult | null>(null)
   const [suggestions, setSuggestions] = useState<DomainSuggestion[]>([])
   const [error, setError] = useState<string | null>(null)
-  const { currency } = useCountry()
+  const { currency, locale } = useCountry()
 
   const search = async (domainInput: string) => {
     if (!domainInput.trim()) {
@@ -35,8 +35,8 @@ export function useDomainSearch() {
     try {
       const query = domainInput.trim().toLowerCase()
       
-      // Call the exact search API with the user's currency
-      const searchData = await searchDomainExact(query, currency || 'INR')
+      // Call the exact search API with the user's currency and locale
+      const searchData = await searchDomainExact(query, currency || 'INR', locale)
       
       // Set the exact match domain result
       if (searchData.exactMatchDomain) {
@@ -74,14 +74,15 @@ export function useDomainSearch() {
     } catch (err) {
       console.error('Domain search error:', err)
       
-      // Provide more specific error messages
+      // Handle API error responses
       if (err instanceof Error) {
-        if (err.message.includes('temporarily unavailable')) {
-          setError('Domain search is temporarily unavailable. Please try again in a moment.')
+        // Check if it's a response error from our API
+        if (err.message.includes('HTTP')) {
+          setError('Domain search service is currently unavailable. Please try again later.')
         } else if (err.message.includes('Failed to fetch')) {
           setError('Unable to connect to domain search. Please check your internet connection.')
         } else {
-          setError('Failed to search domain. Please try again.')
+          setError(err.message || 'Failed to search domain. Please try again.')
         }
       } else {
         setError('An unexpected error occurred. Please try again.')

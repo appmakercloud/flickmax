@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import FloatingCTA from "@/components/FloatingCTA";
 import { Toaster } from 'react-hot-toast';
 import { CountryProvider } from "@/contexts/CountryContext";
 
@@ -26,6 +27,7 @@ export default function RootLayout({
           <Header />
           <main className="min-h-screen">{children}</main>
           <Footer />
+          <FloatingCTA />
           <Toaster 
             position="top-right"
             toastOptions={{

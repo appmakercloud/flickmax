@@ -1,11 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Menu, X, ChevronDown, ShoppingCart, User } from 'lucide-react'
 import { Menu as HeadlessMenu, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { CountrySelectorCompact } from '@/components/ui/CountrySelector'
+import { useCart } from '@/hooks/useCart'
+import CartPanel from '@/components/cart/CartPanel'
 
 const navigation = {
   domains: {
@@ -38,6 +40,14 @@ const navigation = {
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [cartPanelOpen, setCartPanelOpen] = useState(false)
+  const { getCartItemsCount, cart } = useCart()
+  const [cartCount, setCartCount] = useState(0)
+
+  useEffect(() => {
+    const count = getCartItemsCount()
+    setCartCount(count)
+  }, [cart, getCartItemsCount])
 
   return (
     <header className="bg-white border-b border-gray-200">
@@ -96,9 +106,17 @@ export default function Header() {
           {/* Right side buttons */}
           <div className="flex items-center space-x-4">
             <CountrySelectorCompact />
-            <Link href="/cart" className="text-gray-700 hover:text-gray-900">
+            <button 
+              onClick={() => setCartPanelOpen(true)}
+              className="relative text-gray-700 hover:text-gray-900"
+            >
               <ShoppingCart className="h-5 w-5" />
-            </Link>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-blue-600 rounded-full">
+                  {cartCount}
+                </span>
+              )}
+            </button>
             <Link href="/login" className="text-gray-700 hover:text-gray-900">
               <User className="h-5 w-5" />
             </Link>
@@ -150,6 +168,9 @@ export default function Header() {
           </div>
         )}
       </nav>
+      
+      {/* Cart Panel */}
+      <CartPanel isOpen={cartPanelOpen} onClose={() => setCartPanelOpen(false)} />
     </header>
   )
 }

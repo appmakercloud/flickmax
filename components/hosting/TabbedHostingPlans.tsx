@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Check, Star, Server, Zap, Database, Cpu, HardDrive, Gauge, Shield, Clock, Headphones, RefreshCw, MousePointer, Activity, Lock, Save, Settings } from 'lucide-react'
+import { Check, Star, Server, Zap, Database, Cpu, HardDrive, Gauge, Shield, Clock, Headphones, RefreshCw, MousePointer, Activity, Lock, Save, Settings, Sparkles, Globe, Mail } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useCPanelPlans } from '@/hooks/useCPanelPlans'
 import { useBusinessHosting } from '@/hooks/useBusinessHosting'
@@ -282,8 +282,40 @@ export default function TabbedHostingPlans() {
   const plans = activeTab === 'standard' ? displayStandardPlans : displayBusinessPlans
 
   return (
-    <section id="plans" className="py-20 bg-gray-50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section id="plans" className="py-24 relative overflow-hidden">
+      {/* Modern gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50">
+        <div className="absolute inset-0 bg-grid-pattern opacity-[0.02]" />
+      </div>
+      
+      {/* Animated gradient orbs */}
+      <motion.div
+        animate={{
+          x: [0, 100, 0],
+          y: [0, -50, 0],
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        className="absolute top-20 left-0 w-96 h-96 bg-blue-200 rounded-full filter blur-3xl opacity-20"
+      />
+      <motion.div
+        animate={{
+          x: [0, -100, 0],
+          y: [0, 50, 0],
+        }}
+        transition={{
+          duration: 25,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        className="absolute bottom-20 right-0 w-96 h-96 bg-cyan-200 rounded-full filter blur-3xl opacity-20"
+      />
+      
+      <div className="relative">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -292,23 +324,34 @@ export default function TabbedHostingPlans() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            Choose Your Perfect Hosting Plan
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600/10 to-cyan-600/10 backdrop-blur-sm rounded-full text-blue-700 text-sm font-medium mb-6 border border-blue-200/30"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>Choose Your Perfect Plan</span>
+          </motion.div>
+          
+          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-4">
+            Hosting Plans That
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600"> Scale With You</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
             All plans include free domain, SSL certificate, 24/7 support, one-click install, 
             99.9% uptime, daily backups, and easy-to-use control panel. Upgrade or downgrade anytime.
           </p>
 
           {/* Tab Navigation */}
           <div className="flex justify-center mb-8">
-            <div className="inline-flex p-1 bg-gray-100 rounded-full">
+            <div className="inline-flex p-1.5 bg-gray-100/80 backdrop-blur-sm rounded-2xl shadow-inner">
               <button
                 onClick={() => setActiveTab('standard')}
                 className={cn(
-                  'px-6 py-3 rounded-full text-sm transition-all duration-200',
+                  'px-6 py-3 rounded-xl text-sm transition-all duration-300',
                   activeTab === 'standard'
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg'
                     : 'bg-white text-gray-700 hover:text-gray-900'
                 )}
               >
@@ -322,9 +365,9 @@ export default function TabbedHostingPlans() {
               <button
                 onClick={() => setActiveTab('business')}
                 className={cn(
-                  'px-6 py-3 rounded-full text-sm transition-all duration-200 ml-1',
+                  'px-6 py-3 rounded-xl text-sm transition-all duration-300 ml-1',
                   activeTab === 'business'
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg'
                     : 'bg-white text-gray-700 hover:text-gray-900'
                 )}
               >
@@ -340,7 +383,7 @@ export default function TabbedHostingPlans() {
 
           {/* Billing Toggle */}
           <div className="flex justify-center">
-            <div className="bg-gray-200 p-1 rounded-lg inline-flex">
+            <div className="bg-gray-200/80 backdrop-blur-sm p-1 rounded-lg inline-flex">
               <button
                 onClick={() => setBillingPeriod('monthly')}
                 className={cn(
@@ -362,7 +405,7 @@ export default function TabbedHostingPlans() {
                 )}
               >
                 Yearly
-                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-green-400 to-emerald-400 text-white">
                   Save up to 50%
                 </span>
               </button>
@@ -393,21 +436,28 @@ export default function TabbedHostingPlans() {
                 onHoverStart={() => setHoveredPlan(plan.id)}
                 onHoverEnd={() => setHoveredPlan(null)}
                 className={cn(
-                  'relative bg-white rounded-2xl transition-all duration-300 overflow-hidden',
+                  'relative bg-white/80 backdrop-blur-xl rounded-2xl transition-all duration-300 overflow-hidden group',
                   plan.recommended 
                     ? 'shadow-2xl border-2 border-blue-500 scale-105' 
-                    : 'shadow-lg border border-gray-200 hover:shadow-xl hover:border-gray-300',
-                  hoveredPlan === plan.id && 'border-blue-400'
+                    : 'shadow-xl hover:shadow-2xl border border-gray-100/50 hover:border-blue-200/50',
+                  hoveredPlan === plan.id && 'z-10'
                 )}
               >
                 {(plan.recommended || plan.badge) && (
-                  <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center py-2">
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="absolute top-0 left-0 right-0 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-center py-2">
                     <span className="text-xs font-bold uppercase tracking-wider">
                       ⭐ {plan.badge || 'MOST POPULAR'}
                     </span>
-                  </div>
+                  </motion.div>
                 )}
 
+                {/* Background gradient on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-cyan-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                
                 <div className="p-6 pt-8">
                   <h3 className="text-xl font-bold text-gray-900 mb-3">{plan.name}</h3>
                   {plan.description && (
@@ -441,14 +491,13 @@ export default function TabbedHostingPlans() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className={cn(
-                      'w-full py-3.5 px-6 rounded-xl font-semibold transition-all duration-200 mb-6 relative overflow-hidden group',
+                      'w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 mb-6',
                       plan.recommended
-                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
-                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                        ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:from-blue-700 hover:to-cyan-700 shadow-lg hover:shadow-xl'
+                        : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                     )}
                   >
-                    <span className="relative z-10">Get Started</span>
-                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                    Get Started
                   </motion.button>
 
                   <div className="border-t border-gray-100 pt-4">
@@ -609,7 +658,7 @@ export default function TabbedHostingPlans() {
           viewport={{ once: true }}
           className="mt-16"
         >
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 text-center">
+          <div className="bg-gradient-to-r from-blue-50/50 to-cyan-50/50 backdrop-blur-sm rounded-2xl p-8 text-center border border-blue-100/50">
             <h3 className="text-lg font-bold text-gray-900 mb-2">Need a custom solution?</h3>
             <p className="text-gray-600 mb-4">
               Get enterprise-grade hosting with custom resources, dedicated support, and SLA guarantees.
@@ -628,6 +677,7 @@ export default function TabbedHostingPlans() {
             All prices shown in {currency}. Prices exclude applicable taxes. Features subject to availability.
           </p>
         </motion.div>
+        </div>
       </div>
     </section>
   )
