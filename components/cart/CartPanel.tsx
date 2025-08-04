@@ -81,9 +81,10 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                 // Handle exact domain search response format
                 if (data.exactMatchDomain) {
                   const domainData = data.exactMatchDomain
-                  // Parse price from response (could be string or number)
-                  const newPrice = parseFloat(String(domainData.salePrice || domainData.listPrice)) || parseFloat(String(item.price)) || 0
-                  console.log('Found exact match price:', newPrice, currency, 'for domain:', item.domain)
+                  // Parse price from response - remove currency symbols
+                  const priceString = String(domainData.salePrice || domainData.listPrice)
+                  const newPrice = parseFloat(priceString.replace(/[^0-9.]/g, '')) || parseFloat(String(item.price)) || 0
+                  console.log('Found exact match price:', newPrice, currency, 'for domain:', item.domain, '(original:', priceString, ')')
                   return {
                     ...item,
                     price: newPrice,
@@ -97,8 +98,9 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                   )
                   
                   if (domainMatch) {
-                    const newPrice = parseFloat(String(domainMatch.salePrice || domainMatch.listPrice)) || parseFloat(String(item.price)) || 0
-                    console.log('Found price from domains array:', newPrice, currency, 'for domain:', item.domain)
+                    const priceString = String(domainMatch.salePrice || domainMatch.listPrice)
+                    const newPrice = parseFloat(priceString.replace(/[^0-9.]/g, '')) || parseFloat(String(item.price)) || 0
+                    console.log('Found price from domains array:', newPrice, currency, 'for domain:', item.domain, '(original:', priceString, ')')
                     return {
                       ...item,
                       price: newPrice,

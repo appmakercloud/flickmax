@@ -119,16 +119,19 @@ class ClientCartService {
               // Handle exact domain search response format
               if (data.exactMatchDomain) {
                 const domainData = data.exactMatchDomain
-                price = parseFloat(String(domainData.salePrice || domainData.listPrice)) || price
-                console.log('Found exact match price for', item.domain, ':', price, currencyType)
+                const priceString = String(domainData.salePrice || domainData.listPrice)
+                // Remove currency symbols and parse
+                price = parseFloat(priceString.replace(/[^0-9.]/g, '')) || price
+                console.log('Found exact match price for', item.domain, ':', price, currencyType, '(original:', priceString, ')')
               } else if (data.domains && data.domains.length > 0) {
                 // Fallback to domains array
                 const domainMatch = data.domains.find((d: any) => 
                   d.domain.toLowerCase() === item.domain?.toLowerCase()
                 )
                 if (domainMatch) {
-                  price = parseFloat(String(domainMatch.salePrice || domainMatch.listPrice)) || price
-                  console.log('Found price from domains array for', item.domain, ':', price, currencyType)
+                  const priceString = String(domainMatch.salePrice || domainMatch.listPrice)
+                  price = parseFloat(priceString.replace(/[^0-9.]/g, '')) || price
+                  console.log('Found price from domains array for', item.domain, ':', price, currencyType, '(original:', priceString, ')')
                 }
               }
             }
