@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useCart } from '@/hooks/useCart'
+import { useCart } from '@/contexts/CartContext'
 import { clientCartService } from '@/lib/api/client-cart'
 import { Loader2 } from 'lucide-react'
 

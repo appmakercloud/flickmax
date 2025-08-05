@@ -1,3 +1,24 @@
+/**
+ * Domain Search Service - GoDaddy Reseller API Integration
+ * 
+ * This service handles all domain search operations using GoDaddy's Reseller API.
+ * It provides domain availability checking, pricing information, and cross-sell suggestions.
+ * 
+ * IMPORTANT NOTES:
+ * 1. Always use marketId='en-US' to get correct sale prices
+ * 2. Currency can be changed independently from marketId
+ * 3. The service uses retry logic for better reliability
+ * 4. PLID validation is done on first request to ensure configuration is correct
+ * 
+ * @example
+ * const service = getDomainSearchService()
+ * const results = await service.searchDomains({
+ *   query: 'example.com',
+ *   currencyType: 'INR',
+ *   marketId: 'en-US' // Always use en-US for correct pricing
+ * })
+ */
+
 import { createRetryFetch } from './retry'
 
 export interface DomainAPIConfig {
@@ -58,6 +79,10 @@ interface ApiResponse {
   disclaimer?: string
 }
 
+/**
+ * Main service class for domain search operations
+ * Handles GoDaddy Reseller API integration with automatic retry and error handling
+ */
 export class DomainSearchService {
   private config: DomainAPIConfig
   private fetchWithRetry: ReturnType<typeof createRetryFetch>
@@ -73,16 +98,7 @@ export class DomainSearchService {
       plid: process.env.GODADDY_PLID || '590175'
     }
 
-    // Debug logging
-    console.log('DomainSearchService initialized with:', {
-      provider: this.config.provider,
-      baseUrl: this.config.baseUrl,
-      plid: this.config.plid,
-      hasApiKey: !!this.config.apiKey,
-      hasApiSecret: !!this.config.apiSecret,
-      apiKeyLength: this.config.apiKey?.length || 0,
-      apiSecretLength: this.config.apiSecret?.length || 0
-    })
+    // Service initialized
 
     // Validate configuration
     this.validateConfig()
@@ -132,42 +148,21 @@ export class DomainSearchService {
     }
 
     try {
-      console.log('=== VALIDATING PLID ===')
-      console.log('PLID:', this.config.plid)
-      console.log('API Base URL:', this.config.baseUrl)
-      console.log('Has API Key:', !!this.config.apiKey)
-      console.log('Has API Secret:', !!this.config.apiSecret)
-      
       // Test the PLID with a simple API call
       const testUrl = `${this.config.baseUrl}/domains/${this.config.plid}?q=test&pageSize=1`
-      console.log('Test URL:', testUrl)
       
       const headers = this.getAuthHeaders()
-      console.log('Request headers:', {
-        ...headers,
-        'Authorization': 'sso-key [REDACTED]'
-      })
-      
-      console.log('Making test request...')
       const response = await this.fetchWithRetry(testUrl, {
         method: 'GET',
         headers: headers
       })
 
-      console.log('Response status:', response.status)
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()))
-
       if (response.ok) {
         this.plidValidated = true
-        console.log('✓ PLID validation successful')
         const data = await response.json()
-        console.log('Test response data:', JSON.stringify(data).substring(0, 200) + '...')
         return true
       } else {
         const errorText = await response.text()
-        console.error('✗ PLID validation failed')
-        console.error('Response status:', response.status)
-        console.error('Response body:', errorText)
         
         if (response.status === 401) {
           throw new Error('GoDaddy API authentication failed. Please check your API credentials.')
@@ -180,11 +175,23 @@ export class DomainSearchService {
         throw new Error(`PLID validation failed with status ${response.status}: ${errorText}`)
       }
     } catch (error) {
-      console.error('PLID validation error:', error)
       throw error
     }
   }
 
+  /**
+   * Search for domain availability and pricing
+   * 
+   * @param options - Search options
+   * @param options.query - Domain name to search for
+   * @param options.currencyType - Currency for pricing (USD, INR, EUR, etc.)
+   * @param options.marketId - Market ID (ALWAYS use 'en-US' for correct sale prices)
+   * @param options.pageSize - Number of suggestions to return (default: 5)
+   * 
+   * @returns Object containing exactMatchDomain and suggestedDomains with pricing
+   * 
+   * @throws Error if domain query is invalid or API request fails
+   */
   async searchDomains(options: DomainSearchOptions) {
     // Reduced pageSize to 5 for fewer suggestions
     const { query, currencyType = 'USD', marketId = 'en-US', pageSize = 5 } = options
@@ -204,35 +211,16 @@ export class DomainSearchService {
     url.searchParams.append('marketId', marketId)
     url.searchParams.append('pageSize', pageSize.toString())
 
-    console.log('Domain search request:', {
-      url: url.toString(),
-      query: sanitizedQuery,
-      provider: this.config.provider,
-      plid: this.config.plid
-    })
+    // Domain search request prepared
 
     try {
-      console.log('Sending request to GoDaddy API...')
-      console.log('Full URL:', url.toString())
-      console.log('Headers:', {
-        ...this.getAuthHeaders(),
-        'Authorization': 'sso-key [REDACTED]'
-      })
-      
       const response = await this.fetchWithRetry(url.toString(), {
         method: 'GET',
         headers: this.getAuthHeaders()
       })
-
-      console.log('GoDaddy response status:', response.status)
       
       if (!response.ok) {
         const errorText = await response.text()
-        console.error('GoDaddy API error response:')
-        console.error('Status:', response.status)
-        console.error('Status Text:', response.statusText)
-        console.error('Response Body:', errorText)
-        console.error('Response Headers:', Object.fromEntries(response.headers.entries()))
         
         if (response.status === 401) {
           throw new Error('GoDaddy API authentication failed. Please check your API credentials.')
@@ -248,11 +236,30 @@ export class DomainSearchService {
       const data = await response.json()
       return this.transformResponse(data)
     } catch (error) {
-      console.error('Domain search error:', error)
       throw error
     }
   }
 
+  /**
+   * Search for exact domain match with pricing
+   * 
+   * This is the primary method used by the cart to get updated pricing when currency changes.
+   * 
+   * @param domain - Exact domain name to search for
+   * @param currencyType - Currency for pricing (USD, INR, EUR, etc.)
+   * @param marketId - Market ID (ALWAYS use 'en-US' for correct sale prices)
+   * @param pageSize - Number of suggestions (kept small to avoid errors)
+   * 
+   * @returns Object with exactMatchDomain containing pricing information
+   * 
+   * @example
+   * // Get pricing for a domain in INR
+   * const result = await service.searchExactDomain(
+   *   'example.com',
+   *   'INR',     // Get prices in Indian Rupees
+   *   'en-US'    // But use US market for correct sale prices
+   * )
+   */
   async searchExactDomain(domain: string, currencyType: string = 'USD', marketId: string = 'en-US', pageSize: number = 5) {
     // Use the same endpoint as searchDomains which we know works
     
@@ -291,7 +298,6 @@ export class DomainSearchService {
 
       if (!response.ok) {
         const errorText = await response.text()
-        console.error('Cross-sell API error:', response.status, errorText)
         
         if (response.status === 401) {
           throw new Error('GoDaddy API authentication failed.')
@@ -305,7 +311,6 @@ export class DomainSearchService {
       const data = await response.json()
       return this.transformCrossSellResponse(data)
     } catch (error) {
-      console.error('Cross-sell domain search error:', error)
       throw error
     }
   }
@@ -323,6 +328,12 @@ export class DomainSearchService {
       .slice(0, 253) // Max domain length
   }
 
+  /**
+   * Transform GoDaddy API response to consistent format
+   * Handles various pricing structures returned by the API
+   * 
+   * @private
+   */
   private transformResponse(data: ApiResponse) {
     // Transform the API response to a consistent format
     // Handle different pricing formats from GoDaddy API
@@ -351,19 +362,22 @@ export class DomainSearchService {
     return data
   }
   
+  /**
+   * Normalize domain pricing data from various GoDaddy API response formats
+   * 
+   * GoDaddy API returns pricing in different formats:
+   * - Sometimes as direct properties (listPrice, salePrice)
+   * - Sometimes nested in priceInfo object
+   * - Sometimes nested in pricing object
+   * - Sometimes only a single price field
+   * 
+   * This method normalizes all formats to consistent listPrice/salePrice
+   * 
+   * @private
+   */
   private normalizePricing(domain: DomainData) {
     if (!domain) return domain
     
-    // Log the raw domain data to understand the structure
-    console.log('Raw domain pricing data:', {
-      domain: domain.domain,
-      priceInfo: domain.priceInfo,
-      pricing: domain.pricing,
-      listPrice: domain.listPrice,
-      salePrice: domain.salePrice,
-      price: domain.price,
-      rawData: JSON.stringify(domain).substring(0, 500)
-    })
     
     // Handle various pricing formats from GoDaddy API
     let listPrice = domain.listPrice
@@ -472,9 +486,20 @@ export class DomainSearchService {
   }
 }
 
-// Lazy initialization to ensure env vars are loaded
+/**
+ * Singleton instance management
+ * 
+ * We use lazy initialization to ensure environment variables are loaded
+ * before the service is created. This prevents initialization errors
+ * during module loading.
+ */
 let domainSearchServiceInstance: DomainSearchService | null = null
 
+/**
+ * Get or create the domain search service instance
+ * 
+ * @returns Singleton instance of DomainSearchService
+ */
 export function getDomainSearchService(): DomainSearchService {
   if (!domainSearchServiceInstance) {
     domainSearchServiceInstance = new DomainSearchService()
@@ -482,7 +507,29 @@ export function getDomainSearchService(): DomainSearchService {
   return domainSearchServiceInstance
 }
 
-// For backward compatibility
+/**
+ * Export a convenience object for backward compatibility
+ * 
+ * This provides a simpler API for common use cases while maintaining
+ * the singleton pattern internally.
+ * 
+ * @example
+ * import { domainSearchService } from '@/lib/api/domain-service'
+ * 
+ * // Search for domains
+ * const results = await domainSearchService.searchDomains({
+ *   query: 'example',
+ *   currencyType: 'USD',
+ *   marketId: 'en-US'
+ * })
+ * 
+ * // Get exact domain pricing (used by cart)
+ * const pricing = await domainSearchService.searchExactDomain(
+ *   'example.com',
+ *   'INR',    // Currency
+ *   'en-US'   // Always use en-US for correct sale prices!
+ * )
+ */
 export const domainSearchService = {
   searchDomains: async (options: DomainSearchOptions) => {
     return getDomainSearchService().searchDomains(options)

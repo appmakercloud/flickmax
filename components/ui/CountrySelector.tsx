@@ -17,7 +17,9 @@ export default function CountrySelector() {
           <span className="flex items-center">
             <span className="text-lg mr-2">{country.flag}</span>
             <span className="block truncate">{country.name}</span>
-            <span className="ml-2 text-gray-500">({country.currency})</span>
+            {!country.name.includes(`(${country.currency})`) && (
+              <span className="ml-2 text-gray-500">({country.currency})</span>
+            )}
           </span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -48,7 +50,9 @@ export default function CountrySelector() {
                       <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
                         {countryOption.name}
                       </span>
-                      <span className="ml-2 text-gray-500">({countryOption.currency})</span>
+                      {!countryOption.name.includes(`(${countryOption.currency})`) && (
+                        <span className="ml-2 text-gray-500">({countryOption.currency})</span>
+                      )}
                     </span>
                     {selected ? (
                       <span
@@ -107,7 +111,9 @@ export function CountrySelectorCompact() {
                       <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
                         {countryOption.name}
                       </span>
-                      <span className="ml-1 text-xs text-gray-500">({countryOption.currency})</span>
+                      {!countryOption.name.includes(`(${countryOption.currency})`) && (
+                        <span className="ml-1 text-xs text-gray-500">({countryOption.currency})</span>
+                      )}
                     </span>
                     {selected ? (
                       <span

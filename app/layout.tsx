@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/layout/Header";
+import ModernHeader from "@/components/layout/ModernHeader";
 import Footer from "@/components/layout/Footer";
 import FloatingCTA from "@/components/FloatingCTA";
 import { Toaster } from 'react-hot-toast';
 import { CountryProvider } from "@/contexts/CountryContext";
+import { CartProvider } from "@/contexts/CartContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,20 +25,22 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased`} suppressHydrationWarning>
         <CountryProvider>
-          <Header />
-          <main className="min-h-screen">{children}</main>
-          <Footer />
-          <FloatingCTA />
-          <Toaster 
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#363636',
-                color: '#fff',
-              },
-            }}
-          />
+          <CartProvider>
+            <ModernHeader />
+            <main className="min-h-screen">{children}</main>
+            <Footer />
+            <FloatingCTA />
+            <Toaster 
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: '#363636',
+                  color: '#fff',
+                },
+              }}
+            />
+          </CartProvider>
         </CountryProvider>
       </body>
     </html>

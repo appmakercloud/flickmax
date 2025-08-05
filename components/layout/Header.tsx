@@ -6,7 +6,7 @@ import { Menu, X, ChevronDown, ShoppingCart, User } from 'lucide-react'
 import { Menu as HeadlessMenu, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { CountrySelectorCompact } from '@/components/ui/CountrySelector'
-import { useCart } from '@/hooks/useCart'
+import { useCart } from '@/contexts/CartContext'
 import CartPanel from '@/components/cart/CartPanel'
 
 const navigation = {

@@ -1,9 +1,39 @@
 'use client'
 
+/**
+ * CartPanel Component - Shopping Cart Slide-out Panel
+ * 
+ * This component displays the shopping cart in a slide-out panel from the right.
+ * It handles:
+ * - Displaying cart items with real-time pricing
+ * - Updating prices when currency/country changes
+ * - Integration with GoDaddy checkout via form submission
+ * - Cross-sell product recommendations
+ * 
+ * IMPORTANT IMPLEMENTATION NOTES:
+ * 
+ * 1. PRICE UPDATES:
+ *    - When country changes, prices are fetched using the domain search API
+ *    - ALWAYS use marketId='en-US' to get correct sale prices
+ *    - Currency can be changed independently from marketId
+ * 
+ * 2. CART SYNCHRONIZATION:
+ *    - Cart data is stored in localStorage via client-cart service
+ *    - On panel open, cart is refreshed to ensure latest data
+ *    - Price updates fetch fresh cart data first to avoid race conditions
+ * 
+ * 3. CHECKOUT INTEGRATION:
+ *    - Uses form-based checkout (FormCheckout component)
+ *    - Works in both normal and private browsing modes
+ *    - Submits to GoDaddy's checkout with proper PLID
+ * 
+ * @component
+ */
+
 import { Fragment, useEffect, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { X, ShoppingCart, Trash2, Plus, Minus } from 'lucide-react'
-import { useCart } from '@/hooks/useCart'
+import { useCart } from '@/contexts/CartContext'
 import { useCountry } from '@/contexts/CountryContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import FormCheckout from './FormCheckout'
@@ -34,14 +64,22 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
 
   useEffect(() => {
     if (isOpen && cartId) {
-      console.log('CartPanel opened, refreshing cart with ID:', cartId)
       refreshCart()
       // Reset previous country to trigger price update after cart is refreshed
       setPreviousCountry(null)
     }
   }, [isOpen, cartId, refreshCart])
   
-  // Update cart prices when country changes
+  /**
+   * Effect: Update cart prices when country changes
+   * 
+   * This is a critical effect that ensures prices are always shown in the
+   * user's selected currency. It fetches the latest pricing from GoDaddy's
+   * API whenever the country changes.
+   * 
+   * IMPORTANT: Always uses marketId='en-US' regardless of selected country
+   * to ensure sale prices are correctly returned by the API.
+   */
   useEffect(() => {
     const updatePricesForCountry = async () => {
       if (!cartId) return
@@ -53,16 +91,19 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
       setIsUpdatingPrices(true)
       
       try {
-        console.log('Starting price update for', latestCart.items.length, 'items')
-        console.log('Latest cart items:', latestCart.items.map(i => ({ id: i.id, domain: i.domain })))
         
         // Update prices for all cart items based on new country
         const updatedItems = await Promise.all(
           latestCart.items.map(async (item) => {
-            console.log('Processing item:', item.id, item.domain)
             
             if (item.domain) {
-              // Fetch new price for domain with the new market using GoDaddy's exact API
+              /**
+               * Fetch updated pricing for domain
+               * 
+               * Uses the exact domain search endpoint to get current pricing.
+               * CRITICAL: Always use marketId='en-US' to get sale prices.
+               * The currency parameter handles price conversion.
+               */
               const plid = '590175'
               const searchParams = new URLSearchParams({
                 plid: plid,
@@ -71,32 +112,20 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                 marketId: 'en-US'  // Always use en-US for correct sale prices
               })
               
-              console.log('Fetching price for domain:', item.domain, 'with params:', {
-                q: item.domain,
-                marketId: 'en-US',  // Fixed to en-US
-                currencyType: currency,
-                plid: plid
-              })
-              
               try {
                 // Use the exact domain search endpoint for accurate pricing
-                console.log('Fetching from URL:', `/api/domain/search/exact?${searchParams}`)
                 const response = await fetch(`/api/domain/search/exact?${searchParams}`)
                 
                 if (!response.ok) {
-                  console.error('API response not OK:', response.status, response.statusText)
                   const errorData = await response.text()
-                  console.error('Error response:', errorData)
                   return item
                 }
                 
                 const data = await response.json()
-                console.log('Exact domain API response:', data)
                 
                 // Handle exact domain search response format
                 if (data.exactMatchDomain) {
                   const domainData = data.exactMatchDomain
-                  console.log('Cart price update - raw domain data:', domainData)
                   
                   // Parse both list and sale prices
                   const listPriceString = String(domainData.listPrice || '')
@@ -105,14 +134,7 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                   const salePrice = parseFloat(salePriceString.replace(/[^0-9.]/g, '')) || 0
                   const finalPrice = salePrice || listPrice || parseFloat(String(item.price)) || 0
                   
-                  
-                  console.log('Cart price update - parsed prices:', {
-                    domain: item.domain,
-                    listPrice,
-                    salePrice,
-                    finalPrice,
-                    currency
-                  })
+                  // Domain price fetched successfully
                   
                   return {
                     ...item,
@@ -146,9 +168,8 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                   }
                 }
                 
-                console.log('No price found in API response for domain:', item.domain)
               } catch (error) {
-                console.error('Error fetching domain price:', error)
+                // Error fetching domain price
               }
             }
             return item
@@ -156,8 +177,6 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
         )
         
         // Update cart with new prices
-        console.log('Updated items:', updatedItems.length, updatedItems.map(i => ({ id: i.id, domain: i.domain })))
-        
         const subtotal = updatedItems.reduce((sum, item) => sum + item.subtotal, 0)
         const updatedCart = {
           ...latestCart,
@@ -167,15 +186,13 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
           currency
         }
         
-        console.log('Saving updated cart with', updatedCart.items.length, 'items')
-        
         // Save updated cart using the cart service to maintain consistency
         await clientCartService.updateCart(updatedCart)
         
         // Trigger cart refresh to sync state
         refreshCart()
       } catch (error) {
-        console.error('Error updating prices:', error)
+        // Error updating prices
       } finally {
         setIsUpdatingPrices(false)
       }
@@ -185,8 +202,6 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
     if (isOpen && cartId) {
       // First time opening cart or country changed
       if (previousCountry === null || country.code !== previousCountry) {
-        console.log('Updating prices - Country:', previousCountry, '->', country.code)
-        console.log('Currency:', currency)
         setPreviousCountry(country.code)
         updatePricesForCountry()
       }
@@ -295,6 +310,13 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
     }
   }
 
+  /**
+   * Handle checkout process
+   * 
+   * Uses form-based submission to GoDaddy checkout.
+   * This method works reliably in all browser modes including private browsing.
+   * The form is rendered by the FormCheckout component at the bottom of this file.
+   */
   const handleCheckout = async () => {
     if (!cart || cart.items.length === 0) return
     
@@ -308,11 +330,9 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
       if (form) {
         form.submit()
       } else {
-        console.error('Checkout form not found')
         alert('Unable to proceed to checkout. Please try again.')
       }
     } catch (error) {
-      console.error('Checkout error:', error)
       alert('An error occurred. Please try again.')
       setIsLoadingCheckout(false)
     }

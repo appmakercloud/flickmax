@@ -1,4 +1,23 @@
-// Client-side cart implementation for GoDaddy integration
+/**
+ * Client-side Cart Service
+ * 
+ * This service manages the shopping cart entirely on the client side using localStorage.
+ * It handles cart persistence, item management, and price fetching from the domain API.
+ * 
+ * KEY FEATURES:
+ * 1. Cart data stored in localStorage with key 'flickmax_cart'
+ * 2. Automatically fetches domain prices when items are added
+ * 3. Handles currency conversion based on selected country
+ * 4. Generates unique IDs for cart items to prevent duplicates
+ * 
+ * IMPORTANT NOTES:
+ * - Always uses marketId='en-US' when fetching prices for correct sale prices
+ * - Currency is determined by the user's selected country
+ * - Domain items use the domain name as a unique identifier
+ * - Cart persists across page refreshes and browser sessions
+ * 
+ * @class
+ */
 import { Cart, CartItem, CartItemDetail } from '@/types/cart'
 import { countries } from '@/lib/countries'
 
@@ -52,8 +71,20 @@ class ClientCartService {
     return emptyCart
   }
   
+  /**
+   * Add items to cart
+   * 
+   * This method:
+   * 1. Checks if items already exist (by domain name or product ID)
+   * 2. Fetches current pricing from GoDaddy API for domain items
+   * 3. Updates quantities for existing items or adds new items
+   * 4. Recalculates cart totals
+   * 
+   * @param cartId - The cart identifier
+   * @param items - Array of items to add
+   * @returns Updated cart object
+   */
   async addToCart(cartId: string, items: CartItem[]): Promise<Cart> {
-    console.log('clientCartService.addToCart called with:', { cartId, items })
     const cart = await this.getCart(cartId)
     
     // For domain items, fetch exact prices from GoDaddy API
@@ -70,12 +101,9 @@ class ClientCartService {
       })
       
       if (existingItem) {
-        console.log('Found existing item in cart:', existingItem)
         existingItem.quantity = (existingItem.quantity || 1) + (item.quantity || 1)
         existingItem.subtotal = existingItem.price * existingItem.quantity
-        console.log('Updated existing item quantity to:', existingItem.quantity)
       } else {
-        console.log('Adding new item to cart:', item.domain || item.id)
         let price = 19.99 // Default fallback price
         let listPrice = 0
         let salePrice = 0
@@ -83,7 +111,12 @@ class ClientCartService {
         // If it's a domain, fetch the exact price from GoDaddy
         if (item.domain) {
           try {
-            // Get current country from localStorage
+            /**
+             * Determine currency based on selected country
+             * 
+             * CRITICAL: Always use marketId='en-US' regardless of country
+             * to ensure sale prices are returned. Only the currency changes.
+             */
             let marketId = 'en-US'
             let currencyType = 'USD'
             
@@ -104,7 +137,7 @@ class ClientCartService {
                   currencyType = country.currency
                 }
               } catch (e) {
-                console.error('Error parsing stored country:', e)
+                // Error parsing stored country
               }
             }
             
@@ -115,16 +148,9 @@ class ClientCartService {
               marketId: marketId
             })
             
-            console.log('Adding to cart - fetching price with params:', {
-              domain: item.domain,
-              currencyType,
-              marketId
-            })
-            
             const response = await fetch(`/api/domain/search/exact?${searchParams}`)
             if (response.ok) {
               const data = await response.json()
-              console.log('Domain price lookup response:', data)
               
               // Handle exact domain search response format
               if (data.exactMatchDomain) {
@@ -149,7 +175,7 @@ class ClientCartService {
               }
             }
           } catch (error) {
-            console.error('Error fetching domain price:', error)
+            // Error fetching domain price
           }
         }
         
@@ -189,7 +215,7 @@ class ClientCartService {
           cart.currency = country.currency
         }
       } catch (e) {
-        console.error('Error parsing stored country:', e)
+        // Error parsing stored country
       }
     }
     
@@ -199,13 +225,7 @@ class ClientCartService {
     cart.total = cart.subtotal // Total equals subtotal
     cart.updatedAt = new Date().toISOString()
     
-    console.log('Cart before save:', {
-      itemCount: cart.items.length,
-      items: cart.items.map(i => ({ id: i.id, domain: i.domain, quantity: i.quantity })),
-      total: cart.total
-    })
     await this.saveLocalCart(cart)
-    console.log('Cart saved successfully')
     return cart
   }
   
@@ -224,7 +244,15 @@ class ClientCartService {
     await this.saveLocalCart(emptyCart)
   }
   
-  // Prepare cart for GoDaddy checkout
+  /**
+   * Prepare checkout URL for GoDaddy
+   * 
+   * Builds a URL with cart items as query parameters.
+   * This method is not currently used as we use form-based checkout instead.
+   * 
+   * @returns GoDaddy checkout URL with cart items
+   * @deprecated Use FormCheckout component instead
+   */
   prepareCheckoutUrl(): string {
     const cart = this.getLocalCart()
     if (!cart || cart.items.length === 0) {

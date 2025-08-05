@@ -1,13 +1,49 @@
+/**
+ * useCart Hook - Shopping Cart State Management
+ * 
+ * This custom React hook manages the shopping cart state and provides
+ * methods for cart operations. It integrates with the client-side cart
+ * service and handles localStorage persistence.
+ * 
+ * KEY FEATURES:
+ * - Automatic cart initialization with unique cart ID
+ * - Cart persistence across page refreshes
+ * - Real-time cart item count
+ * - Toast notifications for user feedback
+ * - Error handling with user-friendly messages
+ * 
+ * USAGE:
+ * ```tsx
+ * const { cart, addDomainToCart, removeFromCart, cartItemsCount } = useCart()
+ * ```
+ * 
+ * IMPORTANT NOTES:
+ * - Cart ID is stored in localStorage and persists across sessions
+ * - All cart operations are handled client-side
+ * - Price updates happen in CartPanel component when country changes
+ * 
+ * @returns Object with cart state and methods
+ */
 import { useState, useCallback, useEffect } from 'react'
 import { Cart, AddToCartRequest, CartItem } from '@/types/cart'
 import { clientCartService } from '@/lib/api/client-cart'
 import toast from 'react-hot-toast'
+
+// Create a global event emitter for cart animations
+export const cartAnimationEvent = typeof window !== 'undefined' ? new EventTarget() : null
 
 export function useCart() {
   const [cart, setCart] = useState<Cart | null>(null)
   const [cartId, setCartId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  
+  // Trigger animation through custom event
+  const triggerCartAnimation = useCallback(() => {
+    if (cartAnimationEvent) {
+      cartAnimationEvent.dispatchEvent(new CustomEvent('cartAnimation'))
+    }
+  }, [])
 
   const generateCartId = () => {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
@@ -19,11 +55,9 @@ export function useCart() {
     try {
       setIsLoading(true)
       const cartData = await clientCartService.getCart(id)
-      console.log('Cart fetched:', cartData)
       setCart(cartData)
       setError(null)
     } catch (error) {
-      console.error('Error fetching cart:', error)
       // Silently handle cart fetch errors - it's normal for cart to not exist initially
       setError(null)
       setCart(null)
@@ -36,25 +70,32 @@ export function useCart() {
   useEffect(() => {
     const storedCartId = localStorage.getItem('cartId')
     if (storedCartId) {
-      console.log('Found stored cart ID:', storedCartId)
       setCartId(storedCartId)
       fetchCart(storedCartId)
     } else {
       // Generate new cart ID
       const newCartId = generateCartId()
-      console.log('Generated new cart ID:', newCartId)
       localStorage.setItem('cartId', newCartId)
       setCartId(newCartId)
     }
   }, [fetchCart])
 
+  /**
+   * Add multiple items to cart
+   * 
+   * This is the base method for adding items. It handles:
+   * - Adding new items or updating quantities for existing ones
+   * - Fetching current prices from the domain API
+   * - Showing success notifications
+   * 
+   * @param items - Array of items to add to cart
+   * @returns Object with updated cart or undefined on error
+   */
   const addToCart = useCallback(async (items: CartItem[]) => {
     if (!cartId) {
-      console.error('No cart ID available')
       return
     }
     
-    console.log('useCart.addToCart called with cartId:', cartId, 'items:', items)
 
     try {
       setIsLoading(true)
@@ -62,18 +103,17 @@ export function useCart() {
 
       // Use client-side cart service
       const updatedCart = await clientCartService.addToCart(cartId, items)
-      console.log('Cart updated in useCart:', updatedCart)
       setCart(updatedCart)
       
       // Force a refresh to ensure state is synced
       const refreshedCart = await clientCartService.getCart(cartId)
-      console.log('Cart refreshed:', refreshedCart)
       setCart(refreshedCart)
       
-      toast.success('Added to cart successfully!')
+      // Trigger cart animation instead of toast
+      triggerCartAnimation()
+      
       return { cart: refreshedCart }
     } catch (error) {
-      console.error('Error adding to cart:', error)
       const message = error instanceof Error ? error.message : 'Failed to add to cart'
       setError(message)
       toast.error(message)
@@ -82,8 +122,17 @@ export function useCart() {
     }
   }, [cartId])
 
+  /**
+   * Add a domain to cart
+   * 
+   * Convenience method for adding domain registrations to cart.
+   * Automatically fetches current pricing based on user's selected currency.
+   * 
+   * @param domain - The domain name (e.g., 'example.com')
+   * @param productId - The product ID for the domain TLD
+   * @returns Object with updated cart or undefined on error
+   */
   const addDomainToCart = useCallback(async (domain: string, productId: string | number) => {
-    console.log('useCart.addDomainToCart called with:', { domain, productId })
     const item: CartItem = {
       id: String(productId),
       domain,
@@ -117,7 +166,6 @@ export function useCart() {
       setCart(emptyCart)
       toast.success('Cart cleared successfully!')
     } catch (error) {
-      console.error('Error clearing cart:', error)
       const message = error instanceof Error ? error.message : 'Failed to clear cart'
       setError(message)
       toast.error(message)
@@ -149,7 +197,6 @@ export function useCart() {
       
       toast.success('Item removed from cart')
     } catch (error) {
-      console.error('Error removing from cart:', error)
       const message = error instanceof Error ? error.message : 'Failed to remove item'
       setError(message)
       toast.error(message)
@@ -189,7 +236,6 @@ export function useCart() {
       
       toast.success('Quantity updated')
     } catch (error) {
-      console.error('Error updating quantity:', error)
       const message = error instanceof Error ? error.message : 'Failed to update quantity'
       setError(message)
       toast.error(message)
@@ -200,7 +246,6 @@ export function useCart() {
 
   const refreshCart = useCallback(() => {
     if (cartId) {
-      console.log('Refreshing cart with ID:', cartId)
       fetchCart(cartId)
     }
   }, [cartId, fetchCart])

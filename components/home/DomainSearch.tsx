@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Search, ShoppingCart, Check, X, Sparkles, TrendingUp, Shield, Zap, Globe, Loader2, Award, Hexagon, Activity } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { validateDomain } from '@/lib/utils'
 import { useDomainSearch } from '@/hooks/useDomainSearch'
 import { useCountry } from '@/contexts/CountryContext'
-import { useCart } from '@/hooks/useCart'
+import { useCart } from '@/contexts/CartContext'
 import { PriceDisplay } from '@/components/ui/PriceDisplay'
 
 const popularExtensions = [
@@ -32,6 +32,7 @@ export default function DomainSearch() {
   const { currency } = useCountry()
   const { search, reset, isSearching, searchResults, suggestions, error } = useDomainSearch()
   const { addDomainToCart, isLoading: isAddingToCart } = useCart()
+  const searchResultsRef = useRef<HTMLDivElement>(null)
 
   const handleDomainSearch = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -56,13 +57,32 @@ export default function DomainSearch() {
 
   const handleAddToCart = async (domain: string, productId: string) => {
     try {
-      console.log('Adding to cart:', domain, productId)
       await addDomainToCart(domain, productId)
-      console.log('Successfully added to cart')
     } catch (error) {
-      console.error('Failed to add to cart:', error)
+      // Error handled by useCart hook
     }
   }
+
+  // Auto-scroll to search results when they appear
+  useEffect(() => {
+    if (searchResults && searchResultsRef.current) {
+      // Add a small delay to ensure the element is rendered
+      setTimeout(() => {
+        // Get the element position and window height
+        const element = searchResultsRef.current
+        if (!element) return
+        
+        const elementRect = element.getBoundingClientRect()
+        const absoluteElementTop = elementRect.top + window.pageYOffset
+        const middle = absoluteElementTop - (window.innerHeight / 4) // Position results 1/4 from top of viewport
+        
+        window.scrollTo({
+          top: middle > 0 ? middle : 0,
+          behavior: 'smooth'
+        })
+      }, 100)
+    }
+  }, [searchResults])
 
   const handleCloseResults = () => {
     reset()
@@ -70,7 +90,7 @@ export default function DomainSearch() {
 
 
   return (
-    <section className="relative min-h-[750px] overflow-hidden">
+    <section className={`relative overflow-hidden ${!searchResults ? 'min-h-[750px]' : ''}`}>
       {/* Modern blue gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900">
         <div className="absolute inset-0 bg-black/30" />
@@ -136,7 +156,7 @@ export default function DomainSearch() {
         </div>
       </div>
       
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <div className={`relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 ${searchResults ? 'pb-8' : ''}`}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -307,6 +327,7 @@ export default function DomainSearch() {
           <AnimatePresence>
             {searchResults && (
               <motion.div
+                ref={searchResultsRef}
                 initial={{ opacity: 0, y: 30, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -30, scale: 0.9 }}
@@ -387,7 +408,6 @@ export default function DomainSearch() {
                           </div>
                           <button
                             onClick={() => {
-                              console.log('Button clicked, searchResults:', searchResults)
                               handleAddToCart(searchResults.domain, String(searchResults.productId || searchResults.domain))
                             }}
                             disabled={isAddingToCart}
@@ -429,7 +449,6 @@ export default function DomainSearch() {
                             whileHover={{ scale: 1.02, y: -2 }}
                             onClick={() => {
                               if (suggestion.available) {
-                                console.log('Suggestion clicked:', suggestion)
                                 handleAddToCart(suggestion.domain, String(suggestion.productId || suggestion.domain))
                               }
                             }}
