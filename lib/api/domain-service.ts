@@ -22,6 +22,9 @@ interface DomainData {
   listPrice?: string | number
   salePrice?: string | number
   price?: string | number
+  currentPrice?: string | number
+  amount?: string | number
+  value?: string | number
   priceInfo?: {
     listPrice?: string | number
     currentPrice?: string | number
@@ -37,6 +40,7 @@ interface DomainData {
   productId?: string | number
   premium?: boolean
   disclaimer?: string
+  [key: string]: any // Allow additional properties
 }
 
 interface ApiResponse {
@@ -396,10 +400,11 @@ export class DomainSearchService {
     
     // If still no prices, check for any price field
     if (!listPrice && !salePrice) {
-      const priceFields = ['price', 'currentPrice', 'amount', 'value']
+      const priceFields = ['price', 'currentPrice', 'amount', 'value'] as const
       for (const field of priceFields) {
-        if (domain[field]) {
-          salePrice = domain[field]
+        const fieldValue = domain[field as keyof DomainData]
+        if (fieldValue) {
+          salePrice = fieldValue as string | number
           break
         }
       }
