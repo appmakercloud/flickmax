@@ -78,26 +78,13 @@ export async function searchDomainExact(query: string, currencyType: string = 'U
     // Clean the query - remove any extra spaces or special characters
     const cleanQuery = query.trim().toLowerCase()
     
-    // Use provided marketId or determine based on currency
-    if (!marketId) {
-      switch(currencyType) {
-        case 'INR': marketId = 'en-IN'; break
-        case 'GBP': marketId = 'en-GB'; break
-        case 'EUR': marketId = 'en-EU'; break
-        case 'AUD': marketId = 'en-AU'; break
-        case 'CAD': marketId = 'en-CA'; break
-        case 'BRL': marketId = 'pt-BR'; break
-        case 'MXN': marketId = 'es-MX'; break
-        case 'JPY': marketId = 'ja-JP'; break
-        default: marketId = 'en-US'; break
-      }
-    }
+    // Always use en-US marketId for correct sale prices
+    // Only change currency to get proper pricing
+    marketId = 'en-US'
     
     // Build the URL path - use the exact search endpoint with smaller pageSize
     const path = `/api/domain/search/exact?q=${encodeURIComponent(cleanQuery)}&currencyType=${currencyType}&marketId=${marketId}&pageSize=5`
     
-    console.log('Frontend calling EXACT domain search API for:', cleanQuery)
-    console.log('API path:', path)
 
     const response = await fetch(path, {
       method: 'GET',
@@ -111,8 +98,6 @@ export async function searchDomainExact(query: string, currencyType: string = 'U
       }
     })
 
-    console.log('Response status:', response.status)
-    console.log('Response ok:', response.ok)
 
     // Check if response is ok before parsing
     if (!response.ok) {
@@ -130,9 +115,6 @@ export async function searchDomainExact(query: string, currencyType: string = 'U
 
     // Parse successful response
     const data = await response.json()
-    console.log('Domain search API data received:', JSON.stringify(data, null, 2))
-    console.log('Exact match domain available:', data.exactMatchDomain?.available)
-    console.log('Exact match domain:', data.exactMatchDomain?.domain)
     
     // Validate response structure
     if (!data || (!data.exactMatchDomain && !data.suggestedDomains)) {

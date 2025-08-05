@@ -56,12 +56,12 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                 plid: plid,
                 q: item.domain,
                 currencyType: currency,
-                marketId: country.marketId
+                marketId: 'en-US'  // Always use en-US for correct sale prices
               })
               
               console.log('Fetching price for domain:', item.domain, 'with params:', {
                 q: item.domain,
-                marketId: country.marketId,
+                marketId: 'en-US',  // Fixed to en-US
                 currencyType: currency,
                 plid: plid
               })
