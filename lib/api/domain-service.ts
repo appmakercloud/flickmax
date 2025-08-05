@@ -359,28 +359,8 @@ export class DomainSearchService {
     
     // Handle case where only a single price is provided (common for non-US markets)
     if (!listPrice && !salePrice && singlePrice) {
-      // For popular TLDs, create a fictional list price to show savings
-      const popularTlds = ['.com', '.net', '.org', '.ai', '.in', '.co.uk', '.store', '.website']
-      const tld = domain.domain?.substring(domain.domain.lastIndexOf('.'))
-      
-      if (popularTlds.includes(tld)) {
-        // Create a list price that's 10-30% higher to show savings
-        const price = parseFloat(String(singlePrice).replace(/[^0-9.]/g, ''))
-        if (!isNaN(price)) {
-          const discountPercent = tld === '.com' ? 0.14 : 
-                                 tld === '.net' ? 0.29 : 
-                                 tld === '.org' ? 0.35 :
-                                 tld === '.ai' ? 0.15 :
-                                 tld === '.in' ? 0.20 :
-                                 0.10
-          
-          listPrice = (price / (1 - discountPercent)).toFixed(2)
-          salePrice = price.toFixed(2)
-        }
-      } else {
-        // For other TLDs, just use the single price
-        salePrice = singlePrice
-      }
+      // Use the single price as the sale price
+      salePrice = singlePrice
     }
     
     // If still no prices, check for any price field
