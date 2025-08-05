@@ -8,6 +8,7 @@ import { useCountry } from '@/contexts/CountryContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import FormCheckout from './FormCheckout'
 import { PriceDisplay } from '@/components/ui/PriceDisplay'
+import { clientCartService } from '@/lib/api/client-cart'
 
 interface CartPanelProps {
   isOpen: boolean
@@ -46,9 +47,13 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
       setIsUpdatingPrices(true)
       
       try {
+        console.log('Starting price update for', cart.items.length, 'items')
+        
         // Update prices for all cart items based on new country
         const updatedItems = await Promise.all(
           cart.items.map(async (item) => {
+            console.log('Processing item:', item.id, item.domain)
+            
             if (item.domain) {
               // Fetch new price for domain with the new market using GoDaddy's exact API
               const plid = '590175'
@@ -144,6 +149,8 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
         )
         
         // Update cart with new prices
+        console.log('Updated items:', updatedItems.length, updatedItems.map(i => ({ id: i.id, domain: i.domain })))
+        
         const subtotal = updatedItems.reduce((sum, item) => sum + item.subtotal, 0)
         const updatedCart = {
           ...cart,
@@ -153,10 +160,12 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
           currency
         }
         
-        // Save updated cart to localStorage
-        localStorage.setItem('flickmax_cart', JSON.stringify(updatedCart))
+        console.log('Saving updated cart with', updatedCart.items.length, 'items')
         
-        // Trigger cart refresh
+        // Save updated cart using the cart service to maintain consistency
+        await clientCartService.updateCart(updatedCart)
+        
+        // Trigger cart refresh to sync state
         refreshCart()
       } catch (error) {
         console.error('Error updating prices:', error)
