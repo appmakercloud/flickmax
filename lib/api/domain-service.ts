@@ -15,6 +15,37 @@ export interface DomainSearchOptions {
   pageSize?: number
 }
 
+// Type definitions for API responses
+interface DomainData {
+  domain: string
+  available: boolean
+  listPrice?: string | number
+  salePrice?: string | number
+  price?: string | number
+  priceInfo?: {
+    listPrice?: string | number
+    currentPrice?: string | number
+    salePrice?: string | number
+    price?: string | number
+  }
+  pricing?: {
+    list?: string | number
+    sale?: string | number
+    current?: string | number
+    price?: string | number
+  }
+  productId?: string | number
+  premium?: boolean
+  disclaimer?: string
+}
+
+interface ApiResponse {
+  exactMatchDomain?: DomainData
+  suggestedDomains?: DomainData[]
+  domains?: DomainData[]
+  disclaimer?: string
+}
+
 export class DomainSearchService {
   private config: DomainAPIConfig
   private fetchWithRetry: ReturnType<typeof createRetryFetch>
@@ -280,7 +311,7 @@ export class DomainSearchService {
       .slice(0, 253) // Max domain length
   }
 
-  private transformResponse(data: any) {
+  private transformResponse(data: ApiResponse) {
     // Transform the API response to a consistent format
     // Handle different pricing formats from GoDaddy API
     
@@ -293,14 +324,14 @@ export class DomainSearchService {
     
     // Process suggested domains
     if (data.suggestedDomains && Array.isArray(data.suggestedDomains)) {
-      data.suggestedDomains = data.suggestedDomains.map((domain: any) => 
+      data.suggestedDomains = data.suggestedDomains.map((domain) => 
         this.normalizePricing(domain)
       )
     }
     
     // Process domains array (for different response formats)
     if (data.domains && Array.isArray(data.domains)) {
-      data.domains = data.domains.map((domain: any) => 
+      data.domains = data.domains.map((domain) => 
         this.normalizePricing(domain)
       )
     }
@@ -308,7 +339,7 @@ export class DomainSearchService {
     return data
   }
   
-  private normalizePricing(domain: any) {
+  private normalizePricing(domain: DomainData) {
     if (!domain) return domain
     
     // Log the raw domain data to understand the structure
@@ -381,7 +412,7 @@ export class DomainSearchService {
     }
     
     // Ensure prices are properly formatted
-    const formatPrice = (price: any) => {
+    const formatPrice = (price: string | number | undefined) => {
       if (price === null || price === undefined) return undefined
       
       // If it's already a string with currency symbol, extract the number

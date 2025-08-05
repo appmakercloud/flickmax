@@ -101,8 +101,8 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                   // Parse both list and sale prices
                   const listPriceString = String(domainData.listPrice || '')
                   const salePriceString = String(domainData.salePrice || domainData.listPrice || '')
-                  let listPrice = parseFloat(listPriceString.replace(/[^0-9.]/g, '')) || 0
-                  let salePrice = parseFloat(salePriceString.replace(/[^0-9.]/g, '')) || 0
+                  const listPrice = parseFloat(listPriceString.replace(/[^0-9.]/g, '')) || 0
+                  const salePrice = parseFloat(salePriceString.replace(/[^0-9.]/g, '')) || 0
                   const finalPrice = salePrice || listPrice || parseFloat(String(item.price)) || 0
                   
                   
