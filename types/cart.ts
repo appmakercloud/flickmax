@@ -7,6 +7,8 @@ export interface CartItem {
   pfid?: number
   period?: number
   periodUnit?: string
+  listPrice?: number
+  salePrice?: number
 }
 
 export interface AddToCartRequest {
@@ -38,6 +40,8 @@ export interface CartItemDetail {
   renewalPrice?: number
   isDiscounted?: boolean
   discountAmount?: number
+  listPrice?: number
+  salePrice?: number
 }
 
 export interface CartResponse {
