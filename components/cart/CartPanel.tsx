@@ -36,22 +36,29 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
     if (isOpen && cartId) {
       console.log('CartPanel opened, refreshing cart with ID:', cartId)
       refreshCart()
+      // Reset previous country to trigger price update after cart is refreshed
+      setPreviousCountry(null)
     }
   }, [isOpen, cartId, refreshCart])
   
   // Update cart prices when country changes
   useEffect(() => {
     const updatePricesForCountry = async () => {
-      if (!cart || cart.items.length === 0) return
+      if (!cartId) return
+      
+      // Get the latest cart data from localStorage to ensure we have all items
+      const latestCart = await clientCartService.getCart(cartId)
+      if (!latestCart || latestCart.items.length === 0) return
       
       setIsUpdatingPrices(true)
       
       try {
-        console.log('Starting price update for', cart.items.length, 'items')
+        console.log('Starting price update for', latestCart.items.length, 'items')
+        console.log('Latest cart items:', latestCart.items.map(i => ({ id: i.id, domain: i.domain })))
         
         // Update prices for all cart items based on new country
         const updatedItems = await Promise.all(
-          cart.items.map(async (item) => {
+          latestCart.items.map(async (item) => {
             console.log('Processing item:', item.id, item.domain)
             
             if (item.domain) {
@@ -153,7 +160,7 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
         
         const subtotal = updatedItems.reduce((sum, item) => sum + item.subtotal, 0)
         const updatedCart = {
-          ...cart,
+          ...latestCart,
           items: updatedItems,
           subtotal,
           total: subtotal,
@@ -174,8 +181,8 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
       }
     }
     
-    // Update prices when country changes
-    if (isOpen && cart && cart.items.length > 0) {
+    // Update prices when country changes or cart panel opens
+    if (isOpen && cartId) {
       // First time opening cart or country changed
       if (previousCountry === null || country.code !== previousCountry) {
         console.log('Updating prices - Country:', previousCountry, '->', country.code)
@@ -184,7 +191,7 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
         updatePricesForCountry()
       }
     }
-  }, [country.code, country.marketId, currency, cart, isOpen, refreshCart, previousCountry])
+  }, [country.code, country.marketId, currency, cartId, isOpen, refreshCart, previousCountry])
   
   useEffect(() => {
     // Load cross-sell recommendations when cart has items
