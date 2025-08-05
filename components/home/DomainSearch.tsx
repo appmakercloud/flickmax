@@ -8,6 +8,7 @@ import { validateDomain } from '@/lib/utils'
 import { useDomainSearch } from '@/hooks/useDomainSearch'
 import { useCountry } from '@/contexts/CountryContext'
 import { useCart } from '@/hooks/useCart'
+import { PriceDisplay } from '@/components/ui/PriceDisplay'
 
 const popularExtensions = [
   { ext: '.com', popular: true, color: 'from-blue-500 to-blue-600' },
@@ -67,18 +68,6 @@ export default function DomainSearch() {
     reset()
   }
 
-  const formatPrice = (listPrice?: string | number, salePrice?: string | number) => {
-    const price = salePrice || listPrice
-    if (!price) return 'Contact us'
-    
-    if (typeof price === 'string') {
-      return price.replace(/\/(y|year)$/i, '') + '/y'
-    }
-    
-    const symbol = currency === 'INR' ? '₹' : currency === 'EUR' ? '€' : '$'
-    return `${symbol}${price.toFixed(2)}/y`
-  }
-  
 
   return (
     <section className="relative min-h-[750px] overflow-hidden">
@@ -324,9 +313,9 @@ export default function DomainSearch() {
                 transition={{ duration: 0.4, type: "spring" }}
                 className="max-w-5xl mx-auto mt-8"
               >
-                <div className="bg-gradient-to-br from-slate-900/95 to-blue-950/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 md:p-8 relative border border-blue-800/30 overflow-hidden">
+                <div className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 md:p-8 relative border border-slate-700/30 overflow-hidden">
                   {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-cyan-600/10 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-cyan-600/5 pointer-events-none" />
                   
                   {/* Close Button */}
                   <button
@@ -386,9 +375,15 @@ export default function DomainSearch() {
                         >
                           <div className="text-center sm:text-right">
                             <p className="text-xs sm:text-sm text-slate-400 mb-0.5 sm:mb-1">Starting at</p>
-                            <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
-                              {formatPrice(searchResults.listPrice, searchResults.salePrice)}
-                            </p>
+                            <PriceDisplay 
+                              listPrice={searchResults.listPrice}
+                              salePrice={searchResults.salePrice}
+                              currency={currency}
+                              size="large"
+                              theme="dark"
+                              inline={true}
+                              className=""
+                            />
                           </div>
                           <button
                             onClick={() => {
@@ -438,9 +433,9 @@ export default function DomainSearch() {
                                 handleAddToCart(suggestion.domain, String(suggestion.productId || suggestion.domain))
                               }
                             }}
-                            className={`group p-3 sm:p-4 md:p-5 rounded-lg sm:rounded-xl border transition-all duration-300 text-left ${
+                            className={`group p-3 sm:p-4 md:p-5 rounded-lg sm:rounded-xl border transition-all duration-300 text-left flex flex-col gap-2 ${
                               suggestion.available
-                                ? 'bg-gradient-to-br from-slate-800/70 to-blue-900/30 hover:from-blue-900/40 hover:to-cyan-900/30 border-blue-700/30 hover:border-blue-500/50 cursor-pointer hover:shadow-lg hover:shadow-blue-500/10'
+                                ? 'bg-gradient-to-br from-slate-800/70 to-slate-700/50 hover:from-slate-700/70 hover:to-slate-600/50 border-slate-600/30 hover:border-slate-500/50 cursor-pointer hover:shadow-lg hover:shadow-blue-500/10'
                                 : 'bg-slate-900/50 border-slate-800/50 opacity-40 cursor-not-allowed'
                             }`}
                             disabled={!suggestion.available}
@@ -458,9 +453,16 @@ export default function DomainSearch() {
                               )}
                             </div>
                             {suggestion.available && (suggestion.listPrice || suggestion.salePrice) && (
-                              <span className="text-sm text-cyan-400 font-bold">
-                                {formatPrice(suggestion.listPrice, suggestion.salePrice)}
-                              </span>
+                              <PriceDisplay 
+                                listPrice={suggestion.listPrice}
+                                salePrice={suggestion.salePrice}
+                                currency={currency}
+                                size="small"
+                                theme="dark"
+                                showDiscount={true}
+                                inline={true}
+                                className=""
+                              />
                             )}
                           </motion.button>
                         ))}
