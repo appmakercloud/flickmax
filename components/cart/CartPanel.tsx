@@ -84,6 +84,8 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                 // Handle exact domain search response format
                 if (data.exactMatchDomain) {
                   const domainData = data.exactMatchDomain
+                  console.log('Cart price update - raw domain data:', domainData)
+                  
                   // Parse both list and sale prices
                   const listPriceString = String(domainData.listPrice || '')
                   const salePriceString = String(domainData.salePrice || domainData.listPrice || '')
@@ -91,11 +93,19 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                   const salePrice = parseFloat(salePriceString.replace(/[^0-9.]/g, '')) || 0
                   const finalPrice = salePrice || listPrice || parseFloat(String(item.price)) || 0
                   
+                  console.log('Cart price update - parsed prices:', {
+                    domain: item.domain,
+                    listPrice,
+                    salePrice,
+                    finalPrice,
+                    currency
+                  })
+                  
                   return {
                     ...item,
                     price: finalPrice,
-                    listPrice: listPrice || undefined,
-                    salePrice: salePrice < listPrice ? salePrice : undefined,
+                    listPrice: listPrice > 0 ? listPrice : undefined,
+                    salePrice: salePrice > 0 && salePrice < listPrice ? salePrice : undefined,
                     subtotal: finalPrice * (item.quantity || 1),
                     renewalPrice: finalPrice
                   }

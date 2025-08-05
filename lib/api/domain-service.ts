@@ -212,7 +212,6 @@ export class DomainSearchService {
 
   async searchExactDomain(domain: string, currencyType: string = 'USD', marketId: string = 'en-US', pageSize: number = 5) {
     // Use the same endpoint as searchDomains which we know works
-    console.log('searchExactDomain called for:', domain, 'with currency:', currencyType, 'and marketId:', marketId)
     
     // Just use the regular search endpoint which includes exact match
     // Use smaller pageSize to avoid 500 errors with certain domains
@@ -281,9 +280,103 @@ export class DomainSearchService {
       .slice(0, 253) // Max domain length
   }
 
-  private transformResponse(data: unknown) {
+  private transformResponse(data: any) {
     // Transform the API response to a consistent format
+    // Handle different pricing formats from GoDaddy API
+    
+    if (!data) return data
+    
+    // Process exact match domain
+    if (data.exactMatchDomain) {
+      data.exactMatchDomain = this.normalizePricing(data.exactMatchDomain)
+    }
+    
+    // Process suggested domains
+    if (data.suggestedDomains && Array.isArray(data.suggestedDomains)) {
+      data.suggestedDomains = data.suggestedDomains.map((domain: any) => 
+        this.normalizePricing(domain)
+      )
+    }
+    
+    // Process domains array (for different response formats)
+    if (data.domains && Array.isArray(data.domains)) {
+      data.domains = data.domains.map((domain: any) => 
+        this.normalizePricing(domain)
+      )
+    }
+    
     return data
+  }
+  
+  private normalizePricing(domain: any) {
+    if (!domain) return domain
+    
+    // Log the raw domain data to understand the structure
+    console.log('Raw domain pricing data:', {
+      domain: domain.domain,
+      priceInfo: domain.priceInfo,
+      pricing: domain.pricing,
+      listPrice: domain.listPrice,
+      salePrice: domain.salePrice,
+      price: domain.price
+    })
+    
+    // Handle various pricing formats from GoDaddy API
+    let listPrice = domain.listPrice
+    let salePrice = domain.salePrice
+    
+    // Check if pricing is nested in priceInfo
+    if (domain.priceInfo) {
+      if (domain.priceInfo.listPrice !== undefined) {
+        listPrice = domain.priceInfo.listPrice
+      }
+      if (domain.priceInfo.currentPrice !== undefined) {
+        salePrice = domain.priceInfo.currentPrice
+      } else if (domain.priceInfo.salePrice !== undefined) {
+        salePrice = domain.priceInfo.salePrice
+      }
+    }
+    
+    // Check if pricing is nested in pricing object
+    if (domain.pricing) {
+      if (domain.pricing.list !== undefined) {
+        listPrice = domain.pricing.list
+      }
+      if (domain.pricing.sale !== undefined) {
+        salePrice = domain.pricing.sale
+      } else if (domain.pricing.current !== undefined) {
+        salePrice = domain.pricing.current
+      }
+    }
+    
+    // If no sale price but have list price, use list price as sale price
+    if (listPrice && !salePrice) {
+      salePrice = listPrice
+    }
+    
+    // Ensure prices are properly formatted
+    const formatPrice = (price: any) => {
+      if (price === null || price === undefined) return undefined
+      
+      // If it's already a string with currency symbol, return as is
+      if (typeof price === 'string' && price.match(/[₹$£€]/)) {
+        return price
+      }
+      
+      // If it's a number or numeric string, format it
+      const numPrice = typeof price === 'string' ? parseFloat(price) : price
+      if (!isNaN(numPrice)) {
+        return numPrice.toFixed(2)
+      }
+      
+      return price
+    }
+    
+    return {
+      ...domain,
+      listPrice: formatPrice(listPrice),
+      salePrice: formatPrice(salePrice)
+    }
   }
 
   private transformCrossSellResponse(data: {CrossSellDomains?: Array<{domain: string, listPrice: string}>}) {
