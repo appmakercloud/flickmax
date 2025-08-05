@@ -60,15 +60,25 @@ class ClientCartService {
     for (let i = 0; i < items.length; i++) {
       const item = items[i]
       
-      const existingItem = cart.items.find(i => 
-        i.domain === item.domain || i.productId === item.pfid?.toString()
-      )
+      // For domain items, use domain as unique identifier
+      // For other products, use productId
+      const existingItem = cart.items.find(i => {
+        if (item.domain && i.domain) {
+          return i.domain.toLowerCase() === item.domain.toLowerCase()
+        }
+        return i.productId === item.pfid?.toString()
+      })
       
       if (existingItem) {
-        existingItem.quantity += item.quantity || 1
+        console.log('Found existing item in cart:', existingItem)
+        existingItem.quantity = (existingItem.quantity || 1) + (item.quantity || 1)
         existingItem.subtotal = existingItem.price * existingItem.quantity
+        console.log('Updated existing item quantity to:', existingItem.quantity)
       } else {
+        console.log('Adding new item to cart:', item.domain || item.id)
         let price = 19.99 // Default fallback price
+        let listPrice = 0
+        let salePrice = 0
         
         // If it's a domain, fetch the exact price from GoDaddy
         if (item.domain) {
@@ -89,7 +99,8 @@ class ClientCartService {
                 }
                 const country = countries.find(c => c.code === countryCode)
                 if (country) {
-                  marketId = country.marketId
+                  // Always use en-US for marketId to get correct sale prices
+                  marketId = 'en-US'
                   currencyType = country.currency
                 }
               } catch (e) {
@@ -118,19 +129,22 @@ class ClientCartService {
               // Handle exact domain search response format
               if (data.exactMatchDomain) {
                 const domainData = data.exactMatchDomain
-                const priceString = String(domainData.salePrice || domainData.listPrice)
-                // Remove currency symbols and parse
-                price = parseFloat(priceString.replace(/[^0-9.]/g, '')) || price
-                console.log('Found exact match price for', item.domain, ':', price, currencyType, '(original:', priceString, ')')
+                const listPriceString = String(domainData.listPrice || '')
+                const salePriceString = String(domainData.salePrice || domainData.listPrice || '')
+                listPrice = parseFloat(listPriceString.replace(/[^0-9.]/g, '')) || 0
+                salePrice = parseFloat(salePriceString.replace(/[^0-9.]/g, '')) || 0
+                price = salePrice || listPrice || price
               } else if (data.domains && data.domains.length > 0) {
                 // Fallback to domains array
                 const domainMatch = data.domains.find((d: { domain: string; salePrice?: string; listPrice?: string }) => 
                   d.domain.toLowerCase() === item.domain?.toLowerCase()
                 )
                 if (domainMatch) {
-                  const priceString = String(domainMatch.salePrice || domainMatch.listPrice)
-                  price = parseFloat(priceString.replace(/[^0-9.]/g, '')) || price
-                  console.log('Found price from domains array for', item.domain, ':', price, currencyType, '(original:', priceString, ')')
+                  const listPriceString = String(domainMatch.listPrice || '')
+                  const salePriceString = String(domainMatch.salePrice || domainMatch.listPrice || '')
+                  listPrice = parseFloat(listPriceString.replace(/[^0-9.]/g, '')) || 0
+                  salePrice = parseFloat(salePriceString.replace(/[^0-9.]/g, '')) || 0
+                  price = salePrice || listPrice || price
                 }
               }
             }
@@ -140,7 +154,7 @@ class ClientCartService {
         }
         
         const cartItem: CartItemDetail = {
-          id: item.id,
+          id: item.domain ? `domain_${item.domain.toLowerCase()}` : item.id,
           label: item.domain || `Product ${item.id}`,
           quantity: item.quantity || 1,
           price: price,
@@ -150,8 +164,10 @@ class ClientCartService {
           period: item.period || 1,
           periodUnit: item.periodUnit || 'YEAR',
           renewalPrice: price,
-          isDiscounted: false,
-          discountAmount: undefined
+          isDiscounted: salePrice > 0 && salePrice < listPrice,
+          discountAmount: listPrice > salePrice ? listPrice - salePrice : undefined,
+          listPrice: listPrice || undefined,
+          salePrice: salePrice < listPrice ? salePrice : undefined
         }
         cart.items.push(cartItem)
       }
@@ -183,9 +199,13 @@ class ClientCartService {
     cart.total = cart.subtotal // Total equals subtotal
     cart.updatedAt = new Date().toISOString()
     
-    console.log('Saving cart with items:', cart.items.length)
+    console.log('Cart before save:', {
+      itemCount: cart.items.length,
+      items: cart.items.map(i => ({ id: i.id, domain: i.domain, quantity: i.quantity })),
+      total: cart.total
+    })
     await this.saveLocalCart(cart)
-    console.log('Cart saved, returning:', cart)
+    console.log('Cart saved successfully')
     return cart
   }
   

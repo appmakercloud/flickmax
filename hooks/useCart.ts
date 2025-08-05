@@ -9,20 +9,6 @@ export function useCart() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Initialize cart ID from localStorage
-  useEffect(() => {
-    const storedCartId = localStorage.getItem('cartId')
-    if (storedCartId) {
-      setCartId(storedCartId)
-      fetchCart(storedCartId)
-    } else {
-      // Generate new cart ID
-      const newCartId = generateCartId()
-      localStorage.setItem('cartId', newCartId)
-      setCartId(newCartId)
-    }
-  }, [])
-
   const generateCartId = () => {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
   }
@@ -33,9 +19,11 @@ export function useCart() {
     try {
       setIsLoading(true)
       const cartData = await clientCartService.getCart(id)
+      console.log('Cart fetched:', cartData)
       setCart(cartData)
       setError(null)
     } catch (error) {
+      console.error('Error fetching cart:', error)
       // Silently handle cart fetch errors - it's normal for cart to not exist initially
       setError(null)
       setCart(null)
@@ -44,8 +32,29 @@ export function useCart() {
     }
   }, [])
 
-  const addToCart = useCallback(async (items: CartItem[], skipCrossSell: boolean = true) => {
-    if (!cartId) return
+  // Initialize cart ID from localStorage
+  useEffect(() => {
+    const storedCartId = localStorage.getItem('cartId')
+    if (storedCartId) {
+      console.log('Found stored cart ID:', storedCartId)
+      setCartId(storedCartId)
+      fetchCart(storedCartId)
+    } else {
+      // Generate new cart ID
+      const newCartId = generateCartId()
+      console.log('Generated new cart ID:', newCartId)
+      localStorage.setItem('cartId', newCartId)
+      setCartId(newCartId)
+    }
+  }, [fetchCart])
+
+  const addToCart = useCallback(async (items: CartItem[]) => {
+    if (!cartId) {
+      console.error('No cart ID available')
+      return
+    }
+    
+    console.log('useCart.addToCart called with cartId:', cartId, 'items:', items)
 
     try {
       setIsLoading(true)
@@ -53,10 +62,16 @@ export function useCart() {
 
       // Use client-side cart service
       const updatedCart = await clientCartService.addToCart(cartId, items)
+      console.log('Cart updated in useCart:', updatedCart)
       setCart(updatedCart)
       
+      // Force a refresh to ensure state is synced
+      const refreshedCart = await clientCartService.getCart(cartId)
+      console.log('Cart refreshed:', refreshedCart)
+      setCart(refreshedCart)
+      
       toast.success('Added to cart successfully!')
-      return { cart: updatedCart }
+      return { cart: refreshedCart }
     } catch (error) {
       console.error('Error adding to cart:', error)
       const message = error instanceof Error ? error.message : 'Failed to add to cart'
@@ -185,6 +200,7 @@ export function useCart() {
 
   const refreshCart = useCallback(() => {
     if (cartId) {
+      console.log('Refreshing cart with ID:', cartId)
       fetchCart(cartId)
     }
   }, [cartId, fetchCart])
