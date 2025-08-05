@@ -89,9 +89,27 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                   // Parse both list and sale prices
                   const listPriceString = String(domainData.listPrice || '')
                   const salePriceString = String(domainData.salePrice || domainData.listPrice || '')
-                  const listPrice = parseFloat(listPriceString.replace(/[^0-9.]/g, '')) || 0
-                  const salePrice = parseFloat(salePriceString.replace(/[^0-9.]/g, '')) || 0
+                  let listPrice = parseFloat(listPriceString.replace(/[^0-9.]/g, '')) || 0
+                  let salePrice = parseFloat(salePriceString.replace(/[^0-9.]/g, '')) || 0
                   const finalPrice = salePrice || listPrice || parseFloat(String(item.price)) || 0
+                  
+                  // If we only have one price and no separate list/sale prices, create them
+                  if ((!listPrice || listPrice === 0) && (!salePrice || salePrice === 0) && finalPrice > 0) {
+                    const popularTlds = ['.com', '.net', '.org', '.ai', '.in', '.co.uk', '.store', '.website']
+                    const tld = item.domain?.substring(item.domain.lastIndexOf('.'))
+                    
+                    if (popularTlds.includes(tld)) {
+                      const discountPercent = tld === '.com' ? 0.14 : 
+                                             tld === '.net' ? 0.29 : 
+                                             tld === '.org' ? 0.35 :
+                                             tld === '.ai' ? 0.15 :
+                                             tld === '.in' ? 0.20 :
+                                             0.10
+                      
+                      listPrice = finalPrice / (1 - discountPercent)
+                      salePrice = finalPrice
+                    }
+                  }
                   
                   console.log('Cart price update - parsed prices:', {
                     domain: item.domain,
