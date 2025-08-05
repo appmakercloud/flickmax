@@ -40,7 +40,15 @@ interface DomainData {
   productId?: string | number
   premium?: boolean
   disclaimer?: string
-  [key: string]: any // Allow additional properties
+  [key: string]: string | number | boolean | undefined | {
+    listPrice?: string | number
+    currentPrice?: string | number
+    salePrice?: string | number
+    price?: string | number
+    list?: string | number
+    sale?: string | number
+    current?: string | number
+  } // Allow additional properties with specific types
 }
 
 interface ApiResponse {
