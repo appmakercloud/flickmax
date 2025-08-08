@@ -20,7 +20,35 @@ import {
   BarChart3,
   Network,
   MemoryStick,
-  HardDriveIcon
+  HardDriveIcon,
+  Zap,
+  Lock,
+  Gauge,
+  HeadphonesIcon,
+  Clock,
+  Database,
+  Activity,
+  Layers,
+  Award,
+  TrendingUp,
+  Users,
+  Code,
+  Monitor,
+  Smartphone,
+  ArrowRight,
+  Loader2,
+  ShieldCheck,
+  CloudUpload,
+  FileText,
+  MessageCircle,
+  DollarSign,
+  RefreshCw,
+  GitBranch,
+  Package,
+  Boxes,
+  CircuitBoard,
+  Wifi,
+  HardDrive
 } from 'lucide-react'
 import { useCountry } from '@/contexts/CountryContext'
 import { useCart } from '@/contexts/CartContext'
@@ -31,7 +59,7 @@ interface VPSPlan {
   name: string
   monthlyPrice: number
   yearlyPrice: number
-  listPrice?: number
+  originalPrice?: number
   features: string[]
   isPopular?: boolean
   cpu: string
@@ -39,486 +67,485 @@ interface VPSPlan {
   storage: string
   bandwidth: string
   ipAddresses: string
-  rootAccess: boolean
-  managementLevel: string
-  backup?: boolean
   specs: {
     cores: number
-    ram: number
-    storage: number
+    ram: string
+    storage: string
     bandwidth: string
     ipv4: number
-    ipv6: string
+    backups: string
+    support: string
   }
+  highlighted?: string[]
 }
 
-interface FAQ {
-  question: string
-  answer: string
-}
-
-const faqs: FAQ[] = [
-  {
-    question: "What is a VPS and how is it different from shared hosting?",
-    answer: "A Virtual Private Server (VPS) is a virtualized server that mimics a dedicated server within a shared hosting environment. Unlike shared hosting where resources are shared among all users, VPS provides dedicated resources (CPU, RAM, storage) exclusively for your use, offering better performance, security, and control."
-  },
-  {
-    question: "Do I need technical knowledge to manage a VPS?",
-    answer: "While basic technical knowledge is helpful, we offer different management levels. Our Managed VPS includes full server management, automatic updates, and 24/7 support. For experienced users, our Self-Managed VPS provides complete root access and control."
-  },
-  {
-    question: "Can I upgrade my VPS plan later?",
-    answer: "Yes! You can upgrade your VPS plan at any time. The upgrade process is seamless with minimal to no downtime. You only pay the difference for the remaining billing period."
-  },
-  {
-    question: "What operating systems are available?",
-    answer: "We offer a wide range of operating systems including Ubuntu, CentOS, Debian, Fedora, and Windows Server. You can also install custom OS images through our control panel."
-  },
-  {
-    question: "Is my data backed up?",
-    answer: "All VPS plans include weekly automatic backups with 2-week retention. You can also create manual snapshots anytime through the control panel. For critical applications, we recommend our premium backup service with daily backups and extended retention."
-  },
-  {
-    question: "What kind of support do you provide?",
-    answer: "We provide 24/7/365 technical support via phone, chat, and email. Managed VPS customers receive priority support with faster response times and proactive server monitoring."
-  }
-]
-
-const testimonials = [
-  {
-    name: "David Martinez",
-    company: "SaaS Platform CEO",
-    rating: 5,
-    text: "Migrating to FlickMax VPS was the best decision for our growing platform. The performance boost was immediate, and the scalability options are perfect for our needs."
-  },
-  {
-    name: "Lisa Anderson",
-    company: "DevOps Engineer",
-    rating: 5,
-    text: "The control and flexibility of FlickMax VPS is unmatched. Full root access, choice of OS, and excellent uptime. Exactly what our development team needed."
-  },
-  {
-    name: "Robert Kim",
-    company: "E-commerce Business Owner",
-    rating: 5,
-    text: "Our online store handles thousands of transactions daily. FlickMax VPS provides the reliability and speed we need, plus their support team is incredibly responsive."
-  }
-]
-
-const features = [
-  {
-    icon: Cpu,
-    title: "Powerful Processing",
-    description: "Latest Intel Xeon processors with dedicated vCPU cores for consistent performance"
-  },
-  {
-    icon: MemoryStick,
-    title: "100% RAM Allocation",
-    description: "Guaranteed RAM allocation with no overselling or resource sharing"
-  },
-  {
-    icon: HardDriveIcon,
-    title: "NVMe SSD Storage",
-    description: "Ultra-fast NVMe SSDs with up to 10x faster read/write speeds"
-  },
-  {
-    icon: Network,
-    title: "1Gbps Network",
-    description: "High-speed network connectivity with low latency worldwide"
-  },
-  {
-    icon: Shield,
-    title: "DDoS Protection",
-    description: "Enterprise-grade DDoS protection included with all plans"
-  },
-  {
-    icon: Terminal,
-    title: "Full Root Access",
-    description: "Complete control over your server environment and configurations"
-  }
-]
-
-// CountUp Component for animated numbers
-const CountUp = ({ end, decimals = 0, duration = 2 }: { end: number; decimals?: number; duration?: number }) => {
-  const [count, setCount] = useState(0)
-  const countRef = useRef(null)
-  const isInView = useInView(countRef, { once: true })
+// High-tech server animation component
+const ServerAnimation = () => {
+  const [activeNodes, setActiveNodes] = useState<number[]>([])
   
   useEffect(() => {
-    if (isInView && duration > 0 && end > 0) {
-      let start = 0
-      const increment = Math.max(end / (duration * 60), 0.01) // Ensure positive increment
-      const timer = setInterval(() => {
-        start += increment
-        if (start >= end) {
-          setCount(end)
-          clearInterval(timer)
-        } else {
-          setCount(start)
-        }
-      }, 1000 / 60)
-      return () => clearInterval(timer)
+    try {
+      const interval = setInterval(() => {
+        const newNodes = Array.from({ length: 3 }, () => Math.floor(Math.random() * 12))
+        setActiveNodes(newNodes)
+      }, 2000)
+      return () => clearInterval(interval)
+    } catch (error) {
+      console.error('Animation error:', error)
     }
-  }, [isInView, end, duration])
-  
-  return <span ref={countRef}>{count.toFixed(decimals)}</span>
+  }, [])
+
+  return (
+    <div className="relative w-full h-full">
+      {/* 3D Server Rack */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="relative transform-gpu" style={{ perspective: '1000px' }}>
+          {/* Server Stack */}
+          <motion.div
+            animate={{ 
+              rotateY: [0, 10, 0, -10, 0],
+            }}
+            transition={{ 
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="relative"
+          >
+            {[0, 1, 2].map((serverIndex) => (
+              <motion.div
+                key={serverIndex}
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: serverIndex * 0.2 }}
+                className="relative mb-2"
+              >
+                <div className="relative bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 rounded-lg p-4 shadow-2xl"
+                     style={{ 
+                       transform: `translateZ(${serverIndex * 30}px)`,
+                       boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
+                     }}>
+                  {/* Server Front Panel */}
+                  <div className="flex items-center gap-3">
+                    {/* Drive Bays */}
+                    <div className="grid grid-cols-4 gap-1">
+                      {Array.from({ length: 12 }).map((_, i) => (
+                        <motion.div
+                          key={i}
+                          animate={{
+                            backgroundColor: activeNodes.includes(i) 
+                              ? ['#3B82F6', '#06B6D4', '#3B82F6']
+                              : '#1F2937',
+                            boxShadow: activeNodes.includes(i)
+                              ? '0 0 10px rgba(6, 182, 212, 0.5)'
+                              : 'none'
+                          }}
+                          transition={{ duration: 0.5 }}
+                          className="w-8 h-2 rounded-sm border border-gray-600"
+                        />
+                      ))}
+                    </div>
+                    
+                    {/* Status LEDs */}
+                    <div className="flex gap-2">
+                      <motion.div
+                        animate={{ 
+                          backgroundColor: ['#10B981', '#34D399', '#10B981'],
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="w-2 h-2 rounded-full"
+                      />
+                      <motion.div
+                        animate={{ 
+                          backgroundColor: ['#3B82F6', '#60A5FA', '#3B82F6'],
+                        }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                        className="w-2 h-2 rounded-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Network Connections */}
+          <svg className="absolute -inset-20 w-[calc(100%+10rem)] h-[calc(100%+10rem)]" style={{ zIndex: -1 }}>
+            {Array.from({ length: 6 }).map((_, i) => {
+              const angle = (i * 60) * Math.PI / 180
+              const x1 = 150 + Math.cos(angle) * 100
+              const y1 = 100 + Math.sin(angle) * 100
+              const x2 = 150
+              const y2 = 100
+              
+              return (
+                <motion.line
+                  key={i}
+                  x1={x1}
+                  y1={y1}
+                  x2={x2}
+                  y2={y2}
+                  stroke="url(#gradient)"
+                  strokeWidth="2"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ 
+                    pathLength: [0, 1, 1, 0],
+                    opacity: [0, 1, 1, 0]
+                  }}
+                  transition={{
+                    duration: 3,
+                    delay: i * 0.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+              )
+            })}
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#3B82F6" />
+                <stop offset="100%" stopColor="#06B6D4" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+      {/* Floating Particles */}
+      <div className="absolute inset-0">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-cyan-400 rounded-full"
+            initial={{
+              x: Math.random() * 400,
+              y: Math.random() * 400,
+              opacity: 0
+            }}
+            animate={{
+              x: Math.random() * 400,
+              y: Math.random() * 400,
+              opacity: [0, 1, 0]
+            }}
+            transition={{
+              duration: Math.random() * 5 + 5,
+              repeat: Infinity,
+              delay: Math.random() * 5
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export default function VPSHostingPage() {
-  const [plans, setPlans] = useState<VPSPlan[]>([])
-  const [loading, setLoading] = useState(true)
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly')
-  const [openFAQ, setOpenFAQ] = useState<number | null>(null)
-  const [currentTestimonial, setCurrentTestimonial] = useState(0)
-  const [selectedOS, setSelectedOS] = useState('ubuntu')
-  
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly')
+  const [expandedPlan, setExpandedPlan] = useState<number | null>(null)
+  const [selectedPlan, setSelectedPlan] = useState<number | null>(null)
+  const [loading, setLoading] = useState(false)
   const { currency } = useCountry()
   const { addProductToCart } = useCart()
-  
   const heroRef = useRef(null)
-  const statsRef = useRef(null)
-  const isStatsInView = useInView(statsRef, { once: true })
+  const heroInView = useInView(heroRef, { once: true })
 
-  useEffect(() => {
-    fetchVPSPlans()
-  }, [currency])
+  // VPS Plans with GoDaddy-style structure
+  const vpsPlans: VPSPlan[] = [
+    {
+      productId: 1,
+      name: "1 vCPU / 1GB RAM",
+      monthlyPrice: 8.99,
+      yearlyPrice: 4.99 * 12,
+      originalPrice: 8.99 * 12,
+      cpu: "1 vCPU",
+      ram: "1 GB",
+      storage: "40 GB NVMe SSD",
+      bandwidth: "Unmetered",
+      ipAddresses: "1 IPv4 & IPv6",
+      specs: {
+        cores: 1,
+        ram: "1 GB RAM",
+        storage: "40 GB NVMe SSD",
+        bandwidth: "Unmetered",
+        ipv4: 1,
+        backups: "Snapshot",
+        support: "Standard"
+      },
+      features: [
+        "1 vCPU Core",
+        "1 GB RAM",
+        "40 GB NVMe SSD Storage",
+        "Unmetered Bandwidth",
+        "1 IPv4 & IPv6 Address",
+        "Free Snapshot Backups",
+        "Root Access",
+        "99.9% Uptime SLA"
+      ],
+      highlighted: ["40 GB NVMe SSD Storage", "Free Snapshot Backups"]
+    },
+    {
+      productId: 2,
+      name: "2 vCPU / 2GB RAM",
+      monthlyPrice: 17.99,
+      yearlyPrice: 9.99 * 12,
+      originalPrice: 17.99 * 12,
+      cpu: "2 vCPU",
+      ram: "2 GB",
+      storage: "100 GB NVMe SSD",
+      bandwidth: "Unmetered",
+      ipAddresses: "1 IPv4 & IPv6",
+      isPopular: true,
+      specs: {
+        cores: 2,
+        ram: "2 GB RAM",
+        storage: "100 GB NVMe SSD",
+        bandwidth: "Unmetered",
+        ipv4: 1,
+        backups: "Snapshot",
+        support: "Standard"
+      },
+      features: [
+        "2 vCPU Cores",
+        "2 GB RAM",
+        "100 GB NVMe SSD Storage",
+        "Unmetered Bandwidth",
+        "1 IPv4 & IPv6 Address",
+        "Free Snapshot Backups",
+        "Root Access",
+        "99.9% Uptime SLA",
+        "DDoS Protection"
+      ],
+      highlighted: ["100 GB NVMe SSD Storage", "DDoS Protection"]
+    },
+    {
+      productId: 3,
+      name: "4 vCPU / 4GB RAM",
+      monthlyPrice: 34.99,
+      yearlyPrice: 19.99 * 12,
+      originalPrice: 34.99 * 12,
+      cpu: "4 vCPU",
+      ram: "4 GB",
+      storage: "200 GB NVMe SSD",
+      bandwidth: "Unmetered",
+      ipAddresses: "2 IPv4 & IPv6",
+      specs: {
+        cores: 4,
+        ram: "4 GB RAM",
+        storage: "200 GB NVMe SSD",
+        bandwidth: "Unmetered",
+        ipv4: 2,
+        backups: "Automated",
+        support: "Priority"
+      },
+      features: [
+        "4 vCPU Cores",
+        "4 GB RAM",
+        "200 GB NVMe SSD Storage",
+        "Unmetered Bandwidth",
+        "2 IPv4 & IPv6 Addresses",
+        "Automated Backups",
+        "Root Access",
+        "99.9% Uptime SLA",
+        "Enhanced DDoS Protection",
+        "Priority Support"
+      ],
+      highlighted: ["2 IPv4 & IPv6 Addresses", "Automated Backups", "Priority Support"]
+    },
+    {
+      productId: 4,
+      name: "4 vCPU / 8GB RAM",
+      monthlyPrice: 44.99,
+      yearlyPrice: 29.99 * 12,
+      originalPrice: 44.99 * 12,
+      cpu: "4 vCPU",
+      ram: "8 GB",
+      storage: "400 GB NVMe SSD",
+      bandwidth: "Unmetered",
+      ipAddresses: "3 IPv4 & IPv6",
+      specs: {
+        cores: 4,
+        ram: "8 GB RAM",
+        storage: "400 GB NVMe SSD",
+        bandwidth: "Unmetered",
+        ipv4: 3,
+        backups: "Automated",
+        support: "Priority"
+      },
+      features: [
+        "4 vCPU Cores",
+        "8 GB RAM",
+        "400 GB NVMe SSD Storage",
+        "Unmetered Bandwidth",
+        "3 IPv4 & IPv6 Addresses",
+        "Automated Backups",
+        "Root Access",
+        "99.95% Uptime SLA",
+        "Advanced DDoS Protection",
+        "Priority Support",
+        "Free SSL Certificate"
+      ],
+      highlighted: ["400 GB NVMe SSD Storage", "3 IPv4 & IPv6 Addresses", "99.95% Uptime SLA"]
+    }
+  ]
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [])
-
-  const fetchVPSPlans = async () => {
+  const handleAddToCart = async (plan: VPSPlan) => {
+    setLoading(true)
     try {
-      setLoading(true)
-      
-      // Mock VPS plans data
-      const processedPlans: VPSPlan[] = [
-        {
-          productId: 101,
-          name: 'VPS Starter',
-          monthlyPrice: 19.99,
-          yearlyPrice: 179.99,
-          listPrice: 239.88,
-          features: [
-            '2 vCPU Cores',
-            '4 GB RAM',
-            '80 GB NVMe SSD',
-            '2 TB Bandwidth',
-            '1 IPv4 Address',
-            'Free SSL Certificate',
-            'Weekly Backups',
-            'DDoS Protection'
-          ],
-          cpu: '2 vCPU',
-          ram: '4 GB',
-          storage: '80 GB NVMe',
-          bandwidth: '2 TB',
-          ipAddresses: '1 IPv4',
-          rootAccess: true,
-          managementLevel: 'Self-Managed',
-          backup: true,
-          specs: {
-            cores: 2,
-            ram: 4,
-            storage: 80,
-            bandwidth: '2 TB',
-            ipv4: 1,
-            ipv6: 'Unlimited'
-          }
-        },
-        {
-          productId: 102,
-          name: 'VPS Professional',
-          monthlyPrice: 39.99,
-          yearlyPrice: 359.99,
-          listPrice: 479.88,
-          features: [
-            '4 vCPU Cores',
-            '8 GB RAM',
-            '160 GB NVMe SSD',
-            '4 TB Bandwidth',
-            '2 IPv4 Addresses',
-            'Free SSL Certificate',
-            'Daily Backups',
-            'DDoS Protection',
-            'Priority Support'
-          ],
-          isPopular: true,
-          cpu: '4 vCPU',
-          ram: '8 GB',
-          storage: '160 GB NVMe',
-          bandwidth: '4 TB',
-          ipAddresses: '2 IPv4',
-          rootAccess: true,
-          managementLevel: 'Managed Available',
-          backup: true,
-          specs: {
-            cores: 4,
-            ram: 8,
-            storage: 160,
-            bandwidth: '4 TB',
-            ipv4: 2,
-            ipv6: 'Unlimited'
-          }
-        },
-        {
-          productId: 103,
-          name: 'VPS Business',
-          monthlyPrice: 79.99,
-          yearlyPrice: 719.99,
-          listPrice: 959.88,
-          features: [
-            '6 vCPU Cores',
-            '16 GB RAM',
-            '320 GB NVMe SSD',
-            '8 TB Bandwidth',
-            '3 IPv4 Addresses',
-            'Free SSL Certificate',
-            'Daily Backups',
-            'DDoS Protection',
-            'Priority Support',
-            'Load Balancer Ready',
-            'Advanced Monitoring'
-          ],
-          cpu: '6 vCPU',
-          ram: '16 GB',
-          storage: '320 GB NVMe',
-          bandwidth: '8 TB',
-          ipAddresses: '3 IPv4',
-          rootAccess: true,
-          managementLevel: 'Fully Managed',
-          backup: true,
-          specs: {
-            cores: 6,
-            ram: 16,
-            storage: 320,
-            bandwidth: '8 TB',
-            ipv4: 3,
-            ipv6: 'Unlimited'
-          }
-        },
-        {
-          productId: 104,
-          name: 'VPS Enterprise',
-          monthlyPrice: 149.99,
-          yearlyPrice: 1349.99,
-          listPrice: 1799.88,
-          features: [
-            '8 vCPU Cores',
-            '32 GB RAM',
-            '640 GB NVMe SSD',
-            'Unlimited Bandwidth',
-            '5 IPv4 Addresses',
-            'Free SSL Certificate',
-            'Real-time Backups',
-            'DDoS Protection',
-            'Dedicated Support',
-            'Load Balancer Included',
-            'Advanced Monitoring',
-            'Custom Firewall Rules',
-            'Kubernetes Ready'
-          ],
-          cpu: '8 vCPU',
-          ram: '32 GB',
-          storage: '640 GB NVMe',
-          bandwidth: 'Unlimited',
-          ipAddresses: '5 IPv4',
-          rootAccess: true,
-          managementLevel: 'Fully Managed',
-          backup: true,
-          specs: {
-            cores: 8,
-            ram: 32,
-            storage: 640,
-            bandwidth: 'Unlimited',
-            ipv4: 5,
-            ipv6: 'Unlimited'
-          }
-        }
-      ]
-      
-      setPlans(processedPlans)
-    } catch (error) {
-      console.error('Error fetching VPS plans:', error)
-      setPlans([])
+      await addProductToCart(plan.productId.toString(), billingCycle === 'yearly' ? 12 : 1, 'MONTH')
+      toast.success(`${plan.name} VPS added to cart!`)
+    } catch {
+      toast.error('Failed to add to cart')
     } finally {
       setLoading(false)
     }
   }
 
-  const handleAddToCart = async (plan: VPSPlan) => {
-    try {
-      const period = billingCycle === 'yearly' ? 12 : 1
-      await addProductToCart(String(plan.productId), period, 'MONTH')
-      toast.success(`${plan.name} added to cart!`)
-    } catch (error) {
-      toast.error('Failed to add to cart')
+  const formatPrice = (price: number) => {
+    const symbols: { [key: string]: string } = {
+      USD: '$',
+      INR: '₹',
+      EUR: '€',
+      GBP: '£'
     }
-  }
-
-  const scrollToPricing = () => {
-    document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })
-  }
-
-  const operatingSystems = [
-    { id: 'ubuntu', name: 'Ubuntu', versions: ['22.04 LTS', '20.04 LTS'] },
-    { id: 'centos', name: 'CentOS', versions: ['Stream 9', 'Stream 8'] },
-    { id: 'debian', name: 'Debian', versions: ['12', '11'] },
-    { id: 'windows', name: 'Windows Server', versions: ['2022', '2019'] }
-  ]
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-gray-600">Loading...</div>
-      </div>
-    )
+    const rates: { [key: string]: number } = {
+      USD: 1,
+      INR: 83,
+      EUR: 0.92,
+      GBP: 0.79
+    }
+    
+    const convertedPrice = price * (rates[currency] || 1)
+    const symbol = symbols[currency] || '$'
+    
+    return `${symbol}${convertedPrice.toFixed(2)}`
   }
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Clean Hero Section with Simple Gradient */}
-      <section ref={heroRef} className="relative min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-blue-500 via-cyan-500 to-blue-600">
-        {/* Simple floating elements */}
-        <div className="absolute top-20 left-[10%] w-16 h-16 border-2 border-white/20 rounded-lg" />
-        <div className="absolute top-40 right-[20%] w-20 h-20 border-2 border-white/15 rounded-xl" />
-        <div className="absolute bottom-32 left-[25%] w-12 h-12 bg-white/10 rounded-lg" />
-        <div className="absolute top-[60%] right-[15%] w-8 h-8 border border-white/20 rounded" />
+      {/* Debug Test */}
+      <div style={{ padding: '20px', background: '#f0f0f0', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '24px', fontWeight: 'bold' }}>VPS Hosting Page</h1>
+        <p>If you can see this, the page is loading correctly.</p>
+      </div>
+      
+      {/* Hero Section with Server Animation */}
+      <section ref={heroRef} className="relative pt-20 pb-32 overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 50%, #3B82F6 100%)' }} />
 
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            {/* Simple Badge */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="inline-block mb-8"
+        <div className="relative container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={heroInView ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.8 }}
+              className="text-white"
             >
-              <span className="bg-white/20 backdrop-blur-sm text-white text-sm font-medium px-4 py-2 rounded-full">
-                Starting at $19.99/mo
-              </span>
+              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
+                <Zap className="w-4 h-4 text-yellow-400" />
+                <span className="text-sm font-medium">Lightning-Fast NVMe Storage</span>
+              </div>
+              
+              <h1 className="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                VPS Hosting that&apos;s{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-300">
+                  flexible, private, and affordable
+                </span>
+              </h1>
+              
+              <p className="text-xl text-white/90 mb-8">
+                Get dedicated resources, root access, and complete control over your virtual server. 
+                Perfect for developers, growing businesses, and resource-intensive applications.
+              </p>
+
+              <div className="flex flex-wrap gap-4 mb-8">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-cyan-300" />
+                  <span>99.9% Uptime Guarantee</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-cyan-300" />
+                  <span>Free Snapshots</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-cyan-300" />
+                  <span>Root Access</span>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="px-8 py-4 bg-white text-blue-600 rounded-lg font-semibold shadow-xl hover:shadow-2xl transition-all"
+                >
+                  View Plans
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-lg font-semibold border border-white/20 hover:bg-white/20 transition-all"
+                >
+                  Learn More
+                </motion.button>
+              </div>
+
+              {/* Trust Badges */}
+              <div className="mt-12 flex items-center gap-8">
+                <div className="text-center">
+                  <div className="text-3xl font-bold">99.9%</div>
+                  <div className="text-sm text-white/80">Uptime SLA</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold">24/7</div>
+                  <div className="text-sm text-white/80">Expert Support</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold">45-Day</div>
+                  <div className="text-sm text-white/80">Money Back</div>
+                </div>
+              </div>
             </motion.div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                Powerful VPS Hosting
-              </motion.div>
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="text-3xl sm:text-4xl lg:text-5xl mt-4 font-normal"
-              >
-                That Scales With You
-              </motion.div>
-            </h1>
-            
-            <p className="text-lg sm:text-xl text-white/80 mb-10 max-w-2xl mx-auto">
-              Deploy in seconds. Scale in minutes. Full root access with 99.99% uptime guarantee.
-            </p>
-
-            {/* Simple CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={scrollToPricing}
-                className="px-8 py-3 bg-white text-blue-600 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                View Plans
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="px-8 py-3 bg-transparent border-2 border-white/80 text-white rounded-lg font-semibold hover:bg-white/10 transition-all duration-300"
-              >
-                Learn More
-              </motion.button>
-            </div>
-          </motion.div>
-        </div>
-
-      </section>
-      
-      {/* Wave Separator */}
-      <div className="relative -mt-1">
-        <svg className="w-full h-24" viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 0L48 8.5C96 17 192 34 288 42.5C384 51 480 51 576 42.5C672 34 768 17 864 17C960 17 1056 34 1152 42.5C1248 51 1344 51 1392 51L1440 51V120H1392C1344 120 1248 120 1152 120C1056 120 960 120 864 120C768 120 672 120 576 120C480 120 384 120 288 120C192 120 96 120 48 120H0V0Z" fill="white"/>
-        </svg>
-      </div>
-
-      {/* Key Features Grid - Clean Style */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl lg:text-4xl font-semibold mb-4 text-gray-900">
-              Startup Friendly
-            </h2>
-            <p className="text-lg text-gray-600">Built on cutting-edge technology for unmatched performance</p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="group p-6 text-center hover:shadow-lg transition-all duration-300 rounded-xl"
-              >
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <feature.icon className="w-6 h-6 text-white" />
+            {/* Right Content - Server Animation */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={heroInView ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative hidden lg:block"
+              style={{ minHeight: '500px' }}
+            >
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <Server className="w-32 h-32 text-white/80 mx-auto mb-4" />
+                  <p className="text-white text-lg">High-Performance VPS</p>
                 </div>
-                <h3 className="text-lg font-semibold mb-2 text-gray-900">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-gray-600 leading-relaxed">{feature.description}</p>
-              </motion.div>
-            ))}
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Clean VPS Pricing Section */}
-      <section id="pricing" className="py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl lg:text-4xl font-semibold mb-4 text-gray-900">
-              Choose Your Perfect VPS Plan
+      {/* Pricing Section - GoDaddy Style */}
+      <section id="pricing" className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">
+              Choose your VPS hosting plan
             </h2>
-            <p className="text-lg text-gray-600">All plans include free setup and instant deployment</p>
-          </motion.div>
+            <p className="text-xl text-gray-600 mb-8">
+              Powerful virtual private servers with dedicated resources
+            </p>
 
-          {/* Simple Billing Toggle */}
-          <div className="flex justify-center mb-12">
-            <div className="bg-white rounded-lg border border-gray-200 p-1 inline-flex">
+            {/* Billing Toggle */}
+            <div className="inline-flex items-center bg-white rounded-lg p-1 shadow-md">
               <button
                 onClick={() => setBillingCycle('monthly')}
-                className={`px-4 py-2 rounded-md font-medium text-sm transition-all ${
+                className={`px-6 py-3 rounded-md font-medium transition-all ${
                   billingCycle === 'monthly'
-                    ? 'bg-blue-500 text-white'
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white'
                     : 'text-gray-600 hover:text-gray-800'
                 }`}
               >
@@ -526,418 +553,430 @@ export default function VPSHostingPage() {
               </button>
               <button
                 onClick={() => setBillingCycle('yearly')}
-                className={`px-4 py-2 rounded-md font-medium text-sm transition-all ${
+                className={`px-6 py-3 rounded-md font-medium transition-all ${
                   billingCycle === 'yearly'
-                    ? 'bg-blue-500 text-white'
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white'
                     : 'text-gray-600 hover:text-gray-800'
                 }`}
               >
-                Yearly <span className="text-xs">(-25%)</span>
+                Yearly
+                <span className="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded-full">
+                  Save up to 44%
+                </span>
               </button>
             </div>
           </div>
 
-          {/* Clean Pricing Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {plans.map((plan, index) => (
+          {/* Pricing Cards - GoDaddy Grid Style */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {vpsPlans.map((plan, index) => (
               <motion.div
                 key={plan.productId}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className={`relative bg-white rounded-xl p-6 ${
-                  plan.isPopular 
-                    ? 'border-2 border-blue-500 shadow-xl' 
-                    : 'border border-gray-200'
-                } hover:shadow-lg transition-shadow duration-300`}
-              >
-                {plan.isPopular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-blue-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                      RECOMMENDED
-                    </span>
-                  </div>
-                )}
-
-                {/* Plan Header */}
-                <div className="text-center mb-4">
-                  <h3 className="text-xl font-semibold text-gray-900">{plan.name}</h3>
-                  <p className="text-sm text-gray-600 mt-1">{plan.cpu} • {plan.ram}</p>
-                </div>
-
-                {/* Price */}
-                <div className="text-center mb-6">
-                  <div className="flex items-baseline justify-center">
-                    <span className="text-lg text-gray-600">$</span>
-                    <span className="text-3xl font-bold text-gray-900">
-                      {billingCycle === 'yearly' 
-                        ? Math.floor(plan.yearlyPrice / 12)
-                        : Math.floor(plan.monthlyPrice)
-                      }
-                    </span>
-                    <span className="text-gray-600 ml-1">/mo</span>
-                  </div>
-                </div>
-
-                {/* Main Specs */}
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Storage</span>
-                    <span className="font-semibold">{plan.storage}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Bandwidth</span>
-                    <span className="font-semibold">{plan.bandwidth}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">IP Address</span>
-                    <span className="font-semibold">{plan.ipAddresses}</span>
-                  </div>
-                </div>
-
-                {/* CTA Button */}
-                <button
-                  onClick={() => handleAddToCart(plan)}
-                  className={`w-full py-2.5 rounded-lg font-medium transition-all ${
-                    plan.isPopular
-                      ? 'bg-blue-500 text-white hover:bg-blue-600'
-                      : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                  }`}
-                >
-                  Choose Plan
-                </button>
-
-                {/* Key Features */}
-                <div className="mt-4 space-y-2">
-                  {plan.features.slice(0, 3).map((feature, idx) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-green-500" />
-                      <span className="text-xs text-gray-600">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Custom Solutions CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-12 text-center"
-          >
-            <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl p-8 text-white">
-              <h3 className="text-2xl font-bold mb-4">Need More Power?</h3>
-              <p className="text-lg mb-6">Get custom VPS solutions with dedicated resources and priority support</p>
-              <button className="px-8 py-3 bg-white text-blue-600 rounded-xl font-semibold hover:bg-gray-100 transition-colors">
-                Contact Sales Team
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Operating Systems Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
-              Deploy Any OS in
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600"> Seconds</span>
-            </h2>
-            <p className="text-xl text-gray-600">Choose from popular Linux distributions or Windows Server</p>
-          </motion.div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {operatingSystems.map((os, index) => (
-              <motion.div
-                key={os.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                onClick={() => setSelectedOS(os.id)}
-                className={`relative cursor-pointer rounded-xl p-6 border-2 transition-all duration-300 ${
-                  selectedOS === os.id
-                    ? 'border-cyan-500 bg-gradient-to-br from-cyan-50 to-blue-50'
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                className={`relative bg-white rounded-lg shadow-lg overflow-hidden ${
+                  plan.isPopular ? 'ring-2 ring-blue-500' : ''
                 }`}
               >
-                {selectedOS === os.id && (
-                  <div className="absolute top-2 right-2">
-                    <CheckCircle className="w-6 h-6 text-cyan-600" />
+                {plan.isPopular && (
+                  <div className="absolute top-0 right-0 bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-1 text-sm font-semibold rounded-bl-lg">
+                    MOST POPULAR
                   </div>
                 )}
-                <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
-                    <Settings className="w-8 h-8 text-gray-600" />
+
+                <div className="p-6">
+                  {/* Plan Header */}
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold">
+                        {formatPrice(billingCycle === 'yearly' ? plan.yearlyPrice / 12 : plan.monthlyPrice)}
+                      </span>
+                      <span className="text-gray-600">/mo</span>
+                    </div>
+                    {billingCycle === 'yearly' && plan.originalPrice && (
+                      <div className="mt-2">
+                        <span className="text-sm text-gray-500 line-through">
+                          {formatPrice(plan.originalPrice / 12)}/mo
+                        </span>
+                        <span className="ml-2 text-sm text-green-600 font-semibold">
+                          Save {Math.round(((plan.originalPrice - plan.yearlyPrice) / plan.originalPrice) * 100)}%
+                        </span>
+                      </div>
+                    )}
                   </div>
-                  <h4 className="font-semibold text-gray-900">{os.name}</h4>
-                  <p className="text-sm text-gray-600 mt-1">{os.versions[0]}</p>
+
+                  {/* Quick Specs */}
+                  <div className="grid grid-cols-2 gap-3 mb-6 pb-6 border-b">
+                    <div className="flex items-center gap-2">
+                      <Cpu className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium">{plan.specs.cores} vCPU</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MemoryStick className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium">{plan.specs.ram}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <HardDrive className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium">{plan.specs.storage}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Wifi className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium">{plan.specs.bandwidth}</span>
+                    </div>
+                  </div>
+
+                  {/* Features List */}
+                  <ul className="space-y-3 mb-6">
+                    {plan.features.slice(0, expandedPlan === plan.productId ? undefined : 5).map((feature, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <Check className={`w-5 h-5 mt-0.5 flex-shrink-0 ${
+                          plan.highlighted?.includes(feature) ? 'text-green-500' : 'text-gray-400'
+                        }`} />
+                        <span className={`text-sm ${
+                          plan.highlighted?.includes(feature) ? 'font-medium text-gray-900' : 'text-gray-600'
+                        }`}>
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {plan.features.length > 5 && (
+                    <button
+                      onClick={() => setExpandedPlan(expandedPlan === plan.productId ? null : plan.productId)}
+                      className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 mb-4"
+                    >
+                      {expandedPlan === plan.productId ? (
+                        <>Show less <ChevronUp className="w-4 h-4" /></>
+                      ) : (
+                        <>Show more <ChevronDown className="w-4 h-4" /></>
+                      )}
+                    </button>
+                  )}
+
+                  {/* CTA Button */}
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleAddToCart(plan)}
+                    disabled={loading}
+                    className={`w-full py-3 px-4 rounded-lg font-semibold transition-all ${
+                      plan.isPopular
+                        ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:shadow-lg'
+                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    {loading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Adding...
+                      </span>
+                    ) : (
+                      'Add to Cart'
+                    )}
+                  </motion.button>
                 </div>
               </motion.div>
             ))}
           </div>
+
+          {/* Additional Info */}
+          <div className="mt-12 text-center">
+            <p className="text-gray-600 mb-4">
+              All plans include: Free snapshots • Root access • 99.9% uptime SLA • IPv4 & IPv6
+            </p>
+            <div className="flex justify-center gap-6">
+              <div className="flex items-center gap-2">
+                <Shield className="w-5 h-5 text-green-500" />
+                <span className="text-sm">45-day money-back guarantee</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <HeadphonesIcon className="w-5 h-5 text-blue-500" />
+                <span className="text-sm">24/7 expert support</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Enhanced Performance Stats with Counter Animation */}
-      <section ref={statsRef} className="py-20 bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 relative overflow-hidden">
-        {/* Static Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
-              backgroundSize: '60px 60px',
-              backgroundPosition: '0 0'
-            }}
-          />
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+      {/* Features Grid Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Everything you need for success</h2>
+            <p className="text-xl text-gray-600">Powerful features included with every VPS plan</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { value: 99.99, suffix: '%', label: 'Uptime SLA', icon: Infinity, decimals: 2 },
-              { value: 60, prefix: '<', suffix: 's', label: 'Deployment Time', icon: Rocket, decimals: 0 },
-              { value: 10, suffix: 'Gbps', label: 'DDoS Protection', icon: Shield, decimals: 0 },
-              { value: 15, suffix: '+', label: 'Data Centers', icon: Globe, decimals: 0 }
-            ].map((stat, index) => (
+              {
+                icon: <Gauge className="w-8 h-8" />,
+                title: "Lightning Performance",
+                description: "NVMe SSD storage and powerful processors for blazing-fast speed"
+              },
+              {
+                icon: <Shield className="w-8 h-8" />,
+                title: "Enhanced Security",
+                description: "DDoS protection, firewall, and automated security patches"
+              },
+              {
+                icon: <Terminal className="w-8 h-8" />,
+                title: "Full Root Access",
+                description: "Complete control over your server environment and configurations"
+              },
+              {
+                icon: <Cloud className="w-8 h-8" />,
+                title: "Instant Provisioning",
+                description: "Get your VPS up and running in minutes, not hours"
+              },
+              {
+                icon: <Database className="w-8 h-8" />,
+                title: "Automated Backups",
+                description: "Regular snapshots to protect your data and applications"
+              },
+              {
+                icon: <Network className="w-8 h-8" />,
+                title: "Global Network",
+                description: "Multiple data center locations for optimal performance"
+              },
+              {
+                icon: <BarChart3 className="w-8 h-8" />,
+                title: "Resource Monitoring",
+                description: "Real-time metrics and alerts for CPU, RAM, and storage"
+              },
+              {
+                icon: <HeadphonesIcon className="w-8 h-8" />,
+                title: "24/7 Support",
+                description: "Expert assistance whenever you need it"
+              }
+            ].map((feature, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, scale: 0.5, rotateY: -180 }}
-                animate={isStatsInView ? { 
-                  opacity: 1, 
-                  scale: 1,
-                  rotateY: 0
-                } : {}}
-                transition={{ 
-                  delay: index * 0.2,
-                  type: 'spring',
-                  stiffness: 100,
-                  damping: 10
-                }}
-                whileHover={{ 
-                  scale: 1.1,
-                  rotateY: 10,
-                  transition: { duration: 0.3 }
-                }}
-                className="text-center text-white group cursor-pointer"
-                style={{ transformStyle: 'preserve-3d' }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="text-center"
               >
-                <motion.div
-                  animate={isStatsInView ? { 
-                    rotate: 360
-                  } : { rotate: 0 }}
-                  transition={{ 
-                    duration: 1,
-                    delay: index * 0.2,
-                    ease: "easeOut"
-                  }}
-                >
-                  <stat.icon className="w-12 h-12 mx-auto mb-4 text-white/80 group-hover:text-white transition-colors" />
-                </motion.div>
-                <div className="text-4xl lg:text-5xl font-bold mb-2">
-                  {stat.prefix}
-                  {isStatsInView && (
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 1 }}
-                    >
-                      <CountUp 
-                        end={stat.value} 
-                        decimals={stat.decimals}
-                        duration={Math.max(2 + index * 0.5, 1)}
-                      />
-                    </motion.span>
-                  )}
-                  {stat.suffix}
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-lg mb-4">
+                  <div className="text-blue-600">{feature.icon}</div>
                 </div>
-                <motion.p 
-                  className="text-white/90 group-hover:text-white transition-colors"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={isStatsInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: index * 0.2 + 0.5 }}
-                >
-                  {stat.label}
-                </motion.p>
+                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                <p className="text-gray-600">{feature.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Control Panel Preview */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
-              Powerful Control Panel
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600"> at Your Fingertips</span>
-            </h2>
-            <p className="text-xl text-gray-600">Manage your VPS with our intuitive control panel</p>
-          </motion.div>
+      {/* Monitoring & Alerts Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl font-bold mb-6">
+                Monitoring and alerts
+              </h2>
+              <p className="text-lg text-gray-600 mb-8">
+                Stay on top of your server&apos;s performance with our comprehensive monitoring dashboard. 
+                Get instant notifications when something needs your attention.
+              </p>
+              
+              <div className="space-y-4">
+                {[
+                  "Real-time CPU, RAM, and disk usage metrics",
+                  "Network traffic and bandwidth monitoring",
+                  "Custom alert thresholds and notifications",
+                  "Historical data and performance trends",
+                  "Mobile app for monitoring on the go"
+                ].map((item, index) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700">{item}</span>
+                  </div>
+                ))}
+              </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="relative max-w-5xl mx-auto"
-          >
-            <div className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl p-1">
-              <div className="bg-white rounded-xl p-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {[
-                    { icon: BarChart3, title: 'Real-time Monitoring', desc: 'CPU, RAM, and bandwidth usage' },
-                    { icon: Server, title: 'One-Click Actions', desc: 'Reboot, rebuild, and resize' },
-                    { icon: Shield, title: 'Security Center', desc: 'Firewall rules and DDoS stats' },
-                    { icon: Cloud, title: 'Instant Backups', desc: 'Snapshots and automated backups' },
-                    { icon: Terminal, title: 'Web Console', desc: 'Browser-based SSH access' },
-                    { icon: Settings, title: 'API Access', desc: 'Full RESTful API for automation' }
-                  ].map((feature, index) => (
-                    <div key={index} className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <feature.icon className="w-6 h-6 text-blue-600" />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-900">{feature.title}</h4>
-                        <p className="text-sm text-gray-600">{feature.desc}</p>
-                      </div>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="mt-8 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+              >
+                Learn More About Monitoring
+              </motion.button>
+            </div>
+
+            <div className="relative">
+              <div className="bg-white rounded-lg shadow-xl p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold">Server Metrics</h3>
+                  <span className="text-sm text-green-500 flex items-center gap-1">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    Live
+                  </span>
+                </div>
+                
+                {/* Mock Metrics Display */}
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span>CPU Usage</span>
+                      <span className="font-medium">42%</span>
                     </div>
-                  ))}
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full" style={{ width: '42%' }} />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span>Memory</span>
+                      <span className="font-medium">2.8 GB / 4 GB</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full" style={{ width: '70%' }} />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span>Storage</span>
+                      <span className="font-medium">124 GB / 200 GB</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full" style={{ width: '62%' }} />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span>Network I/O</span>
+                      <span className="font-medium">245 Mbps</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full animate-pulse" style={{ width: '35%' }} />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-6 border-t grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <div className="text-2xl font-bold text-blue-600">99.9%</div>
+                    <div className="text-xs text-gray-600">Uptime</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-green-600">12ms</div>
+                    <div className="text-xs text-gray-600">Latency</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-purple-600">8</div>
+                    <div className="text-xs text-gray-600">Active Processes</div>
+                  </div>
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* Support Section */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
-              Trusted by
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600"> Developers</span>
-            </h2>
-            <p className="text-xl text-gray-600">See what our customers are building</p>
-          </motion.div>
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-4">
+            Around-the-clock support
+          </h2>
+          <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
+            Our team of VPS experts is available 24/7 to help you with any questions or issues. 
+            Get the support you need, when you need it.
+          </p>
 
-          <div className="relative max-w-4xl mx-auto">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentTestimonial}
-                initial={{ opacity: 0, x: 100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -100 }}
-                transition={{ duration: 0.5 }}
-                className="bg-gradient-to-br from-slate-50 to-white rounded-2xl shadow-xl p-8 border border-gray-200"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0">
-                    <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                      {testimonials[currentTestimonial].name.charAt(0)}
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-1 mb-3">
-                      {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
-                        <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                      ))}
-                    </div>
-                    <p className="text-gray-700 text-lg mb-4 italic">&ldquo;{testimonials[currentTestimonial].text}&rdquo;</p>
-                    <div>
-                      <p className="font-semibold text-gray-900">{testimonials[currentTestimonial].name}</p>
-                      <p className="text-gray-600">{testimonials[currentTestimonial].company}</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Testimonial Navigation Dots */}
-            <div className="flex justify-center gap-2 mt-6">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentTestimonial(index)}
-                  className={`transition-all duration-300 ${
-                    index === currentTestimonial
-                      ? 'w-8 h-2 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full'
-                      : 'w-2 h-2 bg-gray-300 hover:bg-gray-400 rounded-full'
-                  }`}
-                />
-              ))}
+          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+                <MessageCircle className="w-8 h-8 text-blue-600" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Live Chat</h3>
+              <p className="text-gray-600">Instant answers from our support team</p>
+            </div>
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+                <FileText className="w-8 h-8 text-blue-600" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Knowledge Base</h3>
+              <p className="text-gray-600">Detailed guides and tutorials</p>
+            </div>
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+                <Users className="w-8 h-8 text-blue-600" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Community Forum</h3>
+              <p className="text-gray-600">Connect with other VPS users</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
-              Frequently Asked
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600"> Questions</span>
-            </h2>
-            <p className="text-xl text-gray-600">Everything you need to know about VPS hosting</p>
-          </motion.div>
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">
+            Frequently asked questions about VPS Hosting
+          </h2>
 
-          <div className="space-y-4">
-            {faqs.map((faq, index) => (
+          <div className="max-w-3xl mx-auto space-y-4">
+            {[
+              {
+                question: "What&apos;s VPS hosting and what can I do with it?",
+                answer: "VPS (Virtual Private Server) hosting provides you with dedicated resources on a shared physical server. You get root access, guaranteed resources, and complete control over your server environment. It&apos;s perfect for hosting websites, applications, game servers, or development environments."
+              },
+              {
+                question: "What&apos;s the difference between managed & unmanaged VPS?",
+                answer: "With unmanaged VPS, you have full control and responsibility for server management, including OS updates, security, and software installation. Managed VPS includes server management services like updates, monitoring, and technical support, allowing you to focus on your applications."
+              },
+              {
+                question: "How long does it take to set up a VPS?",
+                answer: "Your VPS is automatically provisioned and ready to use within minutes of purchase. You&apos;ll receive login credentials via email, and you can start configuring your server immediately."
+              },
+              {
+                question: "Can I upgrade my VPS plan later?",
+                answer: "Yes! You can easily upgrade your VPS resources at any time through your control panel. Upgrades are seamless with minimal downtime, and you only pay the difference in pricing."
+              },
+              {
+                question: "What operating systems are available?",
+                answer: "We offer a variety of Linux distributions including Ubuntu, CentOS, Debian, and Fedora. Windows Server is also available for an additional license fee. You can reinstall or change your OS at any time."
+              }
+            ].map((faq, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200"
+                className="bg-white rounded-lg shadow-md"
               >
                 <button
-                  onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
-                  className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-slate-50 transition-colors"
+                  onClick={() => setExpandedPlan(expandedPlan === index ? null : index)}
+                  className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
                 >
-                  <span className="font-semibold text-gray-800">{faq.question}</span>
-                  {openFAQ === index ? (
-                    <ChevronUp className="w-5 h-5 text-cyan-600" />
+                  <span className="font-semibold">{faq.question}</span>
+                  {expandedPlan === index ? (
+                    <ChevronUp className="w-5 h-5 text-gray-500" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-gray-400" />
+                    <ChevronDown className="w-5 h-5 text-gray-500" />
                   )}
                 </button>
                 <AnimatePresence>
-                  {openFAQ === index && (
+                  {expandedPlan === index && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="px-6 pb-4"
+                      className="overflow-hidden"
                     >
-                      <p className="text-gray-600">{faq.answer}</p>
+                      <div className="px-6 pb-4 text-gray-600">
+                        {faq.answer}
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -947,43 +986,32 @@ export default function VPSHostingPage() {
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-              Ready to Deploy Your VPS?
-            </h2>
-            <p className="text-xl text-white/90 mb-8">
-              Get started in under 60 seconds with our instant deployment.
-              No setup fees, no contracts.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <motion.button
-                whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}
-                whileTap={{ scale: 0.95 }}
-                onClick={scrollToPricing}
-                className="px-8 py-4 bg-white text-blue-600 rounded-xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300"
-              >
-                Deploy VPS Now
-                <Rocket className="inline-block ml-2 w-5 h-5" />
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-xl font-semibold text-lg hover:bg-white/10 transition-all duration-300"
-              >
-                Talk to Sales
-              </motion.button>
-            </div>
-            <p className="text-white/70 text-sm mt-6">
-              30-day money-back guarantee • Free migration assistance • 24/7 support
-            </p>
-          </motion.div>
+      {/* Final CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-blue-600 to-cyan-500">
+        <div className="container mx-auto px-4 text-center text-white">
+          <h2 className="text-4xl font-bold mb-4">
+            Ready to get started?
+          </h2>
+          <p className="text-xl mb-8 opacity-90">
+            Join thousands of customers running their applications on FlickMax VPS
+          </p>
+          <div className="flex gap-4 justify-center">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
+              className="px-8 py-4 bg-white text-blue-600 rounded-lg font-semibold shadow-xl hover:shadow-2xl transition-all"
+            >
+              Get Started Now
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-lg font-semibold border border-white/20 hover:bg-white/20 transition-all"
+            >
+              Contact Sales
+            </motion.button>
+          </div>
         </div>
       </section>
     </div>
