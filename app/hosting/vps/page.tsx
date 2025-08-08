@@ -150,9 +150,14 @@ export default function VPSHostingPage() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
+  const [mounted, setMounted] = useState(false)
   const { currency } = useCountry()
   const { addProductToCart } = useCart()
   const mousePosition = useMousePosition()
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Scroll progress for gradient
   const { scrollYProgress } = useScroll()
@@ -362,6 +367,14 @@ export default function VPSHostingPage() {
     return () => clearInterval(interval)
   }, [testimonials.length])
 
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    )
+  }
+
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Animated Gradient Background */}
@@ -382,29 +395,35 @@ export default function VPSHostingPage() {
           <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-500 opacity-90" />
           
           {/* Floating Orbs */}
-          {[...Array(5)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full bg-white/10 backdrop-blur-xl"
-              style={{
-                width: Math.random() * 300 + 100,
-                height: Math.random() * 300 + 100,
-              }}
-              animate={{
-                x: [0, Math.random() * 100 - 50],
-                y: [0, Math.random() * 100 - 50],
-              }}
-              transition={{
-                duration: Math.random() * 20 + 10,
-                repeat: Infinity,
-                repeatType: 'reverse',
-              }}
-              initial={{
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * 500,
-              }}
-            />
-          ))}
+          {[...Array(5)].map((_, i) => {
+            const size = 100 + i * 50
+            const xMove = 50 + i * 10
+            const yMove = 50 + i * 10
+            const xStart = i * 200
+            const yStart = i * 100
+            
+            return (
+              <motion.div
+                key={i}
+                className="absolute rounded-full bg-white/10 backdrop-blur-xl"
+                style={{
+                  width: size,
+                  height: size,
+                  left: `${xStart}px`,
+                  top: `${yStart}px`
+                }}
+                animate={{
+                  x: [0, xMove, 0, -xMove, 0],
+                  y: [0, -yMove, yMove, 0],
+                }}
+                transition={{
+                  duration: 20 + i * 5,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              />
+            )
+          })}
         </div>
 
         <div className="relative container mx-auto px-4">
@@ -967,17 +986,17 @@ export default function VPSHostingPage() {
               key={i}
               className="absolute w-64 h-64 bg-white/5 rounded-full"
               style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
+                left: `${(i * 5) % 100}%`,
+                top: `${(i * 7) % 100}%`,
               }}
               animate={{
                 scale: [1, 1.2, 1],
                 opacity: [0.1, 0.2, 0.1],
               }}
               transition={{
-                duration: Math.random() * 5 + 5,
+                duration: 8 + (i % 3) * 2,
                 repeat: Infinity,
-                delay: Math.random() * 5,
+                delay: i * 0.5,
               }}
             />
           ))}
