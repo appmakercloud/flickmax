@@ -1,0 +1,1513 @@
+'use client'
+
+import { useEffect, useState, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { 
+  Shield, 
+  Zap, 
+  Clock, 
+  HeadphonesIcon,
+  Check,
+  Star,
+  Lock,
+  Globe,
+  Rocket,
+  Award,
+  Users,
+  Sparkles,
+  ArrowRight,
+  CheckCircle,
+  CloudLightning,
+  ShieldCheck,
+  Code,
+  Play,
+  X,
+  Flame,
+  RefreshCw,
+  Zap as Lightning,
+  Search,
+  Layers,
+  Settings,
+  Boxes,
+  HardDrive,
+  Palette,
+  TrendingUp
+} from 'lucide-react'
+import { useCountry } from '@/contexts/CountryContext'
+import { useCart } from '@/contexts/CartContext'
+import { getCurrencySymbol, formatPrice } from '@/lib/utils/currency'
+import toast from 'react-hot-toast'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
+
+// GoDaddy WordPress Hosting Plans (Actual from GoDaddy)
+const godaddyPlans = [
+  {
+    productId: 'basic',
+    name: 'Basic',
+    tagline: 'Best for getting started',
+    monthlyPrice: 9.99,
+    yearlyPrice: 71.88,
+    originalPrice: 119.88,
+    savings: 40,
+    badge: '',
+    isPopular: false,
+    features: [
+      { title: 'WordPress Sites', value: '1 Website', highlight: false },
+      { title: 'Storage', value: '10 GB NVMe SSD', highlight: false },
+      { title: 'Visitors', value: '~25,000/month', highlight: false },
+      { title: 'Free Domain', value: '1 Year', highlight: true },
+      { title: 'Free Business Email', value: '1st Year', highlight: true },
+      { title: 'SSL Certificate', value: 'Free', highlight: true },
+      { title: 'Daily Backups', value: '1 Year Retention', highlight: false },
+      { title: 'Malware Scan & Removal', value: 'Included', highlight: false },
+      { title: 'WordPress Themes', value: '150+ Free', highlight: false },
+      { title: 'Staging Site', value: 'Not Included', highlight: false },
+      { title: 'SEO Optimizer', value: 'Not Included', highlight: false },
+      { title: 'CDN', value: 'Not Included', highlight: false }
+    ],
+    resources: {
+      cpu: '1 CPU Core',
+      ram: '512 MB',
+      bandwidth: 'Unmetered',
+      databases: '1 MySQL DB',
+      phpWorkers: '2 Workers'
+    }
+  },
+  {
+    productId: 'deluxe',
+    name: 'Deluxe',
+    tagline: 'Best for growing sites',
+    monthlyPrice: 14.99,
+    yearlyPrice: 119.88,
+    originalPrice: 179.88,
+    savings: 33,
+    badge: 'MOST POPULAR',
+    isPopular: true,
+    features: [
+      { title: 'WordPress Sites', value: '10 Websites', highlight: true },
+      { title: 'Storage', value: '25 GB NVMe SSD', highlight: false },
+      { title: 'Visitors', value: '~100,000/month', highlight: true },
+      { title: 'Free Domain', value: '1 Year', highlight: true },
+      { title: 'Free Business Email', value: '1st Year', highlight: true },
+      { title: 'SSL Certificate', value: 'Free', highlight: true },
+      { title: 'Daily Backups', value: '1 Year Retention', highlight: false },
+      { title: 'Malware Scan & Removal', value: 'Included', highlight: false },
+      { title: 'WordPress Themes', value: '150+ Free', highlight: false },
+      { title: 'Staging Site', value: '1-Click Staging', highlight: true },
+      { title: 'SEO Optimizer', value: 'Included', highlight: true },
+      { title: 'SFTP Access', value: 'Included', highlight: false }
+    ],
+    resources: {
+      cpu: '2 CPU Cores',
+      ram: '1 GB',
+      bandwidth: 'Unmetered',
+      databases: '25 MySQL DBs',
+      phpWorkers: '4 Workers'
+    }
+  },
+  {
+    productId: 'ultimate',
+    name: 'Ultimate',
+    tagline: 'Best for demanding sites',
+    monthlyPrice: 19.99,
+    yearlyPrice: 179.88,
+    originalPrice: 239.88,
+    savings: 25,
+    badge: '',
+    isPopular: false,
+    features: [
+      { title: 'WordPress Sites', value: '25 Websites', highlight: true },
+      { title: 'Storage', value: '50 GB NVMe SSD', highlight: true },
+      { title: 'Visitors', value: '~400,000/month', highlight: true },
+      { title: 'Free Domain', value: '1 Year', highlight: true },
+      { title: 'Free Business Email', value: '1st Year', highlight: true },
+      { title: 'SSL Certificate', value: 'Free + Premium', highlight: true },
+      { title: 'Daily Backups', value: '1 Year Retention', highlight: false },
+      { title: 'Malware Scan & Removal', value: 'Priority', highlight: true },
+      { title: 'WordPress Themes', value: '150+ Free', highlight: false },
+      { title: 'Staging Site', value: 'Multiple Staging', highlight: true },
+      { title: 'SEO Optimizer', value: 'Premium', highlight: true },
+      { title: 'Full CDN', value: 'Included', highlight: true },
+      { title: 'SSH Access', value: 'Full Access', highlight: true }
+    ],
+    resources: {
+      cpu: '3 CPU Cores',
+      ram: '2 GB',
+      bandwidth: 'Unmetered',
+      databases: '50 MySQL DBs',
+      phpWorkers: '6 Workers'
+    }
+  },
+  {
+    productId: 'ecommerce',
+    name: 'Ecommerce',
+    tagline: 'Best for online stores',
+    monthlyPrice: 29.99,
+    yearlyPrice: 299.88,
+    originalPrice: 359.88,
+    savings: 17,
+    badge: 'BEST FOR STORES',
+    isPopular: false,
+    features: [
+      { title: 'WordPress Sites', value: 'Unlimited', highlight: true },
+      { title: 'Storage', value: '100 GB NVMe SSD', highlight: true },
+      { title: 'Visitors', value: '~800,000/month', highlight: true },
+      { title: 'Free Domain', value: '2 Years', highlight: true },
+      { title: 'Free Business Email', value: '2 Years', highlight: true },
+      { title: 'SSL Certificate', value: 'Premium SSL', highlight: true },
+      { title: 'Real-time Backups', value: 'Included', highlight: true },
+      { title: 'Malware Scan & Removal', value: 'Priority', highlight: true },
+      { title: 'WooCommerce', value: 'Pre-installed', highlight: true },
+      { title: 'Staging Site', value: 'Unlimited', highlight: true },
+      { title: 'SEO Optimizer', value: 'Premium', highlight: true },
+      { title: 'Full CDN', value: 'Premium CDN', highlight: true },
+      { title: 'Object Cache Pro', value: 'Included', highlight: true },
+      { title: 'Elastic Resources', value: 'Auto-scale', highlight: true }
+    ],
+    resources: {
+      cpu: '4 CPU Cores',
+      ram: '4 GB',
+      bandwidth: 'Unmetered',
+      databases: 'Unlimited',
+      phpWorkers: 'Unlimited'
+    }
+  }
+]
+
+// GoDaddy WordPress Features - Comprehensive List
+const godaddyFeatures = [
+  // Core Features
+  {
+    icon: Lock,
+    title: 'Free SSL Certificate',
+    description: 'Industry-standard SSL included for secure browsing and better SEO',
+    gradient: 'from-blue-600 to-cyan-600',
+    category: 'core'
+  },
+  {
+    icon: Settings,
+    title: 'WordPress Pre-Installed',
+    description: 'WordPress already set up and optimized for peak performance',
+    gradient: 'from-blue-600 to-cyan-600',
+    category: 'core'
+  },
+  {
+    icon: RefreshCw,
+    title: 'Automatic Updates',
+    description: 'WordPress software updates applied automatically for security',
+    gradient: 'from-blue-600 to-cyan-600',
+    category: 'core'
+  },
+  {
+    icon: Layers,
+    title: 'Add More Sites',
+    description: 'Easily scale with multiple WordPress sites on one account',
+    gradient: 'from-blue-600 to-cyan-600',
+    category: 'scalability'
+  },
+  {
+    icon: HardDrive,
+    title: 'Expandable Storage',
+    description: 'Add more storage as your website grows',
+    gradient: 'from-blue-600 to-cyan-600',
+    category: 'scalability'
+  },
+  // Security & Performance
+  {
+    icon: Shield,
+    title: 'Security & Performance',
+    description: 'Enterprise-grade security with optimized performance',
+    gradient: 'from-blue-600 to-cyan-600',
+    category: 'security'
+  },
+  {
+    icon: Search,
+    title: 'Malware Scans & Removal',
+    description: 'Automated daily scans with instant malware removal',
+    gradient: 'from-blue-600 to-cyan-600',
+    category: 'security'
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Web Application Firewall',
+    description: 'WAF protection against common threats and attacks',
+    gradient: 'from-blue-600 to-cyan-600',
+    category: 'security'
+  },
+  {
+    icon: CloudLightning,
+    title: 'DDoS Protection',
+    description: 'Enhanced security with enterprise DDoS mitigation',
+    gradient: 'from-blue-600 to-cyan-600',
+    category: 'security'
+  },
+  {
+    icon: Code,
+    title: 'Latest PHP with LTS',
+    description: 'Latest PHP version with Zend extended long-term support',
+    gradient: 'from-blue-600 to-cyan-600',
+    category: 'performance'
+  },
+  // Growth & Design Tools
+  {
+    icon: Sparkles,
+    title: 'AI Site Setup & Optimizer',
+    description: 'AI-powered tools to quickly build and optimize your site',
+    gradient: 'from-blue-600 to-cyan-600',
+    category: 'tools'
+  },
+  {
+    icon: Palette,
+    title: 'Website Design Tools',
+    description: 'Professional design tools and templates included',
+    gradient: 'from-blue-600 to-cyan-600',
+    category: 'tools'
+  },
+  {
+    icon: Boxes,
+    title: 'Gutenberg & CoBlocks',
+    description: 'Advanced block builder by CoBlocks for stunning layouts',
+    gradient: 'from-blue-600 to-cyan-600',
+    category: 'tools'
+  },
+  {
+    icon: TrendingUp,
+    title: 'Audience Growth Tools',
+    description: 'Built-in tools to grow your website traffic and engagement',
+    gradient: 'from-blue-600 to-cyan-600',
+    category: 'tools'
+  }
+]
+
+export default function WordPressHostingPremiumPage() {
+  const [plans, setPlans] = useState(godaddyPlans)
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly')
+  const [selectedPlan, setSelectedPlan] = useState<number>(2)
+  const [showVideo, setShowVideo] = useState(false)
+  const [timeLeft, setTimeLeft] = useState({ minutes: 30, seconds: 0 })
+  const [showComparison, setShowComparison] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [addingToCart, setAddingToCart] = useState<string | null>(null)
+  const [showDisclaimer, setShowDisclaimer] = useState<string | null>(null)
+  
+  const { currency, country } = useCountry()
+  const { addProductToCart } = useCart()
+  
+  const heroRef = useRef(null)
+
+  // Fetch WordPress hosting plans from API
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        setIsLoading(true)
+        const response = await fetch(`/api/products/wordpress-hosting?currency=${currency}&market=en-US`)
+        const data = await response.json()
+        
+        if (data.success && data.plans) {
+          setPlans(data.plans)
+        } else {
+          console.error('Failed to fetch plans:', data.error)
+          // Keep using the fallback plans
+        }
+      } catch (error) {
+        console.error('Error fetching WordPress hosting plans:', error)
+        // Keep using the fallback plans
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    
+    fetchPlans()
+  }, [currency])
+
+
+  // Countdown timer for offer
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 }
+        } else if (prev.minutes > 0) {
+          return { minutes: prev.minutes - 1, seconds: 59 }
+        } else {
+          // Reset to 30 minutes when it reaches 0
+          return { minutes: 30, seconds: 0 }
+        }
+      })
+    }, 1000)
+    
+    return () => clearInterval(timer)
+  }, [])
+
+
+  const handleAddToCart = async (plan: typeof godaddyPlans[0]) => {
+    // For Ecommerce plan, redirect directly to GoDaddy checkout
+    if (plan.name === 'Ecommerce') {
+      window.location.href = 'https://www.secureserver.net/products/wordpress?plan=pl-mwp-ecommerce-tier1&src=ac&term=12%3Amonth&xs=0&plid=590175'
+      return
+    }
+    
+    try {
+      setAddingToCart(plan.productId)
+      
+      // Use the plan's productId directly from the API
+      const period = billingCycle === 'yearly' ? 12 : 1
+      await addProductToCart(plan.productId, period, 'MONTH')
+      
+      // Success message is handled by the cart context
+      // No need for additional toast here as it's already shown
+    } catch (error) {
+      // Error is already shown by cart context
+      console.error('Add to cart error:', error)
+    } finally {
+      setAddingToCart(null)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-white via-blue-50/30 to-cyan-50/30 text-gray-900 overflow-x-hidden relative">
+      {/* Modern Blue/Cyan Gradient Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-white to-cyan-50/50" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-cyan-100/40 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-blue-100/40 via-transparent to-transparent" />
+        
+        {/* Static gradient orbs */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-blue-200/20 to-cyan-200/20 rounded-full filter blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-br from-cyan-200/20 to-teal-200/20 rounded-full filter blur-3xl" />
+        
+        {/* Grid pattern overlay */}
+        <div 
+          className="absolute inset-0 opacity-5"
+          style={{
+            backgroundImage: `linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px)`,
+            backgroundSize: '50px 50px'
+          }}
+        />
+      </div>
+
+      {/* Dynamic Promo Banner */}
+      <motion.div 
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className="relative z-20 bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-600 py-3 overflow-hidden"
+      >
+        {/* Animated background effect */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-black/10" />
+          <motion.div
+            animate={{
+              x: ['0%', '100%'],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: 'linear'
+            }}
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent w-full"
+          />
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-3 sm:px-4">
+          {/* Mobile Layout */}
+          <div className="flex flex-col sm:hidden space-y-2 py-1">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <motion.div
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <Sparkles className="w-4 h-4 text-white" />
+                </motion.div>
+                <span className="font-bold text-white text-sm">
+                  SAVE UP TO {Math.max(...plans.map(p => p.savings || 0))}% OFF on Annual Plans
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-yellow-300 px-2 py-0.5 bg-white/10 rounded-full font-medium">
+                30-DAY MONEY BACK GUARANTEE
+              </span>
+              <div className="flex items-center gap-1 text-yellow-300">
+                <Flame className="w-3 h-3" />
+                <span className="font-bold">
+                  OFFER EXPIRES IN: {String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Desktop Layout */}
+          <div className="hidden sm:flex items-center justify-center gap-2 md:gap-4 text-white text-sm md:text-base">
+            <motion.div
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Sparkles className="w-5 h-5" />
+            </motion.div>
+            
+            <span className="font-bold">
+              SAVE UP TO {Math.max(...plans.map(p => p.savings || 0))}% OFF on Annual Plans
+            </span>
+            
+            <span className="text-yellow-300 px-2 py-1 bg-white/10 rounded-full text-xs font-medium">
+              30-DAY MONEY BACK GUARANTEE
+            </span>
+            
+            <div className="flex items-center gap-2 text-yellow-300">
+              <Flame className="w-4 h-4" />
+              <span className="font-bold text-sm">
+                OFFER EXPIRES IN: {String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
+              </span>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Hero Section */}
+      <section ref={heroRef} className="relative min-h-[85vh] flex items-center justify-center py-20 bg-gradient-to-b from-white via-blue-50/10 to-white">
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-50/20 to-transparent" />
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            {/* Trust Badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+              className="inline-block mb-6"
+            >
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-500 blur-2xl opacity-30 animate-pulse" />
+                <div className="relative bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 shadow-xl">
+                  <Award className="w-5 h-5" />
+                  #1 MANAGED WORDPRESS HOSTING
+                  <Award className="w-5 h-5" />
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Main Headline */}
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black mb-6">
+              <motion.span
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+                className="block text-gray-900"
+              >
+                Lightning-Fast
+              </motion.span>
+              <motion.span
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 }}
+                className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-600"
+              >
+                WordPress Hosting
+              </motion.span>
+              <motion.span
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="block text-3xl md:text-4xl lg:text-5xl mt-4 text-gray-700"
+              >
+                Built for Success
+              </motion.span>
+            </h1>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto"
+            >
+              Join <span className="text-blue-600 font-bold">5,000+ websites</span> achieving{' '}
+              <span className="text-cyan-600 font-bold">99.99% uptime</span>,{' '}
+              <span className="text-teal-600 font-bold">200ms load times</span>, and{' '}
+              <span className="text-blue-600 font-bold">10x better performance</span>
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
+            >
+              <motion.button
+                whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(59, 130, 246, 0.3)' }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
+                className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full font-bold text-lg text-white overflow-hidden shadow-xl"
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  Get Started Now
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </span>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowVideo(true)}
+                className="px-8 py-4 bg-white/80 backdrop-blur-sm border-2 border-blue-200 rounded-full font-bold text-lg text-gray-700 hover:bg-white hover:border-blue-300 transition-all shadow-lg"
+              >
+                <Play className="inline-block mr-2 w-5 h-5 text-blue-600" />
+                Watch Demo (2 min)
+              </motion.button>
+            </motion.div>
+
+            {/* Trust Indicators */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+              className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto"
+            >
+              {[
+                { icon: Shield, text: 'Uptime SLA', value: '99.99%', color: 'from-blue-600 to-cyan-600' },
+                { icon: Lightning, text: 'Load Time', value: '<200ms', color: 'from-blue-600 to-cyan-600' },
+                { icon: HeadphonesIcon, text: 'Support', value: '24/7/365', color: 'from-blue-600 to-cyan-600' },
+                { icon: Sparkles, text: 'AI Website Builder', value: 'Quick Setup', color: 'from-blue-600 to-cyan-600' }
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  className="relative group"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="relative bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-5 hover:bg-white hover:shadow-lg transition-all duration-300">
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${item.color} p-2.5 mx-auto mb-3 shadow-md`}>
+                      <item.icon className="w-full h-full text-white" />
+                    </div>
+                    <p className="text-xs text-gray-600 font-medium">{item.text}</p>
+                    <p className="text-lg font-bold text-gray-900">{item.value}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+        </div>
+
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="relative py-20 z-10 bg-gradient-to-b from-white via-gray-50/50 to-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl md:text-5xl font-black mb-4 text-gray-900">
+              Choose Your Perfect{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600">
+                WordPress Plan
+              </span>
+            </h2>
+            <p className="text-xl text-gray-600">
+              All plans include 30-day money-back guarantee • Free migration • Cancel anytime
+            </p>
+          </motion.div>
+
+          {/* Billing Toggle */}
+          <div className="flex justify-center mb-12">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="relative inline-flex bg-gray-100 rounded-full p-1"
+            >
+              <button
+                onClick={() => setBillingCycle('monthly')}
+                className={`relative px-8 py-3 rounded-full font-semibold text-sm transition-all duration-200 ${
+                  billingCycle === 'monthly' 
+                    ? 'bg-white text-gray-900 shadow-md' 
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Monthly
+              </button>
+              <button
+                onClick={() => setBillingCycle('yearly')}
+                className={`relative px-8 py-3 rounded-full font-semibold text-sm transition-all duration-200 flex items-center gap-2 ${
+                  billingCycle === 'yearly' 
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md' 
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Yearly
+                {billingCycle === 'yearly' && (
+                  <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+                    SAVE 40%
+                  </span>
+                )}
+              </button>
+            </motion.div>
+          </div>
+
+          {/* Pricing Cards */}
+          {isLoading ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+          ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+            {plans.map((plan, index) => (
+              <motion.div
+                key={plan.productId}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                onHoverStart={() => setSelectedPlan(index)}
+                className="relative group"
+              >
+                {/* Glow effect for popular plan */}
+                {plan.isPopular && (
+                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-3xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
+                )}
+
+                <div
+                  className={`relative bg-white border-2 ${
+                    plan.isPopular ? 'border-blue-400 shadow-xl' : 'border-gray-200 hover:border-blue-300'
+                  } rounded-2xl p-6 hover:transform hover:scale-105 transition-all duration-300 h-full flex flex-col`}
+                >
+                  {/* Badge */}
+                  {plan.badge && (
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                      <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-1 rounded-full text-xs font-bold shadow-lg">
+                        {plan.badge}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Plan Header */}
+                  <div className="text-center mb-6">
+                    <h3 className="text-2xl font-bold mb-2 text-gray-900">{plan.name}</h3>
+                    <p className="text-gray-600 text-sm">{plan.tagline}</p>
+                    {plan.name === 'Ecommerce' && (
+                      <p className="text-xs text-blue-600 mt-1 font-medium">
+                        Everything in Ultimate PLUS:
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Price Section */}
+                  <div className="text-center mb-6">
+                    {/* Show original price and discount ONLY for yearly billing */}
+                    {plan.savings > 0 && billingCycle === 'yearly' && (
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <p className="text-gray-400 line-through text-lg">
+                          {formatPrice(plan.originalPrice, currency)}
+                        </p>
+                        <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-bold">
+                          {plan.savings}% OFF
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex items-end justify-center gap-1">
+                      <span className="text-2xl font-bold text-gray-700">{getCurrencySymbol(currency)}</span>
+                      <span className="text-5xl font-black text-gray-900">
+                        {billingCycle === 'yearly'
+                          ? Math.floor(plan.yearlyPrice / 12)
+                          : Math.floor(plan.monthlyPrice)}
+                      </span>
+                      <span className="text-2xl font-bold text-gray-700">
+                        .
+                        {billingCycle === 'yearly'
+                          ? ((plan.yearlyPrice / 12) % 1).toFixed(2).substring(2)
+                          : (plan.monthlyPrice % 1).toFixed(2).substring(2)}
+                      </span>
+                      <span className="text-gray-500 ml-2 mb-2">/mo</span>
+                    </div>
+                    {billingCycle === 'yearly' && (
+                      <p className="text-xs text-gray-500 mt-2">
+                        Billed {formatPrice(plan.yearlyPrice || 0, currency)}/year
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Features List */}
+                  <ul className="space-y-3 mb-6 flex-grow">
+                    {(plan.features || []).slice(0, 12).map((feature: { text?: string; title?: string; highlight?: boolean }, idx: number) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <CheckCircle
+                          className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                            feature.highlight ? 'text-green-500' : 'text-gray-400'
+                          }`}
+                        />
+                        <div className="flex-1">
+                          <span className={`text-sm ${
+                            feature.highlight ? 'text-gray-900 font-medium' : 'text-gray-600'
+                          }`}>
+                            {feature.text || feature.title}
+                          </span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* CTA Button */}
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleAddToCart(plan)}
+                    disabled={addingToCart === plan.productId}
+                    className={`w-full py-3 rounded-full font-bold text-base transition-all ${
+                      plan.isPopular
+                        ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg hover:shadow-xl'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gradient-to-r hover:from-blue-600 hover:to-cyan-600 hover:text-white'
+                    } ${addingToCart === plan.productId ? 'opacity-75 cursor-not-allowed' : ''}`}
+                  >
+                    {addingToCart === plan.productId ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <LoadingSpinner size="sm" />
+                        Adding...
+                      </span>
+                    ) : (
+                      plan.name === 'Ecommerce' ? 'Buy Now' : 'Get Started Now'
+                    )}
+                  </motion.button>
+
+                  {/* Disclaimers */}
+                  <button
+                    onClick={() => setShowDisclaimer(plan.productId)}
+                    className="text-xs text-gray-500 hover:text-gray-700 text-center mt-3 transition-colors underline"
+                  >
+                    Disclaimers
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          )}
+        </div>
+      </section>
+
+      {/* GoDaddy WordPress Features Section */}
+      <section className="relative py-24 z-10 bg-gradient-to-b from-gray-50/30 via-white to-gray-50/30">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600/10 to-cyan-600/10 backdrop-blur-sm rounded-full text-blue-700 text-sm font-medium mb-6 border border-blue-200/30"
+            >
+              <Layers className="w-4 h-4" />
+              <span>All Plans Include</span>
+            </motion.div>
+            <h2 className="text-4xl md:text-5xl font-black mb-4 text-gray-900">
+              Everything You Need to
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600">
+                Succeed with WordPress
+              </span>
+            </h2>
+          </motion.div>
+
+          {/* Features Grid with Categories */}
+          <div className="space-y-12">
+            {/* Core Features */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-700 mb-6 flex items-center gap-2">
+                <div className="w-8 h-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full" />
+                Core Features
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                {godaddyFeatures.filter(f => f.category === 'core').map((feature, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.05 }}
+                    whileHover={{ y: -5 }}
+                    className="relative group"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-cyan-50 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300" />
+                    <div className="relative bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-lg transition-all h-full">
+                      <div className={`inline-flex p-2.5 rounded-lg bg-gradient-to-r ${feature.gradient} mb-3`}>
+                        <feature.icon className="w-5 h-5 text-white" />
+                      </div>
+                      <h3 className="text-base font-semibold mb-2 text-gray-900">{feature.title}</h3>
+                      <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Security & Performance */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-700 mb-6 flex items-center gap-2">
+                <div className="w-8 h-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full" />
+                Security & Performance
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                {godaddyFeatures.filter(f => f.category === 'security' || f.category === 'performance').map((feature, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.05 }}
+                    whileHover={{ y: -5 }}
+                    className="relative group"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-cyan-50 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300" />
+                    <div className="relative bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-lg transition-all h-full">
+                      <div className={`inline-flex p-2.5 rounded-lg bg-gradient-to-r ${feature.gradient} mb-3`}>
+                        <feature.icon className="w-5 h-5 text-white" />
+                      </div>
+                      <h3 className="text-base font-semibold mb-2 text-gray-900">{feature.title}</h3>
+                      <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Scalability */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-700 mb-6 flex items-center gap-2">
+                <div className="w-8 h-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full" />
+                Scalability
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                {godaddyFeatures.filter(f => f.category === 'scalability').map((feature, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.05 }}
+                    whileHover={{ y: -5 }}
+                    className="relative group"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-cyan-50 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300" />
+                    <div className="relative bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-lg transition-all h-full">
+                      <div className={`inline-flex p-2.5 rounded-lg bg-gradient-to-r ${feature.gradient} mb-3`}>
+                        <feature.icon className="w-5 h-5 text-white" />
+                      </div>
+                      <h3 className="text-base font-semibold mb-2 text-gray-900">{feature.title}</h3>
+                      <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Growth & Design Tools */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-700 mb-6 flex items-center gap-2">
+                <div className="w-8 h-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full" />
+                Website & Audience Growth Tools
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {godaddyFeatures.filter(f => f.category === 'tools').map((feature, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.05 }}
+                    whileHover={{ y: -5 }}
+                    className="relative group"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-cyan-50 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300" />
+                    <div className="relative bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-lg transition-all h-full">
+                      <div className={`inline-flex p-2.5 rounded-lg bg-gradient-to-r ${feature.gradient} mb-3`}>
+                        <feature.icon className="w-5 h-5 text-white" />
+                      </div>
+                      <h3 className="text-base font-semibold mb-2 text-gray-900">{feature.title}</h3>
+                      <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Flickmax - Performance & Trust Section */}
+      <section className="relative py-24 z-10 overflow-hidden bg-gradient-to-b from-white via-blue-50/30 to-white">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-cyan-50">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-100/30 to-cyan-100/30 rounded-full filter blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-cyan-100/30 to-blue-100/30 rounded-full filter blur-3xl" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4">
+          {/* Section Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600/10 to-cyan-600/10 backdrop-blur-sm rounded-full text-blue-700 text-sm font-medium mb-6 border border-blue-200/30"
+            >
+              <Award className="w-4 h-4" />
+              <span>Trusted by 5,000+ Websites</span>
+            </motion.div>
+            
+            <h2 className="text-4xl md:text-5xl font-black mb-6 text-gray-900">
+              Why Choose Flickmax for
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600">
+                Managed WordPress Hosting?
+              </span>
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Our Managed Hosting for WordPress is up to 2x faster than the competition via Cloudflare CDN, 
+              so your site performs at lightning speeds. Plus, we make WordPress hosting easy.
+            </p>
+          </motion.div>
+
+          {/* Two Column Layout */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+            {/* Left Column - Key Benefits */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="space-y-6"
+            >
+              <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                <h3 className="text-2xl font-bold mb-6 text-gray-900 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 p-2">
+                    <Rocket className="w-full h-full text-white" />
+                  </div>
+                  We Handle Everything For You
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  With Flickmax, you don&apos;t have to stress about doing any heavy lifting or keeping up with 
+                  WordPress core updates. We do it all for you.
+                </p>
+                
+                <div className="space-y-4">
+                  {[
+                    { icon: CheckCircle, text: '99.9% uptime guarantee and money-back guarantee' },
+                    { icon: Sparkles, text: 'Pre-built sites and startup support' },
+                    { icon: HeadphonesIcon, text: 'Free 24/7 expert support' },
+                    { icon: RefreshCw, text: 'Automatic WordPress core software and security updates' },
+                    { icon: Rocket, text: 'AI-based onboarding and creation tool for faster launches' }
+                  ].map((item, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      className="flex items-start gap-3"
+                    >
+                      <item.icon className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <p className="text-gray-700">{item.text}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Right Column - Performance Stats */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="grid grid-cols-2 gap-4"
+            >
+              {[
+                { 
+                  label: 'Active Websites', 
+                  value: '5K+', 
+                  icon: Globe, 
+                  color: 'from-blue-600 to-cyan-600',
+                  description: 'Trusted globally'
+                },
+                { 
+                  label: 'Uptime SLA', 
+                  value: '99.99%', 
+                  icon: Shield, 
+                  color: 'from-blue-600 to-cyan-600',
+                  description: 'Always online'
+                },
+                { 
+                  label: 'Avg Response', 
+                  value: '197ms', 
+                  icon: Zap, 
+                  color: 'from-blue-600 to-cyan-600',
+                  description: 'Lightning fast'
+                },
+                { 
+                  label: 'Support Rating', 
+                  value: '4.9/5', 
+                  icon: Star, 
+                  color: 'from-blue-600 to-cyan-600',
+                  description: 'Expert help'
+                }
+              ].map((stat, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1, type: 'spring' }}
+                  whileHover={{ y: -5 }}
+                  className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all"
+                >
+                  <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${stat.color} p-2.5 mb-3`}>
+                    <stat.icon className="w-full h-full text-white" />
+                  </div>
+                  <p className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</p>
+                  <p className="text-sm font-medium text-gray-900">{stat.label}</p>
+                  <p className="text-xs text-gray-500 mt-1">{stat.description}</p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* Bottom CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center"
+          >
+            <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-full">
+              <CloudLightning className="w-5 h-5 text-blue-600" />
+              <span className="text-gray-700">
+                <span className="font-semibold">2x Faster Performance</span> with Cloudflare CDN Integration
+              </span>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Migration Section */}
+      <section className="relative py-20 z-10 overflow-hidden bg-gradient-to-b from-gray-50/30 via-white to-gray-50/30">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="relative">
+            {/* Background gradient card */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-3xl transform rotate-1" />
+            <div className="relative bg-gradient-to-r from-blue-600 to-cyan-600 rounded-3xl overflow-hidden">
+              {/* Pattern overlay */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute inset-0" style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                }} />
+              </div>
+              
+              <div className="relative p-12 lg:p-16">
+                <div className="grid lg:grid-cols-2 gap-12 items-center">
+                  {/* Left Content */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-6">
+                      <CheckCircle className="w-4 h-4" />
+                      <span>Free Migration Service</span>
+                    </div>
+                    
+                    <h2 className="text-4xl lg:text-5xl font-black mb-6 text-white">
+                      Can I Transfer My WordPress Site to Flickmax?
+                    </h2>
+                    
+                    <p className="text-xl text-white/90 mb-8 leading-relaxed">
+                      <span className="font-bold text-white">Yes, absolutely!</span> You can migrate your site to Flickmax 
+                      Managed WordPress Hosting using our simple site migration wizard during your initial 
+                      onboarding experience.
+                    </p>
+                    
+                    <div className="space-y-4 mb-8">
+                      <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                        <Sparkles className="w-5 h-5" />
+                        How Our Migration Works:
+                      </h3>
+                      {[
+                        { 
+                          icon: Globe, 
+                          title: 'Flexible Domain Options',
+                          text: 'Move to your domain name or use a temporary domain during setup' 
+                        },
+                        { 
+                          icon: Search, 
+                          title: 'Quick Review Process',
+                          text: 'Our experts review your site to ensure everything is perfect' 
+                        },
+                        { 
+                          icon: Rocket, 
+                          title: 'Ready to Publish',
+                          text: 'After review, your site is optimized and ready to go live' 
+                        }
+                      ].map((item, idx) => (
+                        <motion.div 
+                          key={idx} 
+                          initial={{ opacity: 0, x: -20 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: idx * 0.1 }}
+                          className="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4"
+                        >
+                          <div className="w-10 h-10 rounded-lg bg-white/20 p-2 flex-shrink-0">
+                            <item.icon className="w-full h-full text-white" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-white mb-1">{item.title}</p>
+                            <p className="text-white/80 text-sm">{item.text}</p>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-4">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => window.location.href = '#pricing'}
+                        className="px-8 py-4 bg-white text-blue-600 rounded-full font-bold shadow-lg hover:shadow-xl transition-all"
+                      >
+                        Start Free Migration
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="px-8 py-4 bg-white/20 backdrop-blur-sm text-white rounded-full font-bold hover:bg-white/30 transition-all"
+                      >
+                        Learn More
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                  
+                  {/* Right Visual */}
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="relative hidden lg:block"
+                  >
+                    <div className="relative">
+                      {/* Animated circles */}
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                        className="absolute inset-0 flex items-center justify-center"
+                      >
+                        <div className="w-64 h-64 rounded-full border-4 border-white/20 border-dashed" />
+                      </motion.div>
+                      <motion.div
+                        animate={{ rotate: -360 }}
+                        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                        className="absolute inset-0 flex items-center justify-center"
+                      >
+                        <div className="w-48 h-48 rounded-full border-4 border-white/30 border-dotted" />
+                      </motion.div>
+                      
+                      {/* Center icon */}
+                      <div className="relative w-64 h-64 mx-auto flex items-center justify-center">
+                        <div className="w-32 h-32 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                          <RefreshCw className="w-16 h-16 text-white" />
+                        </div>
+                      </div>
+                      
+                      {/* Feature badges */}
+                      <motion.div
+                        animate={{ y: [0, -10, 0] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                        className="absolute top-0 right-0 bg-white rounded-lg p-3 shadow-lg"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-5 h-5 text-blue-600" />
+                          <span className="text-sm font-semibold text-gray-900">24hr Transfer</span>
+                        </div>
+                      </motion.div>
+                      
+                      <motion.div
+                        animate={{ y: [0, 10, 0] }}
+                        transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+                        className="absolute bottom-0 left-0 bg-white rounded-lg p-3 shadow-lg"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Shield className="w-5 h-5 text-green-600" />
+                          <span className="text-sm font-semibold text-gray-900">Zero Downtime</span>
+                        </div>
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section with Getting Started FAQ */}
+      <section className="relative py-24 z-10 overflow-hidden bg-gradient-to-b from-white via-gray-50/20 to-white">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-blue-50">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-100/20 to-cyan-100/20 rounded-full filter blur-3xl" />
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-cyan-100/20 to-blue-100/20 rounded-full filter blur-3xl" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Column - Getting Started FAQ */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-left"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600/10 to-cyan-600/10 backdrop-blur-sm rounded-full text-blue-700 text-sm font-medium mb-6 border border-blue-200/30">
+                <Rocket className="w-4 h-4" />
+                <span>Quick Start Guide</span>
+              </div>
+              
+              <h3 className="text-3xl font-bold mb-6 text-gray-900">
+                After I Purchase WordPress Hosting, 
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600">
+                  How Do I Get Started?
+                </span>
+              </h3>
+              
+              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                Your hosting plan is seamlessly connected to the latest version of WordPress. 
+                Getting started is incredibly simple:
+              </p>
+              
+              <div className="space-y-4 mb-8">
+                {[
+                  {
+                    icon: Settings,
+                    title: 'Instant Setup',
+                    description: 'Log in to your control panel and start creating immediately'
+                  },
+                  {
+                    icon: HeadphonesIcon,
+                    title: '24/7 Expert Support',
+                    description: 'Our award-winning WordPress experts are always ready to help'
+                  },
+                  {
+                    icon: Sparkles,
+                    title: 'Complete Guidance',
+                    description: 'Get help with creating, updating, or promoting your website'
+                  }
+                ].map((item, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-start gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 p-2 flex-shrink-0">
+                      <item.icon className="w-full h-full text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-1">{item.title}</h4>
+                      <p className="text-gray-600 text-sm">{item.description}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+              
+              <div className="flex items-center gap-3 text-sm text-gray-500">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                <span>WordPress pre-installed and ready to use</span>
+              </div>
+            </motion.div>
+            
+            {/* Right Column - CTA */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center lg:text-left"
+            >
+              <div className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-3xl p-8 lg:p-10 text-white relative overflow-hidden">
+                {/* Pattern overlay */}
+                <div className="absolute inset-0 opacity-10">
+                  <div className="absolute inset-0" style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.3'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`,
+                  }} />
+                </div>
+                
+                <div className="relative">
+                  <h2 className="text-4xl lg:text-5xl font-black mb-4">
+                    Ready to Launch Your Site?
+                  </h2>
+                  <p className="text-xl text-white/90 mb-8">
+                    Join 5,000+ websites powered by our blazing-fast WordPress hosting
+                  </p>
+                  
+                  {/* Support Contact Section */}
+                  <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 sm:p-6 mb-8">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mb-3">
+                      <HeadphonesIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                      <span className="text-base sm:text-lg font-semibold text-center">Need Help? Call Our Experts</span>
+                    </div>
+                    <div className="text-center">
+                      <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 mb-2">
+                        <span className="text-xl sm:text-2xl font-bold">{country.phoneNumber}</span>
+                        <span className="text-white/80 text-xs sm:text-sm">({country.name})</span>
+                      </div>
+                      <p className="text-white/80 text-xs sm:text-sm">
+                        Available 24/7 • Speak to a WordPress Expert
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Features List */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 text-white text-sm">
+                      <Check className="w-5 h-5 flex-shrink-0" />
+                      <span>Free migration service included</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-white text-sm">
+                      <Check className="w-5 h-5 flex-shrink-0" />
+                      <span>30-day money-back guarantee</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-white text-sm">
+                      <Check className="w-5 h-5 flex-shrink-0" />
+                      <span>Instant setup with WordPress pre-installed</span>
+                    </div>
+                  </div>
+                  
+                  {/* Action Link */}
+                  <div className="mt-8 text-center">
+                    <a 
+                      href="#pricing" 
+                      onClick={(e) => {
+                        e.preventDefault()
+                        document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })
+                      }}
+                      className="inline-flex items-center gap-2 text-white hover:text-white/80 transition-colors group"
+                    >
+                      <span className="underline underline-offset-4">View pricing plans</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Trust badges */}
+              <div className="mt-6 flex items-center justify-center lg:justify-start gap-6">
+                <div className="flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-gray-400" />
+                  <span className="text-sm text-gray-600">SSL Secured</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Award className="w-5 h-5 text-gray-400" />
+                  <span className="text-sm text-gray-600">99.9% Uptime</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Users className="w-5 h-5 text-gray-400" />
+                  <span className="text-sm text-gray-600">24/7 Support</span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+
+      {/* Video Modal */}
+      <AnimatePresence>
+        {showVideo && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center p-4"
+            onClick={() => setShowVideo(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative max-w-4xl w-full aspect-video bg-gray-900 rounded-2xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowVideo(false)}
+                className="absolute top-4 right-4 z-10 bg-white/10 backdrop-blur-md p-2 rounded-full hover:bg-white/20 transition-colors"
+              >
+                <X className="w-6 h-6 text-white" />
+              </button>
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-gray-400">Demo video would play here</p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Disclaimer Modal */}
+      <AnimatePresence>
+        {showDisclaimer && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowDisclaimer(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-gray-900">Disclaimers</h3>
+                <button
+                  onClick={() => setShowDisclaimer(null)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+              
+              <div className="text-sm text-gray-600 space-y-4">
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <p className="font-medium mb-2">SSL Certificate:</p>
+                  <p>*An SSL certificate is included with every site and free for the life of the hosting plan. Our hassle-free certificates are automatically installed, validated and renewed. The strong 2048-bit encryption will ensure all transactions are secure. Annual plan purchase required.</p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <p className="font-medium mb-2">Performance:</p>
+                  <p>** Page load times compared to leading WordPress hosting providers Flywheel, Automattic, Siteground, Hostgator, Dreamhost, Namecheap, Hostinger, Bluehost and IONOS for page load times between January and March 2023. Flickmax does not claim that Managed WordPress Hosting has the industry best page load performance. Actual performance may vary by region. Please see terms and conditions for any uptime guarantee.</p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}

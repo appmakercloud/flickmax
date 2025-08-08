@@ -2,6 +2,7 @@
 
 export interface CartItem {
   id: string
+  productId?: string // Alternative ID field for compatibility
   domain?: string
   quantity?: number
   pfid?: number
@@ -9,6 +10,7 @@ export interface CartItem {
   periodUnit?: string
   listPrice?: number
   salePrice?: number
+  submittedViaForm?: boolean // Flag for items already submitted to GoDaddy
 }
 
 export interface AddToCartRequest {
@@ -42,6 +44,7 @@ export interface CartItemDetail {
   discountAmount?: number
   listPrice?: number
   salePrice?: number
+  submittedViaForm?: boolean // Flag for items already submitted to GoDaddy
 }
 
 export interface CartResponse {

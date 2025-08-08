@@ -13,14 +13,37 @@ FlickMax - A modern domain and hosting reseller platform integrated with GoDaddy
 
 ## Important Implementation Notes
 
-### Cart Integration (SOLVED AFTER 2 DAYS!)
-**Problem**: GoDaddy cart API was working (returning cartCount: 1) but items weren't showing in checkout.
+### Cart Integration (FINAL SOLUTION - JWT Tokens via Backend API)
+**Problem Evolution**:
+1. Direct form submission → 500 errors with mixed cart
+2. Client-side API calls → No cookies in private browsing
+3. Sequential submission → Unreliable, cookies lost between calls
+4. **SOLUTION**: Backend API returns real JWT tokens from GoDaddy
 
-**Root Cause**: Server-side API calls set cookies on the server, not in the user's browser. GoDaddy's checkout needs these cookies to identify the session.
+**How It Works (Like FXDomains):**
+1. **Frontend → Backend**: Send items + existing tokens (if any)
+2. **Backend → GoDaddy**: Server-side API call with cookies
+3. **GoDaddy → Backend**: Returns cart data + JWT tokens (first item only)
+4. **Backend → Frontend**: Extracts and forwards JWT tokens
+5. **Frontend Storage**: Saves tokens in localStorage
+6. **Checkout**: Uses intersite-sync with JWT tokens
 
-**Solution**: Make cart API calls directly from the browser (client-side) so cookies are set where they're needed.
+**Critical Implementation Points**: 
+- GoDaddy returns REAL signed JWT tokens (RS256) - NEVER generate fake ones
+- Only FIRST item returns tokens, subsequent items return empty tokens
+- Must pass existing tokens to maintain session (prevents new cart creation)
+- Works in private browsing because tokens are in localStorage, not cookies
 
-**Key Code**: `/components/cart/CartPanel.tsx` - Look for the client-side fetch call with `credentials: 'include'`
+**Files Updated**:
+- `/contexts/CartContext.tsx` - JWT token flow with detailed comments
+- `/components/cart/CartPanel.tsx` - Intersite-sync checkout implementation
+- `/app/api/cart/add-item/route.ts` - Backend API with token extraction
+- `/docs/CART_JWT_IMPLEMENTATION.md` - Complete technical documentation
+
+**Testing**:
+- Add first item → Check localStorage has tokens
+- Add second item → Verify cartCount: 2
+- Test in private browsing → Should work perfectly
 
 ### Environment Variables
 ```

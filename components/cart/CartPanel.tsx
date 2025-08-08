@@ -36,7 +36,6 @@ import { X, ShoppingCart, Trash2, Plus, Minus } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
 import { useCountry } from '@/contexts/CountryContext'
 import { motion, AnimatePresence } from 'framer-motion'
-import FormCheckout from './FormCheckout'
 import { PriceDisplay } from '@/components/ui/PriceDisplay'
 import { clientCartService } from '@/lib/api/client-cart'
 
@@ -58,9 +57,9 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
   const { cart, cartId, isLoading, refreshCart, removeFromCart, updateQuantity, addProductToCart } = useCart()
   const { currency, country } = useCountry()
   const [crossSellProducts, setCrossSellProducts] = useState<CrossSellProduct[]>([])
-  const [isLoadingCheckout, setIsLoadingCheckout] = useState(false)
   const [isUpdatingPrices, setIsUpdatingPrices] = useState(false)
   const [previousCountry, setPreviousCountry] = useState<string | null>(null)
+  const [isCheckingOut, setIsCheckingOut] = useState(false)
 
   useEffect(() => {
     if (isOpen && cartId) {
@@ -311,30 +310,91 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
   }
 
   /**
-   * Handle checkout process
+   * Handle checkout process using JWT Token Authentication
    * 
-   * Uses form-based submission to GoDaddy checkout.
-   * This method works reliably in all browser modes including private browsing.
-   * The form is rendered by the FormCheckout component at the bottom of this file.
+   * This implementation uses the same flow as fxdomains.com:
+   * 1. Retrieve JWT tokens that were stored when items were added to cart
+   * 2. Use intersite-sync API to transfer session to GoDaddy
+   * 3. Redirect user to checkout with authenticated session
+   * 
+   * Why this works in private browsing:
+   * - JWT tokens are stored in localStorage (not affected by cookie restrictions)
+   * - Intersite-sync creates session on GoDaddy's domain using tokens
+   * - No direct cookie dependency between domains
    */
   const handleCheckout = async () => {
     if (!cart || cart.items.length === 0) return
     
-    setIsLoadingCheckout(true)
+    setIsCheckingOut(true)
     
-    // Use form-based checkout - works in both normal and private browsing!
-    // This is the same method your WordPress site uses
     try {
-      // Submit the hidden form
-      const form = document.getElementById('godaddy-checkout-form') as HTMLFormElement
-      if (form) {
+      const plid = process.env.NEXT_PUBLIC_PLID || '590175'
+      
+      /**
+       * Step 1: Retrieve JWT tokens from localStorage
+       * 
+       * These tokens were obtained when the first item was added to cart
+       * They contain the session information needed for checkout
+       */
+      const storedTokens = localStorage.getItem('cart_tokens')
+      const tokens = storedTokens ? JSON.parse(storedTokens) : null
+      
+      if (tokens && tokens.custIdp && tokens.infoCustIdp) {
+        /**
+         * Step 2: Create form for intersite-sync API
+         * 
+         * This API endpoint:
+         * - Accepts JWT tokens as form data
+         * - Validates tokens and creates session on GoDaddy domain
+         * - Redirects to checkout with active session
+         * 
+         * IMPORTANT: This is NOT a regular API call - it's a form submission
+         * that results in a full page redirect
+         */
+        const form = document.createElement('form')
+        form.method = 'POST'
+        form.action = 'https://www.secureserver.net/api/v1/intersite-sync'
+        form.target = '_self' // Same window
+        
+        // Build the intersite-sync URL with redirect parameter
+        const checkoutUrl = `https://cart.secureserver.net/go/checkout?plid=${plid}`
+        form.action = `https://www.secureserver.net/api/v1/intersite-sync?plid=${plid}&redirect=${encodeURIComponent(checkoutUrl)}`
+        
+        // Add JWT tokens as hidden form fields
+        const custIdpInput = document.createElement('input')
+        custIdpInput.type = 'hidden'
+        custIdpInput.name = 'cust_idp'
+        custIdpInput.value = tokens.custIdp
+        form.appendChild(custIdpInput)
+        
+        const infoCustIdpInput = document.createElement('input')
+        infoCustIdpInput.type = 'hidden'
+        infoCustIdpInput.name = 'info_cust_idp'
+        infoCustIdpInput.value = tokens.infoCustIdp
+        form.appendChild(infoCustIdpInput)
+        
+        // Submit form - this will redirect the page
+        document.body.appendChild(form)
         form.submit()
+        // Page will redirect, no cleanup needed
       } else {
-        alert('Unable to proceed to checkout. Please try again.')
+        /**
+         * Fallback: No tokens found
+         * 
+         * This shouldn't happen in normal flow, but if it does:
+         * - Show error to user
+         * - Suggest adding items to cart again
+         */
+        alert('No cart session found. Please add items to cart again.')
+        setIsCheckingOut(false)
+        
+        // Clear any stale data
+        localStorage.removeItem('cart_tokens')
       }
     } catch (error) {
-      alert('An error occurred. Please try again.')
-      setIsLoadingCheckout(false)
+      console.error('Checkout error:', error)
+      alert('An error occurred during checkout. Please try again.')
+      setIsCheckingOut(false)
     }
   }
 
@@ -609,10 +669,10 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
                         <div className="px-4 pb-4 space-y-2">
                           <button
                             onClick={handleCheckout}
-                            disabled={isLoadingCheckout}
-                            className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-md hover:shadow-lg text-sm"
+                            disabled={isCheckingOut}
+                            className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-700 transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            {isLoadingCheckout ? (
+                            {isCheckingOut ? (
                               <>
                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                                 Processing...
@@ -644,14 +704,6 @@ export default function CartPanel({ isOpen, onClose }: CartPanelProps) {
         </div>
         </Dialog>
       </Transition.Root>
-      
-      {/* Hidden form for checkout - works in private browsing! */}
-      {cart && cart.items.length > 0 && (
-        <FormCheckout 
-          items={cart.items} 
-          onSubmit={() => setIsLoadingCheckout(true)}
-        />
-      )}
     </>
   )
 }

@@ -11,7 +11,7 @@ const footerLinks = {
       { name: 'Domain Names', href: '/domains' },
       { name: 'Domain Transfer', href: '/domains/transfer' },
       { name: 'Web Hosting', href: '/hosting/web-hosting' },
-      { name: 'WordPress Hosting', href: '/hosting/wordpress' },
+      { name: 'Managed WordPress', href: '/hosting/managed-wordpress' },
       { name: 'Professional Email', href: '/email/professional' },
       { name: 'Website Builder', href: '/website-builder' },
       { name: 'SSL Certificates', href: '/security/ssl' },

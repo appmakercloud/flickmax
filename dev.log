@@ -2,17 +2,16 @@
 > flickmax@0.1.0 dev
 > next dev --turbopack
 
- ⚠ Warning: Found multiple lockfiles. Selecting /Users/ashokparmar/package-lock.json.
-   Consider removing the lockfiles at:
-   * /Users/ashokparmar/flickmax/package-lock.json
-
- ⚠ Port 3000 is in use by process 1705
-4607, using available port 3001 instead.
+ ⚠ Port 3000 is in use by process 826
+11819, using available port 3001 instead.
    ▲ Next.js 15.4.5 (Turbopack)
    - Local:        http://localhost:3001
    - Network:      http://192.168.1.5:3001
    - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 1548ms
+ ✓ Ready in 1499ms
+ ○ Compiling /hosting/wordpress ...
+ ✓ Compiled /hosting/wordpress in 3.2s
+ GET /hosting/wordpress 200 in 3805ms
 [?25h

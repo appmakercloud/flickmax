@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { Cart, CartItem } from '@/types/cart'
 import { clientCartService } from '@/lib/api/client-cart'
+import { useCountry } from './CountryContext'
 import toast from 'react-hot-toast'
 
 export const cartAnimationEvent = typeof window !== 'undefined' ? new EventTarget() : null
@@ -96,26 +97,133 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [cartId, triggerCartAnimation])
 
   const addDomainToCart = useCallback(async (domain: string, productId: string | number) => {
-    const item: CartItem = {
-      id: String(productId),
-      domain,
-      quantity: 1,
-      pfid: typeof productId === 'number' ? productId : parseInt(productId) || undefined
+    try {
+      /**
+       * JWT Token Cart Flow - Step 1: Check for existing tokens
+       * 
+       * If this is the second+ item being added, we need to pass existing JWT tokens
+       * to maintain the same cart session. Without this, each item creates a new cart.
+       */
+      const existingTokens = localStorage.getItem('cart_tokens')
+      const tokens = existingTokens ? JSON.parse(existingTokens) : null
+      
+      /**
+       * Step 2: Call backend API
+       * 
+       * Backend will:
+       * 1. Call GoDaddy API server-side (avoids CORS issues)
+       * 2. Include existing tokens as cookies if provided
+       * 3. Extract JWT tokens from GoDaddy's response
+       * 4. Return tokens + cart data to frontend
+       */
+      const response = await fetch('/api/cart/add-item', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          items: [{
+            id: 'domain',
+            domain: domain
+          }],
+          existingTokens: tokens // Pass tokens to maintain session
+        })
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        
+        /**
+         * Step 3: Store JWT tokens
+         * 
+         * IMPORTANT: Only first item returns new tokens
+         * Subsequent items return empty tokens but maintain session
+         * Only update stored tokens if new ones are provided
+         */
+        if (data.tokens && (data.tokens.custIdp || data.tokens.infoCustIdp)) {
+          localStorage.setItem('cart_tokens', JSON.stringify(data.tokens))
+        }
+        
+        // Add to local cart for UI display
+        const item: CartItem = {
+          id: String(productId),
+          domain,
+          quantity: 1,
+          pfid: typeof productId === 'number' ? productId : parseInt(productId) || undefined
+        }
+        
+        toast.success(`${domain} added to cart`)
+        return addToCart([item])
+      } else {
+        throw new Error('Failed to add domain to cart')
+      }
+    } catch (error) {
+      toast.error('Failed to add domain to cart')
+      throw error
     }
-    
-    return addToCart([item])
   }, [addToCart])
 
   const addProductToCart = useCallback(async (productId: string, period?: number, periodUnit?: string) => {
-    const item: CartItem = {
-      id: productId,
-      pfid: parseInt(productId) || undefined,
-      quantity: 1,
-      period,
-      periodUnit
+    try {
+      /**
+       * JWT Token Cart Flow for Hosting Products
+       * 
+       * Same flow as domains - must pass existing tokens to maintain session
+       * This ensures domains and hosting end up in the same cart
+       */
+      const existingTokens = localStorage.getItem('cart_tokens')
+      const tokens = existingTokens ? JSON.parse(existingTokens) : null
+      
+      /**
+       * Call backend API with hosting product details
+       * 
+       * IMPORTANT: Mixed cart (domains + hosting) works because:
+       * 1. We maintain same session via JWT tokens
+       * 2. Backend adds items sequentially, not together
+       * 3. Each item is added to existing cart, not new cart
+       */
+      const response = await fetch('/api/cart/add-item', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          items: [{
+            id: productId,
+            quantity: 1,
+            period: period,
+            periodUnit: periodUnit
+          }],
+          existingTokens: tokens // Critical for session persistence
+        })
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        
+        // Store tokens only if new ones provided (first item only)
+        if (data.tokens && (data.tokens.custIdp || data.tokens.infoCustIdp)) {
+          localStorage.setItem('cart_tokens', JSON.stringify(data.tokens))
+        }
+        
+        // Add to local cart for UI display
+        const item: CartItem = {
+          id: productId,
+          pfid: parseInt(productId) || undefined,
+          quantity: 1,
+          period,
+          periodUnit
+        }
+        
+        toast.success('Hosting plan added to cart')
+        return addToCart([item])
+      } else {
+        throw new Error('Failed to add hosting to cart')
+      }
+    } catch (error) {
+      toast.error('Failed to add hosting to cart')
+      throw error
     }
-    
-    return addToCart([item])
   }, [addToCart])
 
   const removeFromCart = useCallback(async (itemId: string) => {

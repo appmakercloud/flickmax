@@ -11,95 +11,76 @@ import { formatCurrency } from '@/lib/countries'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import ErrorMessage from '@/components/ui/ErrorMessage'
 import type { HostingPlan } from '@/types/hosting-plans'
+import { useCart } from '@/contexts/CartContext'
+import toast from 'react-hot-toast'
 
 // Fallback plans for Standard Performance (cPanel)
 const fallbackStandardPlans: HostingPlan[] = [
   {
     id: 'cpanel-starter',
-    name: 'Web Hosting Economy',
+    name: 'cPanel Starter',
     description: "cPanel that's easy, reliable and lightning-fast",
     price: {
-      monthly: 5.99,
+      monthly: 3.99,
       yearly: 3.99,
       currency: 'USD'
     },
     features: [
       '1 website',
-      '25 GB NVMe storage',
-      'cPanel',
-      'Free domain*',
-      'Free email',
-      'Free SSL Certificate, 1 year²',
-      '30-day, money-back guarantee³',
-      'Site security trial offer⁶'
+      '1 database',
+      '10 GB storage'
     ],
     recommended: false,
     limits: {
       websites: 1,
-      storage: '25 GB NVMe storage',
+      storage: '10 GB storage',
       bandwidth: 'Unmetered',
-      databases: 10,
-      ssl: 'Free SSL Certificate, 1 year'
+      databases: 1,
+      ssl: 'Free SSL Certificate'
     }
   },
   {
-    id: 'wordpress-basic',
-    name: 'Hosting for WordPress Basic',
-    description: 'BEST FOR WORDPRESS',
+    id: 'cpanel-economy',
+    name: 'cPanel Economy',
+    description: "cPanel Hosting that's easy, reliable and lightning-fast",
     price: {
-      monthly: 5.99,
-      yearly: 5.99,
+      monthly: 9.99,
+      yearly: 9.99,
       currency: 'USD'
     },
     features: [
       '1 website',
-      '10 GB NVMe storage',
-      'GoDaddy Managed Hosting for WordPress control panel',
-      'Free domain*',
-      'Free email',
-      'Free SSL Certificate, no renewal fees',
-      '30-day, money-back guarantee³',
-      'Site Security Included',
-      'Up to 2x faster performance with CDN⁷',
-      'WordPress pre-installed',
-      'Weekly backups',
-      'Airo Plus Site Optimizer',
-      'Automatic WordPress core software updates',
-      'WordPress migration tool'
+      '10 databases',
+      '25 GB storage'
     ],
-    recommended: true,
-    badge: 'BEST FOR WORDPRESS',
+    recommended: false,
     limits: {
       websites: 1,
-      storage: '10 GB NVMe storage',
+      storage: '25 GB storage',
       bandwidth: 'Unmetered',
-      databases: 1,
-      ssl: 'Free SSL Certificate, no renewal fees'
+      databases: 10,
+      ssl: 'Free SSL Certificate'
     }
   },
   {
     id: 'cpanel-deluxe',
-    name: 'Web Hosting Deluxe',
+    name: 'cPanel Deluxe',
     description: "cPanel Hosting that's easy, reliable and lightning-fast",
     price: {
-      monthly: 7.99,
-      yearly: 7.99,
+      monthly: 14.99,
+      yearly: 14.99,
       currency: 'USD'
     },
     features: [
       '10 websites',
-      '50 GB NVMe storage',
-      'cPanel',
-      'Free domain*',
-      'Free email',
-      'Free, unlimited SSL for all your websites⁵',
-      '30-day, money-back guarantee³',
-      'Site security trial offer⁶'
+      '25 databases',
+      '50 GB storage',
+      'Free, unlimited SSL for all your websites'
     ],
     recommended: false,
     limits: {
       websites: 10,
-      storage: '50 GB NVMe storage',
+      storage: '50 GB storage',
       bandwidth: 'Unmetered',
       databases: 25,
       ssl: 'Free, unlimited SSL for all your websites'
@@ -107,27 +88,23 @@ const fallbackStandardPlans: HostingPlan[] = [
   },
   {
     id: 'cpanel-ultimate',
-    name: 'Web Hosting Ultimate',
+    name: 'cPanel Ultimate',
     description: "cPanel Hosting that's easy, reliable and lightning-fast",
     price: {
-      monthly: 12.99,
-      yearly: 12.99,
+      monthly: 18.99,
+      yearly: 18.99,
       currency: 'USD'
     },
     features: [
       '25 websites',
-      '75 GB NVMe storage',
-      'cPanel',
-      'Free domain*',
-      'Free email',
-      'Free, unlimited SSL for all your websites⁵',
-      '30-day, money-back guarantee³',
-      'Site security trial offer⁶'
+      '50 databases',
+      '75 GB storage',
+      'Free, unlimited SSL for all your websites'
     ],
     recommended: false,
     limits: {
       websites: 25,
-      storage: '75 GB NVMe storage',
+      storage: '75 GB storage',
       bandwidth: 'Unmetered',
       databases: 50,
       ssl: 'Free, unlimited SSL for all your websites'
@@ -268,7 +245,9 @@ export default function TabbedHostingPlans() {
   const [activeTab, setActiveTab] = useState<'standard' | 'business'>('standard')
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('yearly')
   const [hoveredPlan, setHoveredPlan] = useState<string | null>(null)
+  const [addingToCart, setAddingToCart] = useState<string | null>(null)
   const { currency, locale } = useCountry()
+  const { addProductToCart } = useCart()
   
   const { plans: standardPlans, loading: standardLoading, error: standardError } = useCPanelPlans()
   const { plans: businessPlans, loading: businessLoading, error: businessError } = useBusinessHosting()
@@ -280,6 +259,25 @@ export default function TabbedHostingPlans() {
   const loading = activeTab === 'standard' ? standardLoading : businessLoading
   const error = activeTab === 'standard' ? standardError : businessError
   const plans = activeTab === 'standard' ? displayStandardPlans : displayBusinessPlans
+
+  const handleAddToCart = async (plan: HostingPlan) => {
+    try {
+      setAddingToCart(plan.id)
+      
+      // Use the plan ID as the product ID
+      // For yearly billing, period is 12 months
+      const period = billingPeriod === 'yearly' ? 12 : 1
+      await addProductToCart(plan.id, period, 'MONTH')
+      
+      // For hosting, the product was instantly submitted via form
+      // The success message is already shown by the cart context
+    } catch (error) {
+      // Error is already shown by cart context
+      console.error('Add to cart error:', error)
+    } finally {
+      setAddingToCart(null)
+    }
+  }
 
   return (
     <section id="plans" className="py-24 relative overflow-hidden">
@@ -436,29 +434,29 @@ export default function TabbedHostingPlans() {
                 onHoverStart={() => setHoveredPlan(plan.id)}
                 onHoverEnd={() => setHoveredPlan(null)}
                 className={cn(
-                  'relative bg-white/80 backdrop-blur-xl rounded-2xl transition-all duration-300 overflow-hidden group',
+                  'relative bg-white rounded-2xl transition-all duration-300 overflow-hidden group',
                   plan.recommended 
                     ? 'shadow-2xl border-2 border-blue-500 scale-105' 
-                    : 'shadow-xl hover:shadow-2xl border border-gray-100/50 hover:border-blue-200/50',
+                    : 'shadow-lg hover:shadow-2xl border border-gray-100 hover:border-blue-300',
                   hoveredPlan === plan.id && 'z-10'
                 )}
               >
+                {/* Background gradient on hover - moved to bottom layer */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-cyan-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0" />
+                
                 {(plan.recommended || plan.badge) && (
                   <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="absolute top-0 left-0 right-0 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-center py-2">
+                    className="absolute top-0 left-0 right-0 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-center py-2 z-20">
                     <span className="text-xs font-bold uppercase tracking-wider">
                       ⭐ {plan.badge || 'MOST POPULAR'}
                     </span>
                   </motion.div>
                 )}
-
-                {/* Background gradient on hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-cyan-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
-                <div className="p-6 pt-8">
+                <div className="relative z-10 p-6 pt-8">
                   <h3 className="text-xl font-bold text-gray-900 mb-3">{plan.name}</h3>
                   {plan.description && (
                     <p className="text-sm text-gray-600 mb-4">{plan.description}</p>
@@ -490,14 +488,24 @@ export default function TabbedHostingPlans() {
                   <motion.button 
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    onClick={() => handleAddToCart(plan)}
+                    disabled={addingToCart === plan.id}
                     className={cn(
-                      'w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 mb-6',
+                      'w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 mb-6 relative',
                       plan.recommended
                         ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:from-blue-700 hover:to-cyan-700 shadow-lg hover:shadow-xl'
-                        : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                        : 'bg-gray-100 text-gray-900 hover:bg-gray-200',
+                      addingToCart === plan.id && 'opacity-75 cursor-not-allowed'
                     )}
                   >
-                    Get Started
+                    {addingToCart === plan.id ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <LoadingSpinner size="sm" />
+                        Adding...
+                      </span>
+                    ) : (
+                      'Get Started'
+                    )}
                   </motion.button>
 
                   <div className="border-t border-gray-100 pt-4">
