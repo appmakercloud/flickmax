@@ -36,6 +36,7 @@ const navigation = [
       { name: 'Web Hosting', href: '/hosting/web-hosting' },
       { name: 'Managed WordPress', href: '/hosting/managed-wordpress' },
       { name: 'VPS Hosting', href: '/hosting/vps' },
+      { name: 'Fully Managed VPS', href: '/hosting/fully-managed-vps' },
       { name: 'Dedicated Servers', href: '/hosting/dedicated' },
     ]
   },
