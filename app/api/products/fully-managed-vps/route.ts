@@ -326,7 +326,8 @@ const fallbackPlansHighPerformance = [
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const currency = searchParams.get('currency') || 'USD'
-  const marketId = searchParams.get('market') || 'en-US'
+  // Always use en-US for consistent pricing
+  const marketId = 'en-US'
 
   try {
     // For now, we'll use the fallback data since GoDaddy API doesn't provide direct pricing for all currencies

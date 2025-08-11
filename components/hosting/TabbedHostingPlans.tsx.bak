@@ -669,7 +669,7 @@ export default function TabbedHostingPlans() {
           <div className="bg-gradient-to-r from-blue-50/50 to-cyan-50/50 backdrop-blur-sm rounded-2xl p-8 text-center border border-blue-100/50">
             <h3 className="text-lg font-bold text-gray-900 mb-2">Need a custom solution?</h3>
             <p className="text-gray-600 mb-4">
-              Get enterprise-grade hosting with custom resources, dedicated support, and uptime guarantees.
+              Get enterprise-grade hosting with custom resources, dedicated support, and SLA guarantees.
             </p>
             <a 
               href="/contact" 

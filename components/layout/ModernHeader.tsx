@@ -26,8 +26,8 @@ const navigation = [
     name: 'Websites',
     items: [
       { name: 'Website Builder', href: '/website-builder' },
-      { name: 'WordPress', href: '/wordpress' },
-      { name: 'Website Design Services', href: '/design-services' },
+      { name: 'WordPress', href: '/hosting/managed-wordpress' },
+      { name: 'Development Services', href: '/services/development' },
     ]
   },
   {
@@ -37,7 +37,6 @@ const navigation = [
       { name: 'Managed WordPress', href: '/hosting/managed-wordpress' },
       { name: 'VPS Hosting', href: '/hosting/vps' },
       { name: 'Fully Managed VPS', href: '/hosting/fully-managed-vps' },
-      { name: 'Dedicated Servers', href: '/hosting/dedicated' },
     ]
   },
   {
@@ -53,15 +52,13 @@ const navigation = [
     items: [
       { name: 'Email Marketing', href: '/marketing/email' },
       { name: 'SEO Tools', href: '/marketing/seo' },
-      { name: 'Business Email', href: '/marketing/business-email' },
     ]
   },
   {
     name: 'Email',
     items: [
       { name: 'Professional Email', href: '/email/professional' },
-      { name: 'Email Marketing', href: '/email/marketing' },
-      { name: 'Microsoft 365', href: '/email/microsoft365' },
+      { name: 'Microsoft 365', href: '/email/microsoft-365' },
     ]
   }
 ]

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reset Country to US</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .info {
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Country Settings Management</h1>
+    
+    <div class="info">
+        <h3>Current Settings:</h3>
+        <p id="current-country">Loading...</p>
+    </div>
+    
+    <div>
+        <button onclick="setCountry('US')">Set to United States (USD)</button>
+        <button onclick="setCountry('IN')">Set to India (INR)</button>
+        <button onclick="setCountry('GB')">Set to United Kingdom (GBP)</button>
+        <button onclick="clearCountry()">Clear Selection (Use Default)</button>
+    </div>
+    
+    <div id="message"></div>
+    
+    <script>
+        function displayCurrentCountry() {
+            const savedCountry = localStorage.getItem('selectedCountry');
+            const currentEl = document.getElementById('current-country');
+            
+            if (savedCountry) {
+                currentEl.innerHTML = `Selected Country Code: <strong>${savedCountry}</strong>`;
+                
+                // Map country codes to names and currencies
+                const countryMap = {
+                    'US': 'United States (USD)',
+                    'IN': 'India (INR)',
+                    'GB': 'United Kingdom (GBP)',
+                    'CA': 'Canada (CAD)',
+                    'AU': 'Australia (AUD)',
+                    'EUR': 'Europe (EUR)'
+                };
+                
+                if (countryMap[savedCountry]) {
+                    currentEl.innerHTML += `<br>Country: <strong>${countryMap[savedCountry]}</strong>`;
+                }
+            } else {
+                currentEl.innerHTML = 'No country selected (using default: United States - USD)';
+            }
+        }
+        
+        function setCountry(code) {
+            localStorage.setItem('selectedCountry', code);
+            const messageEl = document.getElementById('message');
+            messageEl.innerHTML = `<p class="success">Country set to ${code}. Please refresh the website to see the changes.</p>`;
+            displayCurrentCountry();
+        }
+        
+        function clearCountry() {
+            localStorage.removeItem('selectedCountry');
+            const messageEl = document.getElementById('message');
+            messageEl.innerHTML = '<p class="success">Country selection cleared. Default (US) will be used. Please refresh the website.</p>';
+            displayCurrentCountry();
+        }
+        
+        // Display current country on page load
+        displayCurrentCountry();
+    </script>
+</body>
+</html>

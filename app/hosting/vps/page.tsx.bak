@@ -727,7 +727,7 @@ export default function VPSHostingPage() {
                             </div>
                             <div>
                               <span className="font-semibold text-white text-sm">99.9% Uptime Guarantee</span>
-                              <p className="text-white/80 text-xs mt-0.5">Guaranteed availability backed by our uptime guarantee</p>
+                              <p className="text-white/80 text-xs mt-0.5">Guaranteed availability backed by our SLA</p>
                             </div>
                           </div>
                           

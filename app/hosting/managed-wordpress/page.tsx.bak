@@ -572,7 +572,7 @@ export default function WordPressHostingPremiumPage() {
               className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto"
             >
               {[
-                { icon: Shield, text: 'Uptime Guarantee', value: '99.99%', color: 'from-blue-600 to-cyan-600' },
+                { icon: Shield, text: 'Uptime SLA', value: '99.99%', color: 'from-blue-600 to-cyan-600' },
                 { icon: Lightning, text: 'Load Time', value: '<200ms', color: 'from-blue-600 to-cyan-600' },
                 { icon: HeadphonesIcon, text: 'Support', value: '24/7/365', color: 'from-blue-600 to-cyan-600' },
                 { icon: Sparkles, text: 'AI Website Builder', value: 'Quick Setup', color: 'from-blue-600 to-cyan-600' }
@@ -1045,7 +1045,7 @@ export default function WordPressHostingPremiumPage() {
                   description: 'Trusted globally'
                 },
                 { 
-                  label: 'Uptime Guarantee', 
+                  label: 'Uptime SLA', 
                   value: '99.99%', 
                   icon: Shield, 
                   color: 'from-blue-600 to-cyan-600',

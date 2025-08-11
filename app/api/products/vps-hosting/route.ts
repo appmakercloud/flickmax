@@ -316,7 +316,8 @@ const fallbackVPSPlans = {
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const currency = searchParams.get('currency') || 'USD'
-  const market = searchParams.get('market') || 'en-US'
+  // Always use en-US for consistent pricing
+  const market = 'en-US'
   
 
   try {

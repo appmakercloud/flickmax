@@ -522,18 +522,18 @@ export default function VPSHostingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <span className="text-xs font-bold text-blue-600 uppercase tracking-[0.3em] mb-4 block">FULLY MANAGED VPS</span>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-8">
+                <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-3 block">FULLY MANAGED VPS</span>
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
                   <motion.span 
-                    className="text-gray-900 leading-[1.1] block mb-3 text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight"
+                    className="text-gray-900 block"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.6 }}
                   >
-                    Managed VPS
+                    Powerful VPS.
                   </motion.span>
                   <motion.span 
-                    className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-500 leading-[1.1] block text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight relative"
+                    className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-500 block mt-2"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3, duration: 0.6 }}
@@ -542,10 +542,10 @@ export default function VPSHostingPage() {
                       animation: 'shimmer 3s linear infinite'
                     }}
                   >
-                    We Handle It.
+                    Zero Management
                   </motion.span>
                   <motion.span 
-                    className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 leading-[1.1] block text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mt-2"
+                    className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 block mt-2"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5, duration: 0.6 }}
@@ -555,9 +555,21 @@ export default function VPSHostingPage() {
                       animationDelay: '1.5s'
                     }}
                   >
-                    You Grow.
+                    Hassle.
                   </motion.span>
                 </h1>
+              </motion.div>
+
+              {/* Subtitle Description */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+                className="mb-10"
+              >
+                <p className="text-lg text-gray-600 max-w-xl">
+                  Enterprise-grade VPS performance without the complexity. We handle everything while you focus on growth.
+                </p>
               </motion.div>
 
               {/* Feature List */}
@@ -565,7 +577,7 @@ export default function VPSHostingPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="space-y-4 mb-12"
+                className="space-y-4 mb-10"
               >
                 <div className="flex items-start gap-3 relative group">
                   <div className="mt-1">
@@ -573,192 +585,127 @@ export default function VPSHostingPage() {
                   </div>
                   <div className="relative">
                     <p className="text-gray-600 text-base cursor-help border-b border-dotted border-gray-400 inline-block">
-                      Scale instantly with flexible resources
+                      We manage everything - you focus on growth
                     </p>
                     
-                    {/* Scaling Tooltip on Hover */}
+                    {/* Management Tooltip */}
                     <div className="absolute left-0 bottom-full mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                       <div className="bg-gradient-to-br from-blue-600 to-cyan-500 rounded-xl p-6 shadow-2xl min-w-[320px] border border-blue-400">
-                        {/* Arrow */}
                         <div className="absolute -bottom-2 left-8 w-4 h-4 bg-blue-600 transform rotate-45"></div>
-                        
-                        {/* Icon and Title */}
                         <div className="flex items-center gap-3 mb-4">
                           <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur">
-                            <TrendingUp className="w-7 h-7 text-white" />
+                            <Shield className="w-7 h-7 text-white" />
                           </div>
-                          <h4 className="text-xl font-bold text-white">Instant Scaling Power</h4>
+                          <h4 className="text-xl font-bold text-white">Complete Management</h4>
                         </div>
-                        
-                        {/* Description */}
                         <p className="text-white/95 text-sm leading-relaxed mb-4">
-                          Scale your projects effortlessly with flexible hardware options:
+                          Our experts handle all server management tasks 24/7:
                         </p>
-                        
-                        {/* Specs Grid */}
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center gap-2">
+                            <Check className="w-4 h-4 text-white/90" />
+                            <span className="text-white/90">Server setup & configuration</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Check className="w-4 h-4 text-white/90" />
+                            <span className="text-white/90">Security patches & updates</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Check className="w-4 h-4 text-white/90" />
+                            <span className="text-white/90">Performance optimization</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Check className="w-4 h-4 text-white/90" />
+                            <span className="text-white/90">24/7 monitoring & support</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3 relative group">
+                  <div className="mt-1">
+                    <CheckCircle className="w-5 h-5 text-blue-500" />
+                  </div>
+                  <div className="relative">
+                    <p className="text-gray-600 text-base cursor-help border-b border-dotted border-gray-400 inline-block">
+                      24/7 expert support & monitoring included
+                    </p>
+                    
+                    {/* Support Tooltip */}
+                    <div className="absolute left-0 bottom-full mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                      <div className="bg-gradient-to-br from-blue-600 to-cyan-500 rounded-xl p-6 shadow-2xl min-w-[320px] border border-blue-400">
+                        <div className="absolute -bottom-2 left-8 w-4 h-4 bg-blue-600 transform rotate-45"></div>
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur">
+                            <HeadphonesIcon className="w-7 h-7 text-white" />
+                          </div>
+                          <h4 className="text-xl font-bold text-white">Expert Support</h4>
+                        </div>
+                        <p className="text-white/95 text-sm leading-relaxed mb-4">
+                          Get help from certified professionals anytime:
+                        </p>
                         <div className="grid grid-cols-2 gap-3 text-sm">
                           <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
                             <div className="flex items-center gap-2 mb-1">
-                              <Cpu className="w-4 h-4 text-white/80" />
-                              <span className="font-semibold text-white">vCPU</span>
+                              <Clock className="w-4 h-4 text-white/80" />
+                              <span className="font-semibold text-white">24/7</span>
                             </div>
-                            <span className="text-white/90 text-xs">1 to 32 cores</span>
+                            <span className="text-white/90 text-xs">Round-the-clock</span>
                           </div>
-                          
                           <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
                             <div className="flex items-center gap-2 mb-1">
-                              <MemoryStick className="w-4 h-4 text-white/80" />
-                              <span className="font-semibold text-white">RAM</span>
+                              <Zap className="w-4 h-4 text-white/80" />
+                              <span className="font-semibold text-white">&lt; 15 min</span>
                             </div>
-                            <span className="text-white/90 text-xs">1GB to 128GB</span>
-                          </div>
-                          
-                          <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
-                            <div className="flex items-center gap-2 mb-1">
-                              <HardDrive className="w-4 h-4 text-white/80" />
-                              <span className="font-semibold text-white">Storage</span>
-                            </div>
-                            <span className="text-white/90 text-xs">20GB to 1.5TB NVMe</span>
-                          </div>
-                          
-                          <div className="bg-white/10 rounded-lg p-3 backdrop-blur">
-                            <div className="flex items-center gap-2 mb-1">
-                              <Layers className="w-4 h-4 text-white/80" />
-                              <span className="font-semibold text-white">KVM</span>
-                            </div>
-                            <span className="text-white/90 text-xs">Full virtualization</span>
+                            <span className="text-white/90 text-xs">Response time</span>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+                
                 <div className="flex items-start gap-3 relative group">
                   <div className="mt-1">
                     <CheckCircle className="w-5 h-5 text-blue-500" />
                   </div>
                   <div className="relative">
                     <p className="text-gray-600 text-base cursor-help border-b border-dotted border-gray-400 inline-block">
-                      Fully managed server with expert support
+                      99.99% uptime guarantee with auto-failover
                     </p>
                     
-                    {/* OS Tooltip on Hover */}
+                    {/* Uptime Tooltip */}
                     <div className="absolute left-0 bottom-full mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                       <div className="bg-gradient-to-br from-blue-600 to-cyan-500 rounded-xl p-6 shadow-2xl min-w-[320px] border border-blue-400">
-                        {/* Arrow */}
                         <div className="absolute -bottom-2 left-8 w-4 h-4 bg-blue-600 transform rotate-45"></div>
-                        
-                        {/* OS Logos and Names - Styled as Brands */}
-                        <div className="space-y-4">
-                          {/* Windows Server */}
-                          <div className="flex items-center gap-3">
-                            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="white">
-                              <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/>
-                            </svg>
-                            <span className="font-semibold text-white text-xl tracking-tight">Windows Server</span>
-                          </div>
-                          
-                          {/* Ubuntu */}
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-white/20 rounded flex items-center justify-center">
-                              <Terminal className="w-5 h-5 text-white" />
-                            </div>
-                            <span className="font-semibold text-white text-xl tracking-tight">Ubuntu</span>
-                          </div>
-                          
-                          {/* Debian */}
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-white/20 rounded flex items-center justify-center">
-                              <Layers className="w-5 h-5 text-white" />
-                            </div>
-                            <span className="font-semibold text-white text-xl tracking-tight">Debian</span>
-                          </div>
-                          
-                          {/* AlmaLinux */}
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-white/20 rounded flex items-center justify-center">
-                              <Server className="w-5 h-5 text-white" />
-                            </div>
-                            <span className="font-semibold text-white text-xl tracking-tight">AlmaLinux</span>
-                          </div>
-                        </div>
-                        
-                        <div className="mt-4 pt-4 border-t border-white/20">
-                          <p className="text-white/90 text-sm">
-                            Choose your operating system: Windows or Linux, with options like AlmaLinux, Windows Server, Debian, or Ubuntu. Create hosting accounts with optional cPanel/WHM + Installatron or Plesk.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 relative group">
-                  <div className="mt-1">
-                    <CheckCircle className="w-5 h-5 text-blue-500" />
-                  </div>
-                  <div className="relative">
-                    <p className="text-gray-600 text-base cursor-help border-b border-dotted border-gray-400 inline-block">
-                      99.9% uptime guaranteed
-                    </p>
-                    
-                    {/* Uptime Tooltip on Hover */}
-                    <div className="absolute left-0 bottom-full mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                      <div className="bg-gradient-to-br from-blue-600 to-cyan-500 rounded-xl p-6 shadow-2xl min-w-[320px] border border-blue-400">
-                        {/* Arrow */}
-                        <div className="absolute -bottom-2 left-8 w-4 h-4 bg-blue-600 transform rotate-45"></div>
-                        
-                        {/* Icon and Title */}
                         <div className="flex items-center gap-3 mb-4">
                           <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur">
                             <Activity className="w-7 h-7 text-white animate-pulse" />
                           </div>
                           <h4 className="text-xl font-bold text-white">Rock-Solid Reliability</h4>
                         </div>
-                        
-                        {/* Description */}
                         <p className="text-white/95 text-sm leading-relaxed mb-4">
-                          Your sites stay online with enterprise-grade protection:
+                          Enterprise-grade infrastructure ensures maximum uptime:
                         </p>
-                        
-                        {/* Features List */}
                         <div className="space-y-3">
                           <div className="flex items-start gap-3">
                             <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                               <Check className="w-3 h-3 text-white" />
                             </div>
                             <div>
-                              <span className="font-semibold text-white text-sm">99.9% Uptime SLA</span>
-                              <p className="text-white/80 text-xs mt-0.5">Guaranteed availability backed by our SLA</p>
+                              <span className="font-semibold text-white text-sm">99.99% Uptime Guarantee</span>
+                              <p className="text-white/80 text-xs mt-0.5">Guaranteed availability</p>
                             </div>
                           </div>
-                          
                           <div className="flex items-start gap-3">
                             <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                               <Check className="w-3 h-3 text-white" />
                             </div>
                             <div>
-                              <span className="font-semibold text-white text-sm">24/7 Monitoring</span>
-                              <p className="text-white/80 text-xs mt-0.5">Round-the-clock network surveillance</p>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-start gap-3">
-                            <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                              <Check className="w-3 h-3 text-white" />
-                            </div>
-                            <div>
-                              <span className="font-semibold text-white text-sm">DDoS Protection</span>
-                              <p className="text-white/80 text-xs mt-0.5">Advanced attack mitigation included</p>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-start gap-3">
-                            <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                              <Check className="w-3 h-3 text-white" />
-                            </div>
-                            <div>
-                              <span className="font-semibold text-white text-sm">Auto Backups</span>
-                              <p className="text-white/80 text-xs mt-0.5">Daily snapshots for instant recovery</p>
+                              <span className="font-semibold text-white text-sm">Auto-Failover</span>
+                              <p className="text-white/80 text-xs mt-0.5">Instant redundancy switching</p>
                             </div>
                           </div>
                         </div>
@@ -773,13 +720,13 @@ export default function VPSHostingPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="flex flex-col sm:flex-row gap-4 sm:gap-5 mb-12 justify-center lg:justify-start"
+                className="flex flex-col sm:flex-row gap-4 mb-8"
               >
                 <button
                   onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
                   className="px-8 sm:px-10 py-4 sm:py-4.5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl font-bold text-base sm:text-lg hover:from-blue-700 hover:to-cyan-600 transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
                 >
-                  Get Plans and Pricing
+                  Get Started
                 </button>
                 <a
                   href="/hosting/vps"
@@ -794,165 +741,199 @@ export default function VPSHostingPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="flex items-center gap-4 flex-wrap justify-center lg:justify-start mt-8"
               >
-                <p className="text-xs sm:text-sm text-gray-600 font-medium text-center lg:text-left">
-                  ✓ 30-day money-back guarantee • ✓ Cancel anytime
+                <p className="text-sm text-gray-500">
+                  ✓ Free migration • ✓ 30-day money-back • ✓ Cancel anytime
                 </p>
               </motion.div>
             </motion.div>
 
-            {/* Right Visual - Dashboard Mockup */}
+            {/* Right Visual - Server Management Panel */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
-              className="relative lg:pl-12 hidden lg:block"
+              className="relative lg:pl-8 hidden lg:block"
             >
               <div className="relative">
                 {/* Main Dashboard Card */}
-                <div className="bg-white rounded-2xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-gray-100 p-6 relative">
-                  {/* Header */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center shadow-lg">
-                        <Server className="w-5 h-5 text-white" />
+                <div className="bg-white rounded-xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] overflow-hidden">
+                  {/* Navigation Tabs */}
+                  <div className="bg-gray-50/70 border-b border-gray-200">
+                    <div className="flex">
+                      <div className="relative px-8 py-3.5">
+                        <span className="text-sm font-semibold text-blue-600">Dashboard</span>
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"></div>
                       </div>
+                      <div className="px-8 py-3.5 text-sm text-gray-600 flex items-center gap-1.5">
+                        <span>Monitoring</span>
+                        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                      </div>
+                      <div className="px-8 py-3.5 text-sm text-gray-600">
+                        Backups
+                      </div>
+                      <div className="px-8 py-3.5 text-sm text-gray-600">
+                        Settings
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Server Header */}
+                  <div className="px-8 pt-6 pb-5 bg-gradient-to-b from-white to-gray-50/30">
+                    <div className="flex items-start justify-between">
                       <div>
-                        <h3 className="font-semibold text-gray-900 text-sm">My VPS Hosting</h3>
-                        <p className="text-xs text-gray-500">vps01.flickmax.com</p>
+                        <div className="text-xs text-gray-500 mb-2 font-medium">Hosting / Enterprise Server</div>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-3">srv-enterprise-01</h2>
+                        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span className="text-sm text-gray-700 font-medium">Active</span>
+                          </div>
+                          <span className="text-sm text-gray-600">216.70.73.78</span>
+                          <span className="text-sm text-gray-600 bg-gray-100 px-2 py-0.5 rounded">ubuntu-2404</span>
+                          <span className="text-sm text-gray-600">United States (West)</span>
+                        </div>
                       </div>
+                      <button className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                        <span>Server Actions</span>
+                        <span className="text-xs">▼</span>
+                      </button>
                     </div>
                   </div>
 
-                  {/* Tabs */}
-                  <div className="flex gap-6 border-b border-gray-200 mb-5">
-                    <button className="pb-2.5 text-sm font-semibold text-blue-600 border-b-2 border-blue-600">
-                      Usage
-                    </button>
-                    <button className="pb-2.5 text-sm font-medium text-gray-400 hover:text-gray-600">
-                      Uptime
-                    </button>
-                  </div>
+                  <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
 
-                  {/* Usage Stats */}
-                  <div className="space-y-5">
-                    <div>
-                      <div className="flex justify-between text-xs mb-2">
-                        <span className="text-gray-500 font-medium">CPU</span>
-                        <span className="text-gray-900 font-semibold">45%</span>
+                  {/* Content Grid */}
+                  <div className="p-8 bg-white">
+                    <div className="grid grid-cols-2 gap-8">
+                      {/* History Section */}
+                      <div>
+                        <h3 className="text-base font-bold text-gray-900 mb-4">History</h3>
+                        <div className="space-y-3">
+                          <motion.div 
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.8 }}
+                            className="flex items-center gap-3 text-sm"
+                          >
+                            <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                            <span className="text-gray-500 min-w-[65px]">10:25 pm</span>
+                            <span className="text-gray-700">Rebuild server</span>
+                          </motion.div>
+                          <motion.div 
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.9 }}
+                            className="flex items-center gap-3 text-sm"
+                          >
+                            <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                            <span className="text-gray-500 min-w-[65px]">09:57 pm</span>
+                            <span className="text-gray-700">Sync server</span>
+                          </motion.div>
+                        </div>
                       </div>
-                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <motion.div 
-                          initial={{ width: 0 }}
-                          animate={{ width: "45%" }}
-                          transition={{ duration: 1, delay: 0.5 }}
-                          className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full" 
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-xs mb-2">
-                        <span className="text-gray-500 font-medium">Memory</span>
-                        <span className="text-gray-900 font-semibold">62%</span>
-                      </div>
-                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <motion.div 
-                          initial={{ width: 0 }}
-                          animate={{ width: "62%" }}
-                          transition={{ duration: 1, delay: 0.7 }}
-                          className="h-full bg-gradient-to-r from-blue-600 to-cyan-500 rounded-full" 
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-xs mb-2">
-                        <span className="text-gray-500 font-medium">Storage</span>
-                        <span className="text-gray-900 font-semibold">38%</span>
-                      </div>
-                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <motion.div 
-                          initial={{ width: 0 }}
-                          animate={{ width: "38%" }}
-                          transition={{ duration: 1, delay: 0.9 }}
-                          className="h-full bg-gradient-to-r from-blue-600 to-cyan-500 rounded-full" 
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-xs mb-2">
-                        <span className="text-gray-500 font-medium">Bandwidth</span>
-                        <span className="text-gray-900 font-semibold">71%</span>
-                      </div>
-                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <motion.div 
-                          initial={{ width: 0 }}
-                          animate={{ width: "71%" }}
-                          transition={{ duration: 1, delay: 1.1 }}
-                          className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full" 
-                        />
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Performance Graph */}
-                  <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs font-medium text-gray-700">Server Performance</span>
-                      <span className="text-[10px] text-gray-400">Last 24 hours</span>
+                      {/* Usage Section */}
+                      <div>
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-base font-bold text-gray-900">Usage</h3>
+                          <a href="#" className="text-xs text-blue-600 hover:text-blue-700 font-medium">View All Usage</a>
+                        </div>
+                        
+                        <div className="space-y-2.5">
+                          {/* CPU */}
+                          <motion.div 
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.8 }}
+                            className="flex items-center gap-3"
+                          >
+                            <div className="relative">
+                              <div className="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center">
+                                <span className="text-sm font-bold text-blue-600">3%</span>
+                              </div>
+                              <div className="absolute inset-0 rounded-full border-2 border-blue-100"></div>
+                            </div>
+                            <div className="flex-1">
+                              <div className="text-sm text-gray-800 font-medium">4 CPU cores</div>
+                              <div className="text-xs text-gray-500">3.61% / 100%</div>
+                            </div>
+                          </motion.div>
+
+                          {/* RAM */}
+                          <motion.div 
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.9 }}
+                            className="flex items-center gap-3"
+                          >
+                            <div className="relative">
+                              <div className="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center">
+                                <span className="text-sm font-bold text-blue-600">9%</span>
+                              </div>
+                              <div className="absolute inset-0 rounded-full border-2 border-blue-100"></div>
+                            </div>
+                            <div className="flex-1">
+                              <div className="text-sm text-gray-800 font-medium">RAM</div>
+                              <div className="text-xs text-gray-500">1.51GB / 16GB</div>
+                            </div>
+                          </motion.div>
+
+                          {/* Disk */}
+                          <motion.div 
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 1.0 }}
+                            className="flex items-center gap-3"
+                          >
+                            <div className="relative">
+                              <div className="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center">
+                                <span className="text-sm font-bold text-blue-600">3%</span>
+                              </div>
+                              <div className="absolute inset-0 rounded-full border-2 border-blue-100"></div>
+                            </div>
+                            <div className="flex-1">
+                              <div className="text-sm text-gray-800 font-medium">Disk space</div>
+                              <div className="text-xs text-gray-500">6GB / 200GB</div>
+                            </div>
+                          </motion.div>
+
+                          {/* Uptime */}
+                          <motion.div 
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 1.1 }}
+                            className="flex items-center gap-3"
+                          >
+                            <div className="relative">
+                              <div className="w-11 h-11 rounded-full bg-green-50 flex items-center justify-center">
+                                <span className="text-sm font-bold text-green-600">100%</span>
+                              </div>
+                              <div className="absolute inset-0 rounded-full border-2 border-green-100"></div>
+                            </div>
+                            <div className="flex-1">
+                              <div className="text-sm text-gray-800 font-medium">Uptime monitoring</div>
+                              <div className="text-xs text-gray-500">100% uptime</div>
+                            </div>
+                          </motion.div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="h-24 flex items-end gap-0.5">
-                      {[40, 55, 45, 70, 65, 80, 75, 90, 85, 70, 60, 50, 65, 75, 80, 70, 55, 60, 45, 50, 40, 35, 30, 25].map((height, i) => (
-                        <motion.div 
-                          key={i} 
-                          initial={{ height: 0 }}
-                          animate={{ height: `${height}%` }}
-                          transition={{ duration: 0.5, delay: i * 0.02 }}
-                          className="flex-1 bg-gradient-to-t from-blue-400 to-cyan-400 rounded-t" 
-                        />
-                      ))}
+
+                    {/* Bottom Action */}
+                    <div className="mt-6 pt-6 border-t border-gray-100">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                          <span className="text-xs text-gray-600 font-medium">All systems operational</span>
+                        </div>
+                        <button className="text-xs text-blue-600 hover:text-blue-700 font-medium">
+                          Upgrade Server →
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-
-                {/* Floating Elements */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 1.5 }}
-                  className="absolute -top-3 -right-3 bg-white rounded-xl shadow-xl p-3 border border-gray-100"
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
-                      <Activity className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">99.9%</p>
-                      <p className="text-[10px] text-gray-500 uppercase tracking-wider">Uptime Status</p>
-                    </div>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 1.8 }}
-                  className="absolute -bottom-4 -left-4 bg-white rounded-lg shadow-lg p-3 border border-gray-100"
-                >
-                  <div className="flex items-center gap-2">
-                    <Settings className="w-4 h-4 text-gray-600" />
-                    <div>
-                      <p className="text-xs font-semibold text-gray-900">Manage Email Alerts</p>
-                      <div className="flex gap-1 mt-1">
-                        {[true, true, false, true].map((active, i) => (
-                          <div key={i} className={`w-6 h-3 ${active ? 'bg-blue-100' : 'bg-gray-100'} rounded-full flex items-center justify-end px-0.5`}>
-                            <div className={`w-2 h-2 ${active ? 'bg-blue-600' : 'bg-gray-400'} rounded-full`} />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
               </div>
             </motion.div>
           </div>
@@ -991,16 +972,16 @@ export default function VPSHostingPage() {
               </a>
               
               <a 
-                href="#benefits" 
+                href="#features" 
                 className={`text-xs font-medium transition-colors ${
-                  activeSection === 'benefits' ? 'text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-600'
+                  activeSection === 'features' ? 'text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-600'
                 }`}
                 onClick={(e) => {
                   e.preventDefault();
-                  document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
                 }}
               >
-                Benefits
+                Features
               </a>
               
               <a 
@@ -1061,16 +1042,16 @@ export default function VPSHostingPage() {
           </a>
           
           <a 
-            href="#benefits" 
+            href="#features" 
             className={`flex flex-col items-center justify-center p-1 transition-colors ${
-              activeSection === 'benefits' ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'
+              activeSection === 'features' ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'
             }`}
             onClick={(e) => {
               e.preventDefault();
-              document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth' });
+              document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
             }}
           >
-            <span className="text-[10px] font-medium">Benefits</span>
+            <span className="text-[10px] font-medium">Features</span>
           </a>
           
           <a 
@@ -1584,18 +1565,18 @@ export default function VPSHostingPage() {
               className="inline-flex items-center gap-2 mb-4"
             >
               <span className="px-4 py-1.5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-xs font-semibold rounded-full uppercase tracking-wider">
-                Managed VPS Features
+                Why Choose Managed VPS
               </span>
             </motion.div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+              <span className="text-gray-900">Everything You Need,</span>
               <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                Managed VPS Hosting
-              </span>{' '}
-              <span className="text-gray-900">is loaded with services</span>
+                {' '}Nothing to Manage
+              </span>
             </h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Perfect for business owners who want to save valuable time. With us managing your servers, 
-              you can focus on what matters most - growing your business.
+              Get enterprise-grade server management without the complexity. Our experts handle all technical 
+              aspects while you focus on growing your business.
             </p>
           </div>
 
@@ -1959,6 +1940,10 @@ export default function VPSHostingPage() {
           <div className="space-y-4">
             {[
               {
+                question: "What is Fully Managed VPS Hosting?",
+                answer: "Fully Managed VPS Hosting means we handle all the technical stuff for you. You get dedicated resources (CPU, RAM, storage) like regular VPS, but we take care of server maintenance, security updates, and monitoring 24/7. Benefits include automatic updates to keep your server secure, round-the-clock expert support, and easy scaling when your site grows. Perfect if you want VPS power without the technical hassle."
+              },
+              {
                 question: "What is VPS hosting and why should I choose it?",
                 answer: "VPS (Virtual Private Server) hosting gives you your own private space on a server with dedicated resources like CPU, RAM, and storage that aren't shared with others. Think of it like having your own apartment in a building rather than sharing a room. You get better performance, enhanced security, faster loading times, and full control over your server environment. It's perfect when you've outgrown shared hosting but don't need a full dedicated server yet."
               },
@@ -2028,40 +2013,40 @@ export default function VPSHostingPage() {
           >
             <div className="flex items-center justify-center mb-4">
               <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-full flex items-center justify-center">
-                <Shield className="w-8 h-8 text-white" />
+                <Server className="w-8 h-8 text-white" />
               </div>
             </div>
-            <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 leading-tight">Need Complete Peace of Mind?</h3>
-            <p className="text-base text-gray-700 mb-2 font-semibold">Try Our Fully Managed VPS Hosting</p>
+            <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 leading-tight">Want Full Control Over Your Server?</h3>
+            <p className="text-base text-gray-700 mb-2 font-semibold">Try Our Self-Managed VPS Hosting</p>
             <p className="text-sm text-gray-600 mb-6 max-w-2xl mx-auto leading-relaxed">
-              Let our experts handle everything for you - from server setup and security to 24/7 monitoring, 
-              automatic updates, and performance optimization. Focus on growing your business while we take 
-              care of all the technical details.
+              Take complete control of your virtual private server with root access and the freedom to configure 
+              everything your way. Perfect for developers, system administrators, and tech-savvy businesses who 
+              want maximum flexibility at an unbeatable price.
             </p>
             <div className="flex flex-wrap justify-center gap-4 mb-6">
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-blue-600" />
-                <span className="text-sm text-gray-700">Expert Setup & Migration</span>
+                <span className="text-sm text-gray-700">Full Root Access</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-blue-600" />
-                <span className="text-sm text-gray-700">24/7 Proactive Monitoring</span>
+                <span className="text-sm text-gray-700">Choose Your OS</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-blue-600" />
-                <span className="text-sm text-gray-700">Automatic Security Updates</span>
+                <span className="text-sm text-gray-700">Instant Provisioning</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-blue-600" />
-                <span className="text-sm text-gray-700">Performance Optimization</span>
+                <span className="text-sm text-gray-700">Scalable Resources</span>
               </div>
             </div>
-            <button 
-              onClick={() => window.location.href = '/hosting/managed-vps'}
-              className="px-8 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            <a 
+              href="/hosting/vps"
+              className="inline-block px-8 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
-              Explore Fully Managed VPS →
-            </button>
+              Explore Self-Managed VPS →
+            </a>
           </motion.div>
         </div>
       </section>

@@ -6,7 +6,8 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const currencyType = searchParams.get('currency') || 'USD'
-    const marketId = searchParams.get('market') || 'en-US'
+    // Always use en-US for marketId to get consistent pricing
+    const marketId = 'en-US'
     
     // Fetch WordPress hosting products from GoDaddy
     const url = `https://www.secureserver.net/api/v1/catalog/${PLID}/tags/wordpress?currencyType=${currencyType}&marketId=${marketId}&separateDisclaimers=false`

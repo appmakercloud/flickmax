@@ -31,7 +31,26 @@ import {
   Boxes,
   HardDrive,
   Palette,
-  TrendingUp
+  TrendingUp,
+  Smartphone,
+  Server,
+  Gauge,
+  PenTool,
+  ShoppingCart,
+  Share2,
+  Calendar,
+  Database,
+  Mail,
+  FileText,
+  CreditCard,
+  Package,
+  BarChart3,
+  Wifi,
+  ChartBar,
+  ChevronDown,
+  Calculator,
+  Download,
+  MapPin
 } from 'lucide-react'
 import { useCountry } from '@/contexts/CountryContext'
 import { useCart } from '@/contexts/CartContext'
@@ -39,29 +58,30 @@ import { getCurrencySymbol, formatPrice } from '@/lib/utils/currency'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 
-// GoDaddy WordPress Hosting Plans (Actual from GoDaddy)
-const godaddyPlans = [
+// Website Builder Plans - Fallback data matching actual GoDaddy product IDs
+const builderPlans = [
   {
-    productId: 'basic',
-    name: 'Basic',
-    tagline: 'Best for getting started',
-    monthlyPrice: 9.99,
-    yearlyPrice: 71.88,
-    originalPrice: 119.88,
-    savings: 40,
+    productId: 'website-builder-personal',
+    name: 'Personal',
+    tagline: 'Share your passion online',
+    monthlyPrice: 6.99,  // listPrice
+    yearlyPrice: 59.88,  // salePrice * 12
+    yearlyMonthlyRate: 4.99,  // salePrice
+    originalPrice: 83.88,  // listPrice * 12
+    savings: 29,
+    hasSalePrice: true,
     badge: '',
     isPopular: false,
     features: [
-      { title: 'WordPress Sites', value: '1 Website', highlight: false },
+      { title: 'Websites', value: '1 Website', highlight: false },
       { title: 'Storage', value: '10 GB NVMe SSD', highlight: false },
       { title: 'Visitors', value: '~25,000/month', highlight: false },
-      { title: 'Free Domain', value: '1 Year', highlight: true },
       { title: 'Free Business Email', value: '1st Year', highlight: true },
       { title: 'SSL Certificate', value: 'Free', highlight: true },
       { title: 'Daily Backups', value: '1 Year Retention', highlight: false },
       { title: 'Malware Scan & Removal', value: 'Included', highlight: false },
-      { title: 'WordPress Themes', value: '150+ Free', highlight: false },
-      { title: 'Staging Site', value: 'Not Included', highlight: false },
+      { title: 'Templates', value: '100+ Professional', highlight: false },
+      { title: 'Drag & Drop Editor', value: 'Included', highlight: true },
       { title: 'SEO Optimizer', value: 'Not Included', highlight: false },
       { title: 'CDN', value: 'Not Included', highlight: false }
     ],
@@ -74,25 +94,26 @@ const godaddyPlans = [
     }
   },
   {
-    productId: 'deluxe',
-    name: 'Deluxe',
-    tagline: 'Best for growing sites',
-    monthlyPrice: 14.99,
-    yearlyPrice: 119.88,
-    originalPrice: 179.88,
-    savings: 33,
-    badge: 'MOST POPULAR',
-    isPopular: true,
+    productId: 'website-builder-business',
+    name: 'Business',
+    tagline: 'Create an online presence',
+    monthlyPrice: 10.99,  // listPrice
+    yearlyPrice: 131.88,  // no sale, so listPrice * 12
+    yearlyMonthlyRate: 10.99,  // no discount
+    originalPrice: 131.88,
+    savings: 0,
+    hasSalePrice: false,
+    badge: '',
+    isPopular: false,
     features: [
-      { title: 'WordPress Sites', value: '10 Websites', highlight: true },
+      { title: 'Websites', value: '10 Websites', highlight: true },
       { title: 'Storage', value: '25 GB NVMe SSD', highlight: false },
       { title: 'Visitors', value: '~100,000/month', highlight: true },
-      { title: 'Free Domain', value: '1 Year', highlight: true },
       { title: 'Free Business Email', value: '1st Year', highlight: true },
       { title: 'SSL Certificate', value: 'Free', highlight: true },
       { title: 'Daily Backups', value: '1 Year Retention', highlight: false },
       { title: 'Malware Scan & Removal', value: 'Included', highlight: false },
-      { title: 'WordPress Themes', value: '150+ Free', highlight: false },
+      { title: 'Templates', value: '150+ Professional', highlight: false },
       { title: 'Staging Site', value: '1-Click Staging', highlight: true },
       { title: 'SEO Optimizer', value: 'Included', highlight: true },
       { title: 'SFTP Access', value: 'Included', highlight: false }
@@ -106,25 +127,26 @@ const godaddyPlans = [
     }
   },
   {
-    productId: 'ultimate',
-    name: 'Ultimate',
-    tagline: 'Best for demanding sites',
-    monthlyPrice: 19.99,
-    yearlyPrice: 179.88,
-    originalPrice: 239.88,
+    productId: 'website-builder-plus',
+    name: 'Business Plus',
+    tagline: 'Attract more customers',
+    monthlyPrice: 15.99,  // listPrice
+    yearlyPrice: 143.88,  // salePrice * 12
+    yearlyMonthlyRate: 11.99,  // salePrice
+    originalPrice: 191.88,  // listPrice * 12
     savings: 25,
-    badge: '',
-    isPopular: false,
+    hasSalePrice: true,
+    badge: 'MOST POPULAR',
+    isPopular: true,
     features: [
-      { title: 'WordPress Sites', value: '25 Websites', highlight: true },
+      { title: 'Websites', value: '25 Websites', highlight: true },
       { title: 'Storage', value: '50 GB NVMe SSD', highlight: true },
       { title: 'Visitors', value: '~400,000/month', highlight: true },
-      { title: 'Free Domain', value: '1 Year', highlight: true },
       { title: 'Free Business Email', value: '1st Year', highlight: true },
       { title: 'SSL Certificate', value: 'Free + Premium', highlight: true },
       { title: 'Daily Backups', value: '1 Year Retention', highlight: false },
       { title: 'Malware Scan & Removal', value: 'Priority', highlight: true },
-      { title: 'WordPress Themes', value: '150+ Free', highlight: false },
+      { title: 'Templates', value: '150+ Professional', highlight: false },
       { title: 'Staging Site', value: 'Multiple Staging', highlight: true },
       { title: 'SEO Optimizer', value: 'Premium', highlight: true },
       { title: 'Full CDN', value: 'Included', highlight: true },
@@ -139,25 +161,26 @@ const godaddyPlans = [
     }
   },
   {
-    productId: 'ecommerce',
-    name: 'Ecommerce',
-    tagline: 'Best for online stores',
-    monthlyPrice: 29.99,
-    yearlyPrice: 299.88,
-    originalPrice: 359.88,
-    savings: 17,
+    productId: 'website-builder-onlinestore',
+    name: 'Online Store',
+    tagline: 'Sell products and services',
+    monthlyPrice: 29.99,  // listPrice
+    yearlyPrice: 240.00,  // salePrice * 12
+    yearlyMonthlyRate: 20.00,  // salePrice
+    originalPrice: 359.88,  // listPrice * 12
+    savings: 33,
+    hasSalePrice: true,
     badge: 'BEST FOR STORES',
     isPopular: false,
     features: [
-      { title: 'WordPress Sites', value: 'Unlimited', highlight: true },
+      { title: 'Websites', value: 'Unlimited', highlight: true },
       { title: 'Storage', value: '100 GB NVMe SSD', highlight: true },
       { title: 'Visitors', value: '~800,000/month', highlight: true },
-      { title: 'Free Domain', value: '2 Years', highlight: true },
       { title: 'Free Business Email', value: '2 Years', highlight: true },
       { title: 'SSL Certificate', value: 'Premium SSL', highlight: true },
       { title: 'Real-time Backups', value: 'Included', highlight: true },
       { title: 'Malware Scan & Removal', value: 'Priority', highlight: true },
-      { title: 'WooCommerce', value: 'Pre-installed', highlight: true },
+      { title: 'E-commerce', value: 'Full Store Features', highlight: true },
       { title: 'Staging Site', value: 'Unlimited', highlight: true },
       { title: 'SEO Optimizer', value: 'Premium', highlight: true },
       { title: 'Full CDN', value: 'Premium CDN', highlight: true },
@@ -174,115 +197,237 @@ const godaddyPlans = [
   }
 ]
 
-// GoDaddy WordPress Features - Comprehensive List
-const godaddyFeatures = [
-  // Core Features
+// Website Builder Features - Reorganized with Blue-Cyan Theme
+const builderFeatures = [
+  // Essential Features - Main Highlights
   {
-    icon: Lock,
-    title: 'Free SSL Certificate',
-    description: 'Industry-standard SSL included for secure browsing and better SEO',
-    gradient: 'from-blue-600 to-cyan-600',
-    category: 'core'
+    icon: Sparkles,
+    title: 'AI Website Builder',
+    description: 'Let AI create your perfect website in minutes with smart suggestions',
+    gradient: 'from-blue-500 to-cyan-500',
+    category: 'essential',
+    highlight: true
   },
   {
     icon: Settings,
-    title: 'WordPress Pre-Installed',
-    description: 'WordPress already set up and optimized for peak performance',
+    title: 'Drag & Drop Builder',
+    description: 'No coding needed - build visually with our intuitive editor',
     gradient: 'from-blue-600 to-cyan-600',
-    category: 'core'
-  },
-  {
-    icon: RefreshCw,
-    title: 'Automatic Updates',
-    description: 'WordPress software updates applied automatically for security',
-    gradient: 'from-blue-600 to-cyan-600',
-    category: 'core'
-  },
-  {
-    icon: Layers,
-    title: 'Add More Sites',
-    description: 'Easily scale with multiple WordPress sites on one account',
-    gradient: 'from-blue-600 to-cyan-600',
-    category: 'scalability'
+    category: 'essential',
+    highlight: true
   },
   {
     icon: HardDrive,
-    title: 'Expandable Storage',
-    description: 'Add more storage as your website grows',
-    gradient: 'from-blue-600 to-cyan-600',
-    category: 'scalability'
+    title: 'Unlimited Storage & Bandwidth',
+    description: 'Never worry about limits - unlimited resources for all plans',
+    gradient: 'from-cyan-500 to-teal-500',
+    category: 'essential',
+    highlight: true
   },
-  // Security & Performance
   {
-    icon: Shield,
-    title: 'Security & Performance',
-    description: 'Enterprise-grade security with optimized performance',
+    icon: Smartphone,
+    title: 'Responsive Design',
+    description: 'Perfect on every device - mobile, tablet, and desktop',
+    gradient: 'from-teal-500 to-cyan-500',
+    category: 'essential',
+    highlight: true
+  },
+  // Design & Customization
+  {
+    icon: Palette,
+    title: 'Customizable Themes',
+    description: '100+ professional templates with endless customization',
+    gradient: 'from-blue-400 to-cyan-400',
+    category: 'design'
+  },
+  {
+    icon: Layers,
+    title: 'Click and Drag Reorder',
+    description: 'Rearrange any element with simple drag and drop',
+    gradient: 'from-cyan-400 to-teal-400',
+    category: 'design'
+  },
+  {
+    icon: ChevronDown,
+    title: 'Drop-Down Menus',
+    description: 'Multi-level navigation menus with smooth animations',
+    gradient: 'from-blue-500 to-cyan-500',
+    category: 'design'
+  },
+  {
+    icon: Boxes,
+    title: 'Content Blocks',
+    description: 'Pre-designed sections ready to customize',
+    gradient: 'from-cyan-500 to-blue-500',
+    category: 'design'
+  },
+  {
+    icon: FileText,
+    title: 'Media Library',
+    description: 'Organize images, videos, and files in one place',
+    gradient: 'from-blue-400 to-teal-400',
+    category: 'design'
+  },
+  {
+    icon: Sparkles,
+    title: 'Promo Banners',
+    description: 'Eye-catching banners for announcements and offers',
+    gradient: 'from-teal-400 to-cyan-400',
+    category: 'design'
+  },
+  // Marketing & Growth
+  {
+    icon: Search,
+    title: 'SEO Optimization',
+    description: 'Built-in tools to rank higher on Google',
+    gradient: 'from-blue-500 to-cyan-500',
+    category: 'marketing'
+  },
+  {
+    icon: Share2,
+    title: 'Social Media Integration',
+    description: 'Connect all your social channels seamlessly',
+    gradient: 'from-cyan-500 to-teal-500',
+    category: 'marketing'
+  },
+  {
+    icon: PenTool,
+    title: 'Professional Blog',
+    description: 'Full-featured blogging platform included',
+    gradient: 'from-teal-500 to-blue-500',
+    category: 'marketing'
+  },
+  {
+    icon: Mail,
+    title: 'Contact Forms',
+    description: 'Smart forms with spam protection',
+    gradient: 'from-blue-400 to-cyan-500',
+    category: 'marketing'
+  },
+  {
+    icon: Zap,
+    title: 'Calls to Action',
+    description: 'Convert visitors with powerful CTAs',
+    gradient: 'from-cyan-400 to-blue-400',
+    category: 'marketing'
+  },
+  {
+    icon: ChartBar,
+    title: 'Analytics Dashboard',
+    description: 'Track performance and visitor insights',
+    gradient: 'from-blue-500 to-teal-500',
+    category: 'marketing'
+  },
+  // E-Commerce
+  {
+    icon: ShoppingCart,
+    title: 'Online Store Builder',
+    description: 'Complete e-commerce functionality built-in',
+    gradient: 'from-blue-600 to-cyan-600',
+    category: 'ecommerce'
+  },
+  {
+    icon: CreditCard,
+    title: 'Payment Processing',
+    description: 'Accept all major credit cards securely',
+    gradient: 'from-cyan-600 to-teal-600',
+    category: 'ecommerce'
+  },
+  {
+    icon: Calculator,
+    title: 'Tax & Shipping',
+    description: 'Automated calculations for any location',
+    gradient: 'from-teal-600 to-blue-600',
+    category: 'ecommerce'
+  },
+  {
+    icon: TrendingUp,
+    title: 'Discounts & Coupons',
+    description: 'Create promotional offers easily',
+    gradient: 'from-blue-500 to-cyan-500',
+    category: 'ecommerce'
+  },
+  {
+    icon: RefreshCw,
+    title: 'Cart Recovery',
+    description: 'Recover abandoned carts automatically',
+    gradient: 'from-cyan-500 to-teal-500',
+    category: 'ecommerce'
+  },
+  {
+    icon: Download,
+    title: 'Digital Downloads',
+    description: 'Sell digital products securely',
+    gradient: 'from-teal-500 to-blue-500',
+    category: 'ecommerce'
+  },
+  {
+    icon: Star,
+    title: 'Product Reviews',
+    description: 'Build trust with customer ratings',
+    gradient: 'from-blue-400 to-cyan-400',
+    category: 'ecommerce'
+  },
+  {
+    icon: MapPin,
+    title: 'Local Pickup',
+    description: 'Offer in-person pickup options',
+    gradient: 'from-cyan-400 to-teal-400',
+    category: 'ecommerce'
+  },
+  // Security & Reliability
+  {
+    icon: Lock,
+    title: 'Free SSL Certificate',
+    description: 'Secure, encrypted connections for all visitors',
     gradient: 'from-blue-600 to-cyan-600',
     category: 'security'
   },
   {
-    icon: Search,
-    title: 'Malware Scans & Removal',
-    description: 'Automated daily scans with instant malware removal',
-    gradient: 'from-blue-600 to-cyan-600',
+    icon: Shield,
+    title: 'DDoS Protection',
+    description: 'Enterprise-level attack mitigation',
+    gradient: 'from-cyan-600 to-blue-600',
     category: 'security'
   },
   {
     icon: ShieldCheck,
-    title: 'Web Application Firewall',
-    description: 'WAF protection against common threats and attacks',
-    gradient: 'from-blue-600 to-cyan-600',
+    title: 'Malware Protection',
+    description: 'Automated scanning and threat removal',
+    gradient: 'from-blue-500 to-teal-500',
+    category: 'security'
+  },
+  {
+    icon: RefreshCw,
+    title: 'Backup & Restore',
+    description: 'Automatic daily backups with one-click restore',
+    gradient: 'from-teal-500 to-cyan-500',
     category: 'security'
   },
   {
     icon: CloudLightning,
-    title: 'DDoS Protection',
-    description: 'Enhanced security with enterprise DDoS mitigation',
-    gradient: 'from-blue-600 to-cyan-600',
+    title: 'CDN & Performance',
+    description: 'Lightning-fast loading worldwide',
+    gradient: 'from-cyan-500 to-blue-500',
     category: 'security'
   },
   {
-    icon: Code,
-    title: 'Latest PHP with LTS',
-    description: 'Latest PHP version with Zend extended long-term support',
-    gradient: 'from-blue-600 to-cyan-600',
-    category: 'performance'
-  },
-  // Growth & Design Tools
-  {
-    icon: Sparkles,
-    title: 'AI Site Setup & Optimizer',
-    description: 'AI-powered tools to quickly build and optimize your site',
-    gradient: 'from-blue-600 to-cyan-600',
-    category: 'tools'
-  },
-  {
-    icon: Palette,
-    title: 'Website Design Tools',
-    description: 'Professional design tools and templates included',
-    gradient: 'from-blue-600 to-cyan-600',
-    category: 'tools'
-  },
-  {
-    icon: Boxes,
-    title: 'Gutenberg & CoBlocks',
-    description: 'Advanced block builder by CoBlocks for stunning layouts',
-    gradient: 'from-blue-600 to-cyan-600',
-    category: 'tools'
-  },
-  {
-    icon: TrendingUp,
-    title: 'Audience Growth Tools',
-    description: 'Built-in tools to grow your website traffic and engagement',
-    gradient: 'from-blue-600 to-cyan-600',
-    category: 'tools'
+    icon: Lock,
+    title: 'Members-Only Pages',
+    description: 'Create exclusive password-protected content',
+    gradient: 'from-blue-400 to-cyan-400',
+    category: 'security'
   }
 ]
 
-export default function WordPressHostingPremiumPage() {
-  const [plans, setPlans] = useState(godaddyPlans)
+export default function WebsiteBuilderPage() {
+  const { currency, country } = useCountry()
+  const { addProductToCart } = useCart()
+  
+  // Initialize with empty array to force API fetch
+  const [plans, setPlans] = useState<any[]>([])
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly')
-  const [selectedPlan, setSelectedPlan] = useState<number>(2)
+  const [selectedPlan, setSelectedPlan] = useState<number>(1)
   const [showVideo, setShowVideo] = useState(false)
   const [timeLeft, setTimeLeft] = useState({ minutes: 30, seconds: 0 })
   const [showComparison, setShowComparison] = useState(false)
@@ -290,36 +435,139 @@ export default function WordPressHostingPremiumPage() {
   const [addingToCart, setAddingToCart] = useState<string | null>(null)
   const [showDisclaimer, setShowDisclaimer] = useState<string | null>(null)
   
-  const { currency, country } = useCountry()
-  const { addProductToCart } = useCart()
-  
   const heroRef = useRef(null)
+  
+  // Helper function to get appropriate icon for each feature
+  const getFeatureIcon = (text: string) => {
+    const lowerText = text.toLowerCase()
+    
+    // Match feature text to appropriate icons
+    if (lowerText.includes('responsive') || lowerText.includes('mobile')) {
+      return Smartphone
+    }
+    if (lowerText.includes('hosting') || lowerText.includes('host')) {
+      return Server
+    }
+    if (lowerText.includes('page-load') || lowerText.includes('performance') || lowerText.includes('rapid') || lowerText.includes('speed')) {
+      return Gauge
+    }
+    if (lowerText.includes('blog') || lowerText.includes('create')) {
+      return PenTool
+    }
+    if (lowerText.includes('ssl') || lowerText.includes('security')) {
+      return Lock
+    }
+    if (lowerText.includes('paypal') || lowerText.includes('payment') || lowerText.includes('donate')) {
+      return CreditCard
+    }
+    if (lowerText.includes('seo') || lowerText.includes('search engine')) {
+      return Search
+    }
+    if (lowerText.includes('social media') || lowerText.includes('integration')) {
+      return Share2
+    }
+    if (lowerText.includes('facebook') || lowerText.includes('share content')) {
+      return Share2
+    }
+    if (lowerText.includes('appointment') || lowerText.includes('booking') || lowerText.includes('schedule')) {
+      return Calendar
+    }
+    if (lowerText.includes('shopping cart') || lowerText.includes('cart') || lowerText.includes('store')) {
+      return ShoppingCart
+    }
+    if (lowerText.includes('product') || lowerText.includes('inventory')) {
+      return Package
+    }
+    if (lowerText.includes('shipping')) {
+      return Package
+    }
+    if (lowerText.includes('discount') || lowerText.includes('promotion')) {
+      return TrendingUp
+    }
+    if (lowerText.includes('email')) {
+      return Mail
+    }
+    if (lowerText.includes('storage') || lowerText.includes('database')) {
+      return Database
+    }
+    if (lowerText.includes('bandwidth') || lowerText.includes('unlimited')) {
+      return Wifi
+    }
+    if (lowerText.includes('analytics') || lowerText.includes('statistics')) {
+      return BarChart3
+    }
+    if (lowerText.includes('template') || lowerText.includes('design')) {
+      return Palette
+    }
+    if (lowerText.includes('support') || lowerText.includes('help')) {
+      return HeadphonesIcon
+    }
+    if (lowerText.includes('backup')) {
+      return RefreshCw
+    }
+    if (lowerText.includes('domain')) {
+      return Globe
+    }
+    if (lowerText.includes('cdn') || lowerText.includes('cloudflare')) {
+      return CloudLightning
+    }
+    if (lowerText.includes('firewall') || lowerText.includes('protection')) {
+      return Shield
+    }
+    if (lowerText.includes('malware') || lowerText.includes('scan')) {
+      return ShieldCheck
+    }
+    
+    // Default icon
+    return Check
+  }
 
-  // Fetch WordPress hosting plans from API
+  // Fetch Website Builder plans from API - refresh on currency/country change
   useEffect(() => {
     const fetchPlans = async () => {
       try {
         setIsLoading(true)
-        // Always use en-US market to get sale prices, but change currency
-        const response = await fetch(`/api/products/wordpress-hosting?currency=${currency}&market=en-US`)
-        const data = await response.json()
+        console.log('Fetching Website Builder plans for currency:', currency, 'country:', country.code)
         
-        if (data.success && data.plans) {
+        // Clear cache by adding timestamp to force fresh data
+        const timestamp = new Date().getTime()
+        // Always use en-US for market, only change currency
+        const response = await fetch(
+          `/api/products/website-builder?currency=${currency}&market=en-US&t=${timestamp}`,
+          {
+            cache: 'no-store',
+            headers: {
+              'Cache-Control': 'no-cache',
+            }
+          }
+        )
+        
+        const data = await response.json()
+        console.log('API Response:', data)
+        
+        if (data.plans && data.plans.length > 0) {
+          console.log('Setting plans from API:', data.plans)
           setPlans(data.plans)
+          
+          // Set the popular plan as selected
+          const popularIndex = data.plans.findIndex((p: any) => p.isPopular)
+          setSelectedPlan(popularIndex !== -1 ? popularIndex : 1)
         } else {
-          console.error('Failed to fetch plans:', data.error)
-          // Keep using the fallback plans
+          console.error('No plans in response, using fallback:', data)
+          // If no plans from API, keep the fallback
+          setPlans(builderPlans)
         }
       } catch (error) {
-        console.error('Error fetching WordPress hosting plans:', error)
-        // Keep using the fallback plans
+        console.error('Error fetching Website Builder plans:', error)
+        // On error, use fallback plans
+        setPlans(builderPlans)
       } finally {
         setIsLoading(false)
       }
     }
     
     fetchPlans()
-  }, [currency])
+  }, [currency, country])
 
 
   // Countdown timer for offer
@@ -341,11 +589,11 @@ export default function WordPressHostingPremiumPage() {
   }, [])
 
 
-  const handleAddToCart = async (plan: typeof godaddyPlans[0]) => {
-    // For Ecommerce plan, redirect directly to GoDaddy checkout
-    if (plan.name === 'Ecommerce') {
-      window.location.href = 'https://www.secureserver.net/products/wordpress?plan=pl-mwp-ecommerce-tier1&src=ac&term=12%3Amonth&xs=0&plid=590175'
-      return
+  const handleAddToCart = async (plan: any) => {
+    // For Online Store plan, you might want to redirect to a specific URL or handle differently
+    if (plan.name === 'Online Store' || plan.productId === 'website-builder-onlinestore') {
+      // For now, add to cart normally, but you can customize this
+      // window.location.href = 'https://www.secureserver.net/products/website-builder?plan=onlinestore&plid=590175'
     }
     
     try {
@@ -421,13 +669,13 @@ export default function WordPressHostingPremiumPage() {
                   <Sparkles className="w-4 h-4 text-white" />
                 </motion.div>
                 <span className="font-bold text-white text-sm">
-                  SAVE UP TO {Math.max(...plans.map(p => p.savings || 0))}% OFF on Annual Plans
+                  SAVE UP TO {plans.length > 0 ? Math.max(...plans.map(p => p.savings || 0)) : 40}% OFF on Annual Plans
                 </span>
               </div>
             </div>
             <div className="flex items-center justify-between text-xs">
               <span className="text-yellow-300 px-2 py-0.5 bg-white/10 rounded-full font-medium">
-                30-DAY MONEY BACK GUARANTEE
+                7-DAY MONEY BACK GUARANTEE
               </span>
               <div className="flex items-center gap-1 text-yellow-300">
                 <Flame className="w-3 h-3" />
@@ -448,11 +696,11 @@ export default function WordPressHostingPremiumPage() {
             </motion.div>
             
             <span className="font-bold">
-              SAVE UP TO {Math.max(...plans.map(p => p.savings || 0))}% OFF on Annual Plans
+              SAVE UP TO {plans.length > 0 ? Math.max(...plans.map(p => p.savings || 0)) : 40}% OFF on Annual Plans
             </span>
             
             <span className="text-yellow-300 px-2 py-1 bg-white/10 rounded-full text-xs font-medium">
-              30-DAY MONEY BACK GUARANTEE
+              7-DAY MONEY BACK GUARANTEE
             </span>
             
             <div className="flex items-center gap-2 text-yellow-300">
@@ -488,7 +736,7 @@ export default function WordPressHostingPremiumPage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-500 blur-2xl opacity-30 animate-pulse" />
                 <div className="relative bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 shadow-xl">
                   <Award className="w-5 h-5" />
-                  #1 MANAGED WORDPRESS HOSTING
+                  #1 RATED WEBSITE BUILDER
                   <Award className="w-5 h-5" />
                 </div>
               </div>
@@ -502,7 +750,7 @@ export default function WordPressHostingPremiumPage() {
                 transition={{ delay: 0.3 }}
                 className="block text-gray-900"
               >
-                Lightning-Fast
+                Create Stunning
               </motion.span>
               <motion.span
                 initial={{ opacity: 0, x: 50 }}
@@ -510,7 +758,7 @@ export default function WordPressHostingPremiumPage() {
                 transition={{ delay: 0.4 }}
                 className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-600"
               >
-                WordPress Hosting
+                Websites in Minutes
               </motion.span>
               <motion.span
                 initial={{ opacity: 0, y: 50 }}
@@ -518,7 +766,7 @@ export default function WordPressHostingPremiumPage() {
                 transition={{ delay: 0.5 }}
                 className="block text-3xl md:text-4xl lg:text-5xl mt-4 text-gray-700"
               >
-                Built for Success
+                Zero Coding Skills Needed
               </motion.span>
             </h1>
 
@@ -528,10 +776,10 @@ export default function WordPressHostingPremiumPage() {
               transition={{ delay: 0.6 }}
               className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto"
             >
-              Join <span className="text-blue-600 font-bold">5,000+ websites</span> achieving{' '}
-              <span className="text-cyan-600 font-bold">99.99% uptime</span>,{' '}
-              <span className="text-teal-600 font-bold">200ms load times</span>, and{' '}
-              <span className="text-blue-600 font-bold">10x better performance</span>
+              Build your dream <span className="text-blue-600 font-bold">website in minutes</span> with our intuitive{' '}
+              <span className="text-cyan-600 font-bold">drag-and-drop builder</span>,{' '}
+              <span className="text-teal-600 font-bold">300+ designer templates</span>, and{' '}
+              <span className="text-blue-600 font-bold">AI-powered tools</span>
             </motion.p>
 
             {/* CTA Buttons */}
@@ -560,7 +808,7 @@ export default function WordPressHostingPremiumPage() {
                 className="px-8 py-4 bg-white/80 backdrop-blur-sm border-2 border-blue-200 rounded-full font-bold text-lg text-gray-700 hover:bg-white hover:border-blue-300 transition-all shadow-lg"
               >
                 <Play className="inline-block mr-2 w-5 h-5 text-blue-600" />
-                Watch Demo (2 min)
+                See How It Works
               </motion.button>
             </motion.div>
 
@@ -572,10 +820,10 @@ export default function WordPressHostingPremiumPage() {
               className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto"
             >
               {[
-                { icon: Shield, text: 'Uptime Guarantee', value: '99.99%', color: 'from-blue-600 to-cyan-600' },
-                { icon: Lightning, text: 'Load Time', value: '<200ms', color: 'from-blue-600 to-cyan-600' },
+                { icon: Palette, text: 'Templates', value: '100+', color: 'from-blue-600 to-cyan-600' },
+                { icon: Lightning, text: 'Setup Time', value: '<5 mins', color: 'from-blue-600 to-cyan-600' },
                 { icon: HeadphonesIcon, text: 'Support', value: '24/7/365', color: 'from-blue-600 to-cyan-600' },
-                { icon: Sparkles, text: 'AI Website Builder', value: 'Quick Setup', color: 'from-blue-600 to-cyan-600' }
+                { icon: Sparkles, text: 'AI Designer', value: 'Built-in', color: 'from-blue-600 to-cyan-600' }
               ].map((item, i) => (
                 <motion.div
                   key={i}
@@ -610,11 +858,11 @@ export default function WordPressHostingPremiumPage() {
             <h2 className="text-4xl md:text-5xl font-black mb-4 text-gray-900">
               Choose Your Perfect{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600">
-                WordPress Plan
+                Website Builder Plan
               </span>
             </h2>
             <p className="text-xl text-gray-600">
-              All plans include 30-day money-back guarantee • Free migration • Cancel anytime
+              All plans include SSL certificate • 24/7 support • 7-day money-back guarantee
             </p>
           </motion.div>
 
@@ -644,9 +892,9 @@ export default function WordPressHostingPremiumPage() {
                 }`}
               >
                 Yearly
-                {billingCycle === 'yearly' && (
+                {billingCycle === 'yearly' && plans.length > 0 && (
                   <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
-                    SAVE 40%
+                    SAVE UP TO {Math.max(...plans.map(p => p.savings || 0))}%
                   </span>
                 )}
               </button>
@@ -655,8 +903,24 @@ export default function WordPressHostingPremiumPage() {
 
           {/* Pricing Cards */}
           {isLoading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+              {[0, 1, 2, 3].map((i) => (
+                <div key={i} className="bg-white border-2 border-gray-200 rounded-2xl p-6 animate-pulse">
+                  <div className="h-8 bg-gray-200 rounded w-3/4 mx-auto mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-full mb-6"></div>
+                  <div className="h-12 bg-gray-200 rounded w-2/3 mx-auto mb-6"></div>
+                  <div className="space-y-3">
+                    {[1, 2, 3, 4].map((j) => (
+                      <div key={j} className="h-4 bg-gray-200 rounded w-full"></div>
+                    ))}
+                  </div>
+                  <div className="h-10 bg-gray-200 rounded-full mt-6"></div>
+                </div>
+              ))}
+            </div>
+          ) : plans.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-gray-600">Unable to load pricing. Please try again.</p>
             </div>
           ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
@@ -677,8 +941,8 @@ export default function WordPressHostingPremiumPage() {
 
                 <div
                   className={`relative bg-white border-2 ${
-                    plan.isPopular ? 'border-blue-400 shadow-xl' : 'border-gray-200 hover:border-blue-300'
-                  } rounded-2xl p-6 hover:transform hover:scale-105 transition-all duration-300 h-full flex flex-col`}
+                    plan.isPopular ? 'border-blue-400 shadow-xl scale-105' : 'border-gray-200 hover:border-blue-300'
+                  } rounded-2xl p-6 hover:shadow-lg transition-all duration-300 h-full flex flex-col`}
                 >
                   {/* Badge */}
                   {plan.badge && (
@@ -693,37 +957,40 @@ export default function WordPressHostingPremiumPage() {
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold mb-2 text-gray-900">{plan.name}</h3>
                     <p className="text-gray-600 text-sm">{plan.tagline}</p>
-                    {plan.name === 'Ecommerce' && (
-                      <p className="text-xs text-blue-600 mt-1 font-medium">
-                        Everything in Ultimate PLUS:
-                      </p>
-                    )}
                   </div>
 
                   {/* Price Section */}
                   <div className="text-center mb-6">
-                    {/* Show original price and discount ONLY for yearly billing */}
-                    {plan.savings > 0 && billingCycle === 'yearly' && (
+                    {/* Show discount info based on billing cycle */}
+                    {billingCycle === 'yearly' && (
                       <div className="flex items-center justify-center gap-2 mb-2">
-                        <p className="text-gray-400 line-through text-lg">
-                          {formatPrice(plan.originalPrice, currency)}
-                        </p>
-                        <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-bold">
-                          {plan.savings}% OFF
-                        </span>
+                        {plan.savings > 0 ? (
+                          <>
+                            <p className="text-gray-400 line-through text-lg">
+                              {formatPrice(plan.originalPrice, currency)}
+                            </p>
+                            <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-bold">
+                              {plan.savings}% OFF
+                            </span>
+                          </>
+                        ) : plan.hasSalePrice === false && (
+                          <span className="text-gray-500 text-sm">
+                            Same price as monthly
+                          </span>
+                        )}
                       </div>
                     )}
                     <div className="flex items-end justify-center gap-1">
                       <span className="text-2xl font-bold text-gray-700">{getCurrencySymbol(currency)}</span>
                       <span className="text-5xl font-black text-gray-900">
                         {billingCycle === 'yearly'
-                          ? Math.floor(plan.yearlyPrice / 12)
+                          ? Math.floor(plan.yearlyMonthlyRate || plan.yearlyPrice / 12)
                           : Math.floor(plan.monthlyPrice)}
                       </span>
                       <span className="text-2xl font-bold text-gray-700">
                         .
                         {billingCycle === 'yearly'
-                          ? ((plan.yearlyPrice / 12) % 1).toFixed(2).substring(2)
+                          ? ((plan.yearlyMonthlyRate || plan.yearlyPrice / 12) % 1).toFixed(2).substring(2)
                           : (plan.monthlyPrice % 1).toFixed(2).substring(2)}
                       </span>
                       <span className="text-gray-500 ml-2 mb-2">/mo</span>
@@ -735,25 +1002,64 @@ export default function WordPressHostingPremiumPage() {
                     )}
                   </div>
 
-                  {/* Features List */}
-                  <ul className="space-y-3 mb-6 flex-grow">
-                    {(plan.features || []).slice(0, 12).map((feature: { text?: string; title?: string; highlight?: boolean }, idx: number) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <CheckCircle
-                          className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-                            feature.highlight ? 'text-green-500' : 'text-gray-400'
-                          }`}
-                        />
-                        <div className="flex-1">
-                          <span className={`text-sm ${
-                            feature.highlight ? 'text-gray-900 font-medium' : 'text-gray-600'
-                          }`}>
-                            {feature.text || feature.title}
-                          </span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+                  {/* Divider */}
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-5"></div>
+
+                  {/* Features List - Improved Design */}
+                  <div className="mb-6 flex-grow overflow-y-auto">
+                    {/* For Online Store, show "Everything in Business Plus PLUS:" */}
+                    {plan.name === 'Online Store' && (
+                      <div className="mb-3">
+                        <p className="text-xs font-semibold text-gray-600 text-center">
+                          Everything in Business Plus PLUS:
+                        </p>
+                      </div>
+                    )}
+                    
+                    <ul className="space-y-2">
+                      {(() => {
+                        let featuresToShow = plan.features || []
+                        
+                        // For Online Store, only show unique features not in Business Plus
+                        if (plan.name === 'Online Store') {
+                          // These are the unique e-commerce features that Online Store has
+                          const uniqueKeywords = [
+                            'shopping cart',
+                            'sell physical',
+                            'sell digital',
+                            'accept credit',
+                            'debit card',
+                            'shipping',
+                            'discount',
+                            'promotion',
+                            'inventory'
+                          ]
+                          
+                          featuresToShow = featuresToShow.filter((feature: any) => {
+                            const featureText = (feature.text || feature.title || '').toLowerCase()
+                            // Check if this feature contains any of the unique e-commerce keywords
+                            return uniqueKeywords.some(keyword => featureText.includes(keyword))
+                          })
+                        }
+                        
+                        return featuresToShow.map((feature: { text?: string; title?: string; highlight?: boolean }, idx: number) => {
+                          const featureText = feature.text || feature.title || ''
+                          const IconComponent = getFeatureIcon(featureText)
+                          
+                          return (
+                            <li key={idx} className="flex items-center gap-2.5 group">
+                              <div className="flex-shrink-0 p-1 bg-gray-50 rounded">
+                                <IconComponent className="w-4 h-4 text-gray-600" />
+                              </div>
+                              <span className="text-sm text-gray-700 leading-tight">
+                                {featureText}
+                              </span>
+                            </li>
+                          )
+                        })
+                      })()}
+                    </ul>
+                  </div>
 
                   {/* CTA Button */}
                   <motion.button
@@ -773,17 +1079,9 @@ export default function WordPressHostingPremiumPage() {
                         Adding...
                       </span>
                     ) : (
-                      plan.name === 'Ecommerce' ? 'Buy Now' : 'Get Started Now'
+                      'Get Started Now'
                     )}
                   </motion.button>
-
-                  {/* Disclaimers */}
-                  <button
-                    onClick={() => setShowDisclaimer(plan.productId)}
-                    className="text-xs text-gray-500 hover:text-gray-700 text-center mt-3 transition-colors underline"
-                  >
-                    Disclaimers
-                  </button>
                 </div>
               </motion.div>
             ))}
@@ -792,7 +1090,7 @@ export default function WordPressHostingPremiumPage() {
         </div>
       </section>
 
-      {/* GoDaddy WordPress Features Section */}
+      {/* Website Builder Features Section */}
       <section className="relative py-24 z-10 bg-gradient-to-b from-gray-50/30 via-white to-gray-50/30">
         <div className="max-w-7xl mx-auto px-4">
           <motion.div
@@ -814,111 +1112,275 @@ export default function WordPressHostingPremiumPage() {
             <h2 className="text-4xl md:text-5xl font-black mb-4 text-gray-900">
               Everything You Need to
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600">
-                Succeed with WordPress
+                Build with Confidence
               </span>
             </h2>
           </motion.div>
 
-          {/* Features Grid with Categories */}
-          <div className="space-y-12">
-            {/* Core Features */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-700 mb-6 flex items-center gap-2">
-                <div className="w-8 h-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full" />
-                Core Features
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                {godaddyFeatures.filter(f => f.category === 'core').map((feature, index) => (
+          {/* Features Grid - Redesigned with Blue-Cyan Theme */}
+          <div className="space-y-16">
+            {/* Essential Features - Hero Section */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="text-center mb-8">
+                <motion.h3 
+                  initial={{ opacity: 0, y: -20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="text-2xl font-bold text-gray-900 mb-2"
+                >
+                  ✨ Essential Features
+                </motion.h3>
+                <p className="text-gray-600">Everything you need to build amazing websites</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {builderFeatures.filter(f => f.category === 'essential').map((feature, index) => (
                   <motion.div
                     key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
+                    whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: index * 0.05 }}
-                    whileHover={{ y: -5 }}
+                    transition={{ 
+                      delay: index * 0.1,
+                      type: "spring",
+                      stiffness: 100
+                    }}
+                    whileHover={{ 
+                      scale: 1.05,
+                      rotate: 2,
+                      transition: { duration: 0.2 }
+                    }}
                     className="relative group"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-cyan-50 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300" />
-                    <div className="relative bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-lg transition-all h-full">
-                      <div className={`inline-flex p-2.5 rounded-lg bg-gradient-to-r ${feature.gradient} mb-3`}>
-                        <feature.icon className="w-5 h-5 text-white" />
-                      </div>
-                      <h3 className="text-base font-semibold mb-2 text-gray-900">{feature.title}</h3>
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-2xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity" />
+                    <div className="relative bg-gradient-to-br from-white to-blue-50/50 border-2 border-blue-200/50 rounded-2xl p-6 hover:border-cyan-400 hover:shadow-2xl transition-all h-full">
+                      <motion.div 
+                        whileHover={{ rotate: 360 }}
+                        transition={{ duration: 0.5 }}
+                        className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${feature.gradient} mb-4 shadow-lg`}
+                      >
+                        <feature.icon className="w-6 h-6 text-white" />
+                      </motion.div>
+                      <h3 className="text-lg font-bold mb-2 text-gray-900">{feature.title}</h3>
                       <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
                     </div>
                   </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
-            {/* Security & Performance */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-700 mb-6 flex items-center gap-2">
-                <div className="w-8 h-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full" />
-                Security & Performance
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                {godaddyFeatures.filter(f => f.category === 'security' || f.category === 'performance').map((feature, index) => (
+            {/* Design & Customization */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent" />
+                <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+                  <Palette className="w-5 h-5 text-blue-600" />
+                  Design & Customization
+                </h3>
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-cyan-300 to-transparent" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                {builderFeatures.filter(f => f.category === 'design').map((feature, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.05 }}
+                    whileHover={{ 
+                      y: -8,
+                      transition: { type: "spring", stiffness: 300 }
+                    }}
+                    className="relative group"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-300 to-blue-300 rounded-xl opacity-0 group-hover:opacity-20 blur transition-all" />
+                    <div className="relative bg-white/90 backdrop-blur border border-blue-100 rounded-xl p-4 hover:border-cyan-300 hover:shadow-xl transition-all h-full">
+                      <div className={`inline-flex p-2 rounded-lg bg-gradient-to-r ${feature.gradient} mb-3`}>
+                        <feature.icon className="w-4 h-4 text-white" />
+                      </div>
+                      <h3 className="text-sm font-semibold mb-1 text-gray-900">{feature.title}</h3>
+                      <p className="text-gray-600 text-xs leading-relaxed">{feature.description}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Marketing & Growth */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-teal-300 to-transparent" />
+                <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-cyan-600" />
+                  Marketing & Growth
+                </h3>
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                {builderFeatures.filter(f => f.category === 'marketing').map((feature, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: index * 0.05 }}
-                    whileHover={{ y: -5 }}
+                    transition={{ 
+                      delay: index * 0.05,
+                      type: "spring",
+                      damping: 20
+                    }}
+                    whileHover={{ 
+                      scale: 1.05,
+                      transition: { duration: 0.2 }
+                    }}
                     className="relative group"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-cyan-50 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300" />
-                    <div className="relative bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-lg transition-all h-full">
-                      <div className={`inline-flex p-2.5 rounded-lg bg-gradient-to-r ${feature.gradient} mb-3`}>
-                        <feature.icon className="w-5 h-5 text-white" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-teal-200 to-cyan-200 rounded-xl opacity-0 group-hover:opacity-30 blur-sm transition-all" />
+                    <div className="relative bg-gradient-to-br from-white to-cyan-50/30 border border-cyan-200/50 rounded-xl p-4 hover:border-teal-300 hover:shadow-xl transition-all h-full">
+                      <div className={`inline-flex p-2 rounded-lg bg-gradient-to-r ${feature.gradient} mb-3`}>
+                        <feature.icon className="w-4 h-4 text-white" />
                       </div>
-                      <h3 className="text-base font-semibold mb-2 text-gray-900">{feature.title}</h3>
-                      <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
+                      <h3 className="text-sm font-semibold mb-1 text-gray-900">{feature.title}</h3>
+                      <p className="text-gray-600 text-xs leading-relaxed">{feature.description}</p>
                     </div>
                   </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
-            {/* Scalability */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-700 mb-6 flex items-center gap-2">
-                <div className="w-8 h-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full" />
-                Scalability
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-                {godaddyFeatures.filter(f => f.category === 'scalability').map((feature, index) => (
+            {/* E-Commerce */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent" />
+                <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+                  <ShoppingCart className="w-5 h-5 text-blue-600" />
+                  E-Commerce Features
+                </h3>
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-cyan-300 to-transparent" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {builderFeatures.filter(f => f.category === 'ecommerce').map((feature, index) => (
                   <motion.div
                     key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, rotateY: -90 }}
+                    whileInView={{ opacity: 1, rotateY: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: index * 0.05 }}
-                    whileHover={{ y: -5 }}
-                    className="relative group"
+                    transition={{ 
+                      delay: index * 0.08,
+                      duration: 0.5
+                    }}
+                    whileHover={{ 
+                      z: 50,
+                      scale: 1.03,
+                      transition: { duration: 0.2 }
+                    }}
+                    className="relative group perspective-1000"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-cyan-50 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300" />
-                    <div className="relative bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-lg transition-all h-full">
-                      <div className={`inline-flex p-2.5 rounded-lg bg-gradient-to-r ${feature.gradient} mb-3`}>
-                        <feature.icon className="w-5 h-5 text-white" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-300 to-teal-300 rounded-lg opacity-0 group-hover:opacity-25 blur transition-all" />
+                    <div className="relative bg-white border border-blue-200/60 rounded-lg p-4 hover:border-cyan-400 hover:shadow-lg transition-all h-full">
+                      <div className={`inline-flex p-2 rounded bg-gradient-to-r ${feature.gradient} mb-2.5`}>
+                        <feature.icon className="w-4 h-4 text-white" />
                       </div>
-                      <h3 className="text-base font-semibold mb-2 text-gray-900">{feature.title}</h3>
-                      <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
+                      <h3 className="text-sm font-semibold mb-1 text-gray-900">{feature.title}</h3>
+                      <p className="text-gray-600 text-xs">{feature.description}</p>
                     </div>
                   </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
-            {/* Growth & Design Tools */}
+            {/* Security & Reliability */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-cyan-300 to-transparent" />
+                <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-teal-600" />
+                  Security & Reliability
+                </h3>
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-blue-300 to-transparent" />
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                {builderFeatures.filter(f => f.category === 'security').map((feature, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ 
+                      delay: index * 0.05,
+                      type: "spring",
+                      stiffness: 200
+                    }}
+                    whileHover={{ 
+                      y: -5,
+                      boxShadow: "0 10px 30px rgba(59, 130, 246, 0.2)"
+                    }}
+                    className="relative group"
+                  >
+                    <div className="relative bg-gradient-to-br from-blue-50 to-cyan-50 border border-teal-200/50 rounded-lg p-3 hover:border-blue-400 transition-all h-full">
+                      <div className={`inline-flex p-1.5 rounded bg-gradient-to-r ${feature.gradient} mb-2`}>
+                        <feature.icon className="w-3.5 h-3.5 text-white" />
+                      </div>
+                      <h3 className="text-xs font-semibold mb-0.5 text-gray-900">{feature.title}</h3>
+                      <p className="text-gray-600 text-[10px] leading-tight">{feature.description}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Plus - Every Website Builder Plan Includes */}
             <div>
               <h3 className="text-lg font-semibold text-gray-700 mb-6 flex items-center gap-2">
                 <div className="w-8 h-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full" />
-                Website & Audience Growth Tools
+                Plus - Every Website Builder Plan Includes
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {godaddyFeatures.filter(f => f.category === 'tools').map((feature, index) => (
+                {[
+                  {
+                    icon: HeadphonesIcon,
+                    title: '24/7 Expert Support',
+                    description: 'Our Flickmax Guides are always here to help',
+                    gradient: 'from-blue-600 to-cyan-600'
+                  },
+                  {
+                    icon: Smartphone,
+                    title: 'Mobile-Friendly Site',
+                    description: 'Easily reach customers wherever they are',
+                    gradient: 'from-blue-600 to-cyan-600'
+                  },
+                  {
+                    icon: Palette,
+                    title: '100+ Beautiful Templates',
+                    description: 'Dazzle customers with templates designed to sell',
+                    gradient: 'from-blue-600 to-cyan-600'
+                  },
+                  {
+                    icon: ChartBar,
+                    title: 'Marketing Dashboard',
+                    description: 'Real-time tracking of your performance and presence',
+                    gradient: 'from-blue-600 to-cyan-600'
+                  }
+                ].map((feature, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
@@ -973,12 +1435,12 @@ export default function WordPressHostingPremiumPage() {
             <h2 className="text-4xl md:text-5xl font-black mb-6 text-gray-900">
               Why Choose Flickmax for
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600">
-                Managed WordPress Hosting?
+                Website Builder Platform?
               </span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Our Managed Hosting for WordPress is up to 2x faster than the competition via Cloudflare CDN, 
-              so your site performs at lightning speeds. Plus, we make WordPress hosting easy.
+              Our Website Builder is designed for speed and simplicity. Create professional websites 
+              in minutes with our intuitive drag-and-drop interface and AI-powered design tools.
             </p>
           </motion.div>
 
@@ -1001,7 +1463,7 @@ export default function WordPressHostingPremiumPage() {
                 </h3>
                 <p className="text-gray-600 mb-6">
                   With Flickmax, you don&apos;t have to stress about doing any heavy lifting or keeping up with 
-                  WordPress core updates. We do it all for you.
+                  Updates and maintenance. We handle everything automatically.
                 </p>
                 
                 <div className="space-y-4">
@@ -1009,7 +1471,7 @@ export default function WordPressHostingPremiumPage() {
                     { icon: CheckCircle, text: '99.9% uptime guarantee and money-back guarantee' },
                     { icon: Sparkles, text: 'Pre-built sites and startup support' },
                     { icon: HeadphonesIcon, text: 'Free 24/7 expert support' },
-                    { icon: RefreshCw, text: 'Automatic WordPress core software and security updates' },
+                    { icon: RefreshCw, text: 'Automatic platform updates and security patches' },
                     { icon: Rocket, text: 'AI-based onboarding and creation tool for faster launches' }
                   ].map((item, index) => (
                     <motion.div
@@ -1096,14 +1558,14 @@ export default function WordPressHostingPremiumPage() {
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-full">
               <CloudLightning className="w-5 h-5 text-blue-600" />
               <span className="text-gray-700">
-                <span className="font-semibold">2x Faster Performance</span> with Cloudflare CDN Integration
+                <span className="font-semibold">2x Faster Performance</span> with Flickmax Global CDN
               </span>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Migration Section */}
+      {/* Key Features Section - Redesigned */}
       <section className="relative py-20 z-10 overflow-hidden bg-gradient-to-b from-gray-50/30 via-white to-gray-50/30">
         <div className="max-w-7xl mx-auto px-4">
           <div className="relative">
@@ -1118,146 +1580,162 @@ export default function WordPressHostingPremiumPage() {
               </div>
               
               <div className="relative p-12 lg:p-16">
-                <div className="grid lg:grid-cols-2 gap-12 items-center">
-                  {/* Left Content */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                  >
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-6">
-                      <CheckCircle className="w-4 h-4" />
-                      <span>Free Migration Service</span>
-                    </div>
-                    
-                    <h2 className="text-4xl lg:text-5xl font-black mb-6 text-white">
-                      Can I Transfer My WordPress Site to Flickmax?
-                    </h2>
-                    
-                    <p className="text-xl text-white/90 mb-8 leading-relaxed">
-                      <span className="font-bold text-white">Yes, absolutely!</span> You can migrate your site to Flickmax 
-                      Managed WordPress Hosting using our simple site migration wizard during your initial 
-                      onboarding experience.
-                    </p>
-                    
-                    <div className="space-y-4 mb-8">
-                      <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                        <Sparkles className="w-5 h-5" />
-                        How Our Migration Works:
-                      </h3>
-                      {[
-                        { 
-                          icon: Globe, 
-                          title: 'Flexible Domain Options',
-                          text: 'Move to your domain name or use a temporary domain during setup' 
-                        },
-                        { 
-                          icon: Search, 
-                          title: 'Quick Review Process',
-                          text: 'Our experts review your site to ensure everything is perfect' 
-                        },
-                        { 
-                          icon: Rocket, 
-                          title: 'Ready to Publish',
-                          text: 'After review, your site is optimized and ready to go live' 
-                        }
-                      ].map((item, idx) => (
-                        <motion.div 
-                          key={idx} 
-                          initial={{ opacity: 0, x: -20 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: idx * 0.1 }}
-                          className="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4"
-                        >
-                          <div className="w-10 h-10 rounded-lg bg-white/20 p-2 flex-shrink-0">
-                            <item.icon className="w-full h-full text-white" />
-                          </div>
-                          <div>
-                            <p className="font-semibold text-white mb-1">{item.title}</p>
-                            <p className="text-white/80 text-sm">{item.text}</p>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                    
-                    <div className="flex flex-wrap gap-4">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => window.location.href = '#pricing'}
-                        className="px-8 py-4 bg-white text-blue-600 rounded-full font-bold shadow-lg hover:shadow-xl transition-all"
-                      >
-                        Start Free Migration
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="px-8 py-4 bg-white/20 backdrop-blur-sm text-white rounded-full font-bold hover:bg-white/30 transition-all"
-                      >
-                        Learn More
-                      </motion.button>
-                    </div>
-                  </motion.div>
+                {/* Section Header */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="text-center mb-12"
+                >
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-6">
+                    <Sparkles className="w-4 h-4" />
+                    <span>Core Platform Features</span>
+                  </div>
                   
-                  {/* Right Visual */}
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="relative hidden lg:block"
-                  >
-                    <div className="relative">
-                      {/* Animated circles */}
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                        className="absolute inset-0 flex items-center justify-center"
-                      >
-                        <div className="w-64 h-64 rounded-full border-4 border-white/20 border-dashed" />
-                      </motion.div>
-                      <motion.div
-                        animate={{ rotate: -360 }}
-                        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                        className="absolute inset-0 flex items-center justify-center"
-                      >
-                        <div className="w-48 h-48 rounded-full border-4 border-white/30 border-dotted" />
-                      </motion.div>
-                      
-                      {/* Center icon */}
-                      <div className="relative w-64 h-64 mx-auto flex items-center justify-center">
-                        <div className="w-32 h-32 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                          <RefreshCw className="w-16 h-16 text-white" />
+                  <h2 className="text-4xl lg:text-5xl font-black mb-4 text-white">
+                    Build Beautiful Websites
+                    <span className="block">That Perform</span>
+                  </h2>
+                  
+                  <p className="text-xl text-white/90 max-w-3xl mx-auto">
+                    Every Flickmax Website Builder plan includes these essential features 
+                    to ensure your success online
+                  </p>
+                </motion.div>
+
+                {/* Features Grid - 2x2 Layout */}
+                <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
+                  {[
+                    {
+                      icon: Smartphone,
+                      title: 'Mobile Design and Editing',
+                      description: "No matter what device you're using, your site will look great and you can edit on-the-go.",
+                      gradient: 'from-blue-500 to-cyan-500',
+                      badge: 'Responsive',
+                      highlights: ['Edit anywhere', 'Touch-optimized', 'Real-time preview']
+                    },
+                    {
+                      icon: Palette,
+                      title: 'Customizable Themes',
+                      description: 'Play with 100+ theme filters to instantly change layouts, fonts and colors.',
+                      gradient: 'from-purple-500 to-pink-500',
+                      badge: '100+ Themes',
+                      highlights: ['One-click styling', 'Custom colors', 'Font library']
+                    },
+                    {
+                      icon: Server,
+                      title: 'Free Website Hosting',
+                      description: 'Ensure your site runs smoothly and pages load quickly with fast, reliable hosting.',
+                      gradient: 'from-green-500 to-teal-500',
+                      badge: 'Always Free',
+                      highlights: ['99.9% uptime', 'SSL included', 'Daily backups']
+                    },
+                    {
+                      icon: Gauge,
+                      title: 'Rapid Page-Load Performance',
+                      description: "Nothing's worse than a slow loading webpage. Ours are fast.",
+                      gradient: 'from-orange-500 to-red-500',
+                      badge: 'Lightning Fast',
+                      highlights: ['CDN powered', 'Optimized images', 'Fast servers']
+                    }
+                  ].map((feature, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="relative group"
+                    >
+                      <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 lg:p-8 hover:bg-white/20 transition-all duration-300 h-full border border-white/20">
+                        {/* Feature Badge */}
+                        <div className="absolute -top-3 right-6">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r ${feature.gradient} text-white shadow-lg`}>
+                            {feature.badge}
+                          </span>
+                        </div>
+                        
+                        {/* Icon and Title */}
+                        <div className="flex items-start gap-4 mb-4">
+                          <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} p-3 flex-shrink-0 shadow-lg`}>
+                            <feature.icon className="w-full h-full text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-white mb-2">
+                              {feature.title}
+                            </h3>
+                            <p className="text-white/80 text-base leading-relaxed">
+                              {feature.description}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        {/* Feature Highlights */}
+                        <div className="mt-4 pt-4 border-t border-white/10">
+                          <div className="flex flex-wrap gap-2">
+                            {feature.highlights.map((highlight, hidx) => (
+                              <span 
+                                key={hidx}
+                                className="inline-flex items-center gap-1 px-3 py-1 bg-white/10 rounded-full text-xs text-white/90"
+                              >
+                                <CheckCircle className="w-3 h-3" />
+                                {highlight}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </div>
-                      
-                      {/* Feature badges */}
-                      <motion.div
-                        animate={{ y: [0, -10, 0] }}
-                        transition={{ duration: 3, repeat: Infinity }}
-                        className="absolute top-0 right-0 bg-white rounded-lg p-3 shadow-lg"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-5 h-5 text-blue-600" />
-                          <span className="text-sm font-semibold text-gray-900">24hr Transfer</span>
-                        </div>
-                      </motion.div>
-                      
-                      <motion.div
-                        animate={{ y: [0, 10, 0] }}
-                        transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                        className="absolute bottom-0 left-0 bg-white rounded-lg p-3 shadow-lg"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Shield className="w-5 h-5 text-green-600" />
-                          <span className="text-sm font-semibold text-gray-900">Zero Downtime</span>
-                        </div>
-                      </motion.div>
-                    </div>
-                  </motion.div>
+                    </motion.div>
+                  ))}
                 </div>
+
+                {/* Bottom CTA */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4 }}
+                  className="mt-12 text-center"
+                >
+                  <p className="text-white/90 mb-6 text-lg">
+                    Start building your professional website today with our powerful platform
+                  </p>
+                  <div className="flex flex-wrap gap-4 justify-center">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
+                      className="px-8 py-4 bg-white text-blue-600 rounded-full font-bold shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+                    >
+                      <Rocket className="w-5 h-5" />
+                      Get Started Now
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-8 py-4 bg-white/20 backdrop-blur-sm text-white rounded-full font-bold hover:bg-white/30 transition-all flex items-center gap-2"
+                    >
+                      <Play className="w-5 h-5" />
+                      Watch Demo
+                    </motion.button>
+                  </div>
+                  
+                  {/* Trust Indicators */}
+                  <div className="mt-8 flex items-center justify-center gap-8 flex-wrap">
+                    <div className="flex items-center gap-2 text-white/80 text-sm">
+                      <Clock className="w-4 h-4" />
+                      <span>Setup in 5 minutes</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-white/80 text-sm">
+                      <Shield className="w-4 h-4" />
+                      <span>No coding required</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-white/80 text-sm">
+                      <RefreshCw className="w-4 h-4" />
+                      <span>Free updates</span>
+                    </div>
+                  </div>
+                </motion.div>
               </div>
             </div>
           </div>
@@ -1288,18 +1766,18 @@ export default function WordPressHostingPremiumPage() {
               </div>
               
               <h3 className="text-3xl font-bold mb-6 text-gray-900">
-                After I Purchase WordPress Hosting, 
+                After I Purchase Website Builder, 
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600">
                   How Do I Get Started?
                 </span>
               </h3>
               
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                Your hosting plan is seamlessly connected to the latest version of WordPress. 
-                Getting started is incredibly simple:
+              <p className="text-lg text-gray-600 mb-4 leading-relaxed">
+                Your website builder comes with everything pre-configured and ready to use. 
+                <span className="font-semibold text-blue-600"> Let AI help create your website in minutes.</span>
               </p>
               
-              <div className="space-y-4 mb-8">
+              <div className="space-y-4 mb-6">
                 {[
                   {
                     icon: Settings,
@@ -1309,7 +1787,7 @@ export default function WordPressHostingPremiumPage() {
                   {
                     icon: HeadphonesIcon,
                     title: '24/7 Expert Support',
-                    description: 'Our award-winning WordPress experts are always ready to help'
+                    description: 'Our award-winning support team is always ready to help'
                   },
                   {
                     icon: Sparkles,
@@ -1336,9 +1814,35 @@ export default function WordPressHostingPremiumPage() {
                 ))}
               </div>
               
+              {/* New Features Grid */}
+              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 mb-6">
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { icon: Smartphone, text: 'Responsive Design' },
+                    { icon: Database, text: 'Unlimited Storage' },
+                    { icon: Wifi, text: 'Unlimited Bandwidth' },
+                    { icon: Sparkles, text: 'AI Website Builder' },
+                    { icon: RefreshCw, text: 'Backup/Restore' },
+                    { icon: CheckCircle, text: 'Ready Instantly' }
+                  ].map((feature, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.05 }}
+                      className="flex items-center gap-2 text-sm"
+                    >
+                      <feature.icon className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                      <span className="text-gray-700 font-medium">{feature.text}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+              
               <div className="flex items-center gap-3 text-sm text-gray-500">
                 <CheckCircle className="w-4 h-4 text-green-500" />
-                <span>WordPress pre-installed and ready to use</span>
+                <span>Website builder ready to use instantly</span>
               </div>
             </motion.div>
             
@@ -1363,7 +1867,7 @@ export default function WordPressHostingPremiumPage() {
                     Ready to Launch Your Site?
                   </h2>
                   <p className="text-xl text-white/90 mb-8">
-                    Join 5,000+ websites powered by our blazing-fast WordPress hosting
+                    Join 5,000+ businesses using our powerful website builder
                   </p>
                   
                   {/* Support Contact Section */}
@@ -1378,7 +1882,7 @@ export default function WordPressHostingPremiumPage() {
                         <span className="text-white/80 text-xs sm:text-sm">({country.name})</span>
                       </div>
                       <p className="text-white/80 text-xs sm:text-sm">
-                        Available 24/7 • Speak to a WordPress Expert
+                        Available 24/7 • Speak to a Website Expert
                       </p>
                     </div>
                   </div>
@@ -1391,11 +1895,11 @@ export default function WordPressHostingPremiumPage() {
                     </div>
                     <div className="flex items-center gap-3 text-white text-sm">
                       <Check className="w-5 h-5 flex-shrink-0" />
-                      <span>30-day money-back guarantee</span>
+                      <span>7-day money-back guarantee</span>
                     </div>
                     <div className="flex items-center gap-3 text-white text-sm">
                       <Check className="w-5 h-5 flex-shrink-0" />
-                      <span>Instant setup with WordPress pre-installed</span>
+                      <span>Instant setup with everything ready to go</span>
                     </div>
                   </div>
                   
@@ -1502,7 +2006,7 @@ export default function WordPressHostingPremiumPage() {
                 </div>
                 <div className="p-4 bg-gray-50 rounded-lg">
                   <p className="font-medium mb-2">Performance:</p>
-                  <p>** Page load times compared to leading WordPress hosting providers Flywheel, Automattic, Siteground, Hostgator, Dreamhost, Namecheap, Hostinger, Bluehost and IONOS for page load times between January and March 2023. Flickmax does not claim that Managed WordPress Hosting has the industry best page load performance. Actual performance may vary by region. Please see terms and conditions for any uptime guarantee.</p>
+                  <p>** Page load times compared to leading website builder providers for page load times between January and March 2023. Flickmax does not claim to have the industry best page load performance. Actual performance may vary by region. Please see terms and conditions for any uptime guarantee.</p>
                 </div>
               </div>
             </motion.div>

@@ -71,7 +71,7 @@ const faqs = [
   {
     id: 10,
     question: 'What is your uptime guarantee?',
-    answer: 'We guarantee 99.99% uptime for all our hosting services. If we fail to meet this guarantee, you\'ll receive service credits according to our SLA.',
+    answer: 'We guarantee 99.99% uptime for all our hosting services. If we fail to meet this guarantee, you\'ll receive service credits according to our uptime guarantee policy.',
     category: 'technical',
     helpful: { yes: 167, no: 4 }
   }

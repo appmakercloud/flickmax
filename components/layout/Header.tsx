@@ -25,14 +25,13 @@ const navigation = {
       { name: 'Web Hosting', href: '/hosting/web-hosting' },
       { name: 'Managed WordPress', href: '/hosting/managed-wordpress' },
       { name: 'VPS Hosting', href: '/hosting/vps' },
-      { name: 'Dedicated Servers', href: '/hosting/dedicated' },
     ]
   },
   email: {
     title: 'Email & Marketing',
     items: [
       { name: 'Professional Email', href: '/email/professional' },
-      { name: 'Email Marketing', href: '/email/marketing' },
+      { name: 'Microsoft 365', href: '/email/microsoft-365' },
       { name: 'Website Builder', href: '/website-builder' },
     ]
   }
