@@ -153,6 +153,7 @@ export default function DomainTransferPage() {
   const [bulkDomains, setBulkDomains] = useState('')
   const [isBulkMode, setIsBulkMode] = useState(false)
   const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null)
+  const [quickTransferDomain, setQuickTransferDomain] = useState('')
   const { currency, country } = useCountry()
   const { addProductToCart } = useCart()
   const [addingToCart, setAddingToCart] = useState<string | null>(null)
@@ -252,37 +253,63 @@ export default function DomainTransferPage() {
     toast.success(`${domains.length} domains ready for transfer`)
   }
 
+  const handleQuickTransfer = (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!quickTransferDomain.trim()) {
+      toast.error('Please enter a domain name')
+      return
+    }
+
+    const domain = quickTransferDomain.trim().toLowerCase()
+    
+    // Basic domain validation
+    if (!validateDomain(domain)) {
+      toast.error('Please enter a valid domain name')
+      return
+    }
+
+    // Redirect to GoDaddy's transfer interface
+    const transferUrl = `https://dcc.secureserver.net/domains/transfer-in/${encodeURIComponent(domain)}?plid=590175&prog_id=590175`
+    window.location.href = transferUrl
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section - Clean Teal Gradient */}
-      <section className="relative bg-gradient-to-br from-teal-500 via-cyan-500 to-teal-600 py-20">
-        <div className="absolute inset-0 bg-black/5" />
+    <div className="min-h-screen bg-white">
+      {/* Hero Section - Blue Gradient */}
+      <section className="relative bg-gradient-to-br from-blue-600 to-cyan-500 py-24">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/90 to-cyan-500/90" />
+          <div className="absolute inset-0" style={{
+            backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)',
+          }} />
+        </div>
         <div className="relative max-w-7xl mx-auto px-4">
           <div className="text-center text-white">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
               Transfer & Save up to<br />
               <span className="text-yellow-300">30% on Renewals</span>
             </h1>
-            <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+            <p className="text-xl text-white/95 mb-8 max-w-3xl mx-auto">
               Switch to Flickmax and get better prices, free WHOIS privacy, and an extra year 
               added to your domain. Transfer multiple domains with our bulk transfer tool.
             </p>
 
             {/* Feature Pills */}
-            <div className="flex flex-wrap justify-center gap-4 mb-8">
-              <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm">
+            <div className="flex flex-wrap justify-center gap-3 mb-10">
+              <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium border border-white/20 hover:bg-white/25 transition-colors">
                 <CheckCircle className="w-4 h-4" />
                 Free WHOIS Privacy
               </span>
-              <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm">
+              <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium border border-white/20 hover:bg-white/25 transition-colors">
                 <CheckCircle className="w-4 h-4" />
                 No Hidden Fees
               </span>
-              <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm">
+              <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium border border-white/20 hover:bg-white/25 transition-colors">
                 <CheckCircle className="w-4 h-4" />
                 Free 1-Year Extension
               </span>
-              <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm">
+              <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium border border-white/20 hover:bg-white/25 transition-colors">
                 <CheckCircle className="w-4 h-4" />
                 24/7 Support
               </span>
@@ -291,14 +318,14 @@ export default function DomainTransferPage() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a 
-                href="#transfer-form"
-                className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-white text-teal-600 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                href="#quick-transfer"
+                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-white text-blue-600 rounded-full font-semibold hover:bg-gray-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 duration-200"
               >
                 Start Transfer Now
               </a>
               <button 
-                onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
-                className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-transparent text-white rounded-lg font-semibold border-2 border-white/50 hover:bg-white/10 transition-colors"
+                onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-transparent text-white rounded-full font-semibold border-2 border-white/40 hover:bg-white/10 hover:border-white/60 transition-all duration-200"
               >
                 View Pricing
               </button>
@@ -307,241 +334,55 @@ export default function DomainTransferPage() {
         </div>
       </section>
 
-      {/* Transfer Form Section */}
-      <section id="transfer-form" className="py-16 -mt-8 relative z-10">
+      {/* Quick Transfer Input Section */}
+      <section id="quick-transfer" className="py-8 -mt-20 relative z-10">
         <div className="max-w-4xl mx-auto px-4">
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-            {/* Tab Navigation */}
-            <div className="flex border-b border-gray-200">
-              <button
-                onClick={() => setIsBulkMode(false)}
-                className={`flex-1 px-6 py-4 text-center font-medium transition-colors ${
-                  !isBulkMode 
-                    ? 'text-teal-600 border-b-2 border-teal-600 bg-teal-50/50' 
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <Globe className="w-5 h-5" />
-                  Single Domain Transfer
-                </div>
-              </button>
-              <button
-                onClick={() => setIsBulkMode(true)}
-                className={`flex-1 px-6 py-4 text-center font-medium transition-colors ${
-                  isBulkMode 
-                    ? 'text-teal-600 border-b-2 border-teal-600 bg-teal-50/50' 
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <Layers className="w-5 h-5" />
-                  Bulk Transfer (Multiple Domains)
-                </div>
-              </button>
-            </div>
-
-            <div className="p-8">
-              {!isBulkMode ? (
-                // Single Domain Transfer
-                <form onSubmit={handleCheckTransfer} className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Domain Name
-                    </label>
-                    <div className="relative">
-                      <Globe className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="text"
-                        value={domainName}
-                        onChange={(e) => setDomainName(e.target.value)}
-                        placeholder="example.com"
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Authorization Code (EPP Code)
-                    </label>
-                    <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="text"
-                        value={authCode}
-                        onChange={(e) => setAuthCode(e.target.value)}
-                        placeholder="Enter your transfer code"
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-                    <p className="mt-2 text-sm text-gray-500">
-                      Get this code from your current domain registrar
-                    </p>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={isChecking}
-                    className="w-full bg-teal-600 text-white py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {isChecking ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Checking Transfer Eligibility...
-                      </>
-                    ) : (
-                      <>
-                        Start Transfer
-                        <ArrowRight className="w-5 h-5" />
-                      </>
-                    )}
-                  </button>
-                </form>
-              ) : (
-                // Bulk Transfer
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Enter Multiple Domains (one per line)
-                    </label>
-                    <textarea
-                      value={bulkDomains}
-                      onChange={(e) => setBulkDomains(e.target.value)}
-                      placeholder="example1.com&#10;example2.net&#10;example3.org"
-                      rows={8}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
-                    />
-                  </div>
-
-                  <button
-                    onClick={handleBulkTransfer}
-                    className="w-full bg-teal-600 text-white py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors flex items-center justify-center gap-2"
-                  >
-                    Process Bulk Transfer
-                    <ArrowRight className="w-5 h-5" />
-                  </button>
-
-                  {selectedDomains.length > 0 && (
-                    <div className="mt-6 p-4 bg-teal-50 rounded-lg">
-                      <p className="font-semibold text-teal-900 mb-2">
-                        Selected Domains ({selectedDomains.length})
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedDomains.map((domain, index) => (
-                          <span
-                            key={index}
-                            className="px-3 py-1 bg-white rounded-md text-sm border border-teal-200"
-                          >
-                            {domain}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Transfer Results */}
-              <AnimatePresence>
-                {showResults && transferData && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="mt-8 p-6 bg-green-50 rounded-lg border border-green-200"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <CheckCircle className="w-6 h-6 text-green-600" />
-                          <h3 className="text-lg font-semibold text-green-900">
-                            Transfer Available!
-                          </h3>
-                        </div>
-                        <p className="text-green-800 mb-4">
-                          {transferData.domain} is ready to transfer
-                        </p>
-                        <div className="space-y-2 text-sm text-green-700">
-                          <p>• Transfer Price: {currency === 'INR' ? '₹' : '$'}{transferData.price}/year</p>
-                          <p>• Renewal Price: {currency === 'INR' ? '₹' : '$'}{transferData.renewalPrice}/year</p>
-                          <p>• Transfer Time: {transferData.transferTime}</p>
-                          <p>• Includes 1 year extension</p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={handleAddToCart}
-                        disabled={addingToCart === transferData.domain}
-                        className="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center gap-2"
-                      >
-                        {addingToCart === transferData.domain ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            Adding...
-                          </>
-                        ) : (
-                          <>
-                            <ShoppingCart className="w-4 h-4" />
-                            Add to Cart
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section id="pricing" className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-teal-100 text-teal-700 rounded-full text-sm font-medium mb-4">
-              <DollarSign className="w-4 h-4" />
-              Transparent Pricing
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Simple Transfer Pricing
-            </h2>
-            <p className="text-xl text-gray-600">
-              Transfer includes 1 year extension at these competitive rates
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            {transferPricing.map((item, index) => (
-              <div
-                key={index}
-                className="relative bg-white rounded-lg border-2 border-gray-200 p-6 text-center hover:border-teal-500 transition-colors"
-              >
-                {item.popular && (
-                  <span className="absolute -top-3 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-teal-500 text-white text-xs font-bold rounded-full">
-                    POPULAR
-                  </span>
-                )}
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{item.tld}</h3>
-                <div className="text-3xl font-bold text-teal-600">
-                  {currency === 'INR' ? `₹${item.price.inr}` : `$${item.price.usd}`}
-                </div>
-                <p className="text-sm text-gray-500 mt-1">/year</p>
+          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div className="p-8 md:p-10">
+              <form onSubmit={handleQuickTransfer} className="flex flex-col md:flex-row gap-3">
+                <input
+                  type="text"
+                  value={quickTransferDomain}
+                  onChange={(e) => setQuickTransferDomain(e.target.value)}
+                  placeholder="Enter domain to transfer"
+                  className="flex-1 px-6 py-4 text-lg border-2 border-gray-200 rounded-lg md:rounded-l-lg md:rounded-r-none focus:outline-none focus:border-cyan-500 transition-all placeholder-gray-400 bg-gray-50/50"
+                />
+                <button
+                  type="submit"
+                  className="px-10 py-4 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-semibold text-lg rounded-lg md:rounded-l-none md:rounded-r-lg transition-all duration-200 shadow-lg hover:shadow-xl whitespace-nowrap transform hover:scale-105"
+                >
+                  Transfer
+                </button>
+              </form>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-600">
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle className="w-4 h-4 text-cyan-500" />
+                  <span>Free WHOIS Privacy</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle className="w-4 h-4 text-cyan-500" />
+                  <span>1 Year Extension Included</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle className="w-4 h-4 text-cyan-500" />
+                  <span>No Hidden Fees</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle className="w-4 h-4 text-cyan-500" />
+                  <span>Quick 5-7 Day Transfer</span>
+                </span>
               </div>
-            ))}
+            </div>
           </div>
-
-          <p className="text-center text-gray-600 mt-8">
-            All transfers include FREE WHOIS Privacy, DNS Management, and Email Forwarding
-          </p>
         </div>
       </section>
+
 
       {/* Transfer Steps */}
-      <section className="py-16 bg-gray-50">
+      <section id="how-it-works" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-4">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 text-blue-600 rounded-full text-sm font-semibold mb-4 border border-blue-100">
               <RefreshCw className="w-4 h-4" />
               Simple Process
             </div>
@@ -557,15 +398,16 @@ export default function DomainTransferPage() {
             {transferSteps.map((step, index) => (
               <div key={index} className="relative">
                 <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500 text-white rounded-full mb-4">
-                    <span className="text-2xl font-bold">{step.number}</span>
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-cyan-500 text-white rounded-full mb-4 shadow-xl relative">
+                    <span className="text-3xl font-bold">{step.number}</span>
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 opacity-20 blur-xl" />
                   </div>
-                  <h3 className="font-semibold text-gray-900 mb-2">{step.title}</h3>
+                  <h3 className="font-bold text-lg text-gray-900 mb-2">{step.title}</h3>
                   <p className="text-sm text-gray-600 mb-2">{step.description}</p>
-                  <span className="text-xs text-gray-500">{step.time}</span>
+                  <span className="text-xs font-medium text-cyan-600">{step.time}</span>
                 </div>
                 {index < transferSteps.length - 1 && (
-                  <div className="hidden md:block absolute top-8 left-full w-full h-0.5 bg-gray-300 -z-10" style={{ width: 'calc(100% - 4rem)' }} />
+                  <div className="hidden md:block absolute top-10 left-full w-full h-1 bg-gradient-to-r from-blue-200 via-cyan-200 to-blue-200 -z-10 opacity-50" style={{ width: 'calc(100% - 5rem)' }} />
                 )}
               </div>
             ))}
@@ -574,43 +416,47 @@ export default function DomainTransferPage() {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-16 bg-white">
+      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-medium mb-4">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 text-blue-600 rounded-full text-sm font-semibold mb-4 border border-blue-100">
               <Award className="w-4 h-4" />
               Top-Rated Provider
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Why Transfer to Flickmax?
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Get more value and better service for your domains with our industry-leading features
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {transferBenefits.map((benefit, index) => (
-              <div
+              <motion.div
                 key={index}
-                className="bg-white rounded-lg p-6 border border-gray-200 hover:shadow-lg transition-shadow"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="group bg-white rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 border border-gray-100"
               >
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white mb-4">
-                  <benefit.icon className="w-6 h-6" />
+                <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-xl flex items-center justify-center text-white mb-6 shadow-lg group-hover:scale-110 transition-transform">
+                  <benefit.icon className="w-7 h-7" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{benefit.title}</h3>
-                <p className="text-gray-600">{benefit.description}</p>
-              </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">{benefit.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{benefit.description}</p>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-20 bg-white">
         <div className="max-w-3xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-100 text-orange-700 rounded-full text-sm font-medium mb-4">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 text-blue-600 rounded-full text-sm font-semibold mb-4 border border-blue-100">
               <MessageCircle className="w-4 h-4" />
               Get Answers
             </div>
@@ -626,15 +472,15 @@ export default function DomainTransferPage() {
             {transferFAQs.map((faq, index) => (
               <div
                 key={index}
-                className="bg-white rounded-lg overflow-hidden"
+                className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-cyan-200 transition-colors mb-4"
               >
                 <button
                   onClick={() => setExpandedFAQ(expandedFAQ === index ? null : index)}
-                  className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                  className="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 transition-all"
                 >
-                  <span className="font-medium text-gray-900">{faq.question}</span>
+                  <span className="font-semibold text-gray-900 text-lg">{faq.question}</span>
                   <ChevronDown
-                    className={`w-5 h-5 text-gray-400 transition-transform ${
+                    className={`w-5 h-5 text-cyan-600 transition-transform duration-300 ${
                       expandedFAQ === index ? 'rotate-180' : ''
                     }`}
                   />
@@ -647,7 +493,7 @@ export default function DomainTransferPage() {
                       exit={{ height: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="px-6 pb-4 text-gray-600">
+                      <div className="px-6 pb-5 text-gray-600 leading-relaxed">
                         {faq.answer}
                       </div>
                     </motion.div>
@@ -660,29 +506,35 @@ export default function DomainTransferPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-teal-500 to-cyan-600">
+      <section className="py-24 bg-gradient-to-br from-blue-600 to-cyan-500">
         <div className="max-w-4xl mx-auto px-4 text-center text-white">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Transfer Your Domain?
-          </h2>
-          <p className="text-xl mb-8 text-white/90">
-            Join thousands of satisfied customers who&apos;ve made the switch
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="px-8 py-3 bg-white text-teal-600 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
-            >
-              Start Transfer Now
-            </button>
-            <a
-              href={`tel:${country.phoneNumber}`}
-              className="px-8 py-3 bg-transparent text-white rounded-lg font-semibold border-2 border-white/50 hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
-            >
-              <Phone className="w-5 h-5" />
-              Call {country.phoneNumber}
-            </a>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl md:text-5xl font-bold mb-6">
+              Ready to Transfer Your Domain?
+            </h2>
+            <p className="text-xl mb-10 text-white/95 max-w-2xl mx-auto">
+              Join thousands of satisfied customers who&apos;ve made the switch
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={() => document.getElementById('quick-transfer')?.scrollIntoView({ behavior: 'smooth' })}
+                className="px-10 py-4 bg-white text-blue-600 rounded-full font-semibold hover:bg-gray-50 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-105"
+              >
+                Start Transfer Now
+              </button>
+              <a
+                href={`tel:${country.phoneNumber}`}
+                className="px-10 py-4 bg-transparent text-white rounded-full font-semibold border-2 border-white/40 hover:bg-white/10 hover:border-white/60 transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                <Phone className="w-5 h-5" />
+                Call {country.phoneNumber}
+              </a>
+            </div>
+          </motion.div>
         </div>
       </section>
     </div>

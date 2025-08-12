@@ -1,14 +1,20 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Open_Sans } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import ModernHeader from "@/components/layout/ModernHeader";
 import Footer from "@/components/layout/Footer";
 import FloatingCTA from "@/components/FloatingCTA";
+import NavigationProgress from "@/components/layout/NavigationProgress";
 import { Toaster } from 'react-hot-toast';
 import { CountryProvider } from "@/contexts/CountryContext";
 import { CartProvider } from "@/contexts/CartContext";
 
-const inter = Inter({ subsets: ["latin"] });
+const openSans = Open_Sans({ 
+  subsets: ["latin"],
+  display: 'swap',
+  variable: '--font-open-sans'
+});
 
 export const metadata: Metadata = {
   title: "Flickmax - Domains, Hosting & Email Solutions",
@@ -22,10 +28,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} antialiased`} suppressHydrationWarning>
+    <html lang="en" className={openSans.variable}>
+      <body className={`${openSans.className} antialiased`} suppressHydrationWarning>
         <CountryProvider>
           <CartProvider>
+            <Suspense fallback={null}>
+              <NavigationProgress />
+            </Suspense>
             <ModernHeader />
             <main className="min-h-screen">{children}</main>
             <Footer />

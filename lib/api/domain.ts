@@ -1,5 +1,17 @@
 import { API_CONFIG } from './config'
 
+export interface DomainValuationReason {
+  rank: number
+  Type: string
+  Text: string
+  Title: string
+  Keyword?: string
+  Avg_sold_price?: number
+  AvgSoldPriceDisplay?: string
+  Domain?: string
+  Sld?: string
+}
+
 export interface DomainSearchResult {
   domain: string
   available: boolean
@@ -10,6 +22,19 @@ export interface DomainSearchResult {
   premium?: boolean
   disclaimer?: string | null
   extendedValidation?: boolean
+  valuation?: {
+    GoValue?: number
+    GoValueDisplay?: string
+    Sale?: number
+    SaleDisplay?: string
+    Prices?: {
+      GoValue?: number
+      GoValueDisplay?: string
+      Sale?: number
+      SaleDisplay?: string
+    }
+    Reasons?: DomainValuationReason[]
+  }
 }
 
 export interface ExactSearchResponse {
@@ -82,8 +107,8 @@ export async function searchDomainExact(query: string, currencyType: string = 'U
     // Only change currency to get proper pricing
     marketId = 'en-US'
     
-    // Build the URL path - use the exact search endpoint with smaller pageSize
-    const path = `/api/domain/search/exact?q=${encodeURIComponent(cleanQuery)}&currencyType=${currencyType}&marketId=${marketId}&pageSize=5`
+    // Build the URL path - use the exact search endpoint with optimized pageSize
+    const path = `/api/domain/search/exact?q=${encodeURIComponent(cleanQuery)}&currencyType=${currencyType}&marketId=${marketId}&pageSize=6`
     
 
     const response = await fetch(path, {

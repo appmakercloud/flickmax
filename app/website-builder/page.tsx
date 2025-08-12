@@ -57,6 +57,7 @@ import { useCart } from '@/contexts/CartContext'
 import { getCurrencySymbol, formatPrice } from '@/lib/utils/currency'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { PricingTableSkeleton } from '@/components/ui/PricingSkeleton'
 
 // Website Builder Plans - Fallback data matching actual GoDaddy product IDs
 const builderPlans = [
@@ -903,21 +904,7 @@ export default function WebsiteBuilderPage() {
 
           {/* Pricing Cards */}
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-              {[0, 1, 2, 3].map((i) => (
-                <div key={i} className="bg-white border-2 border-gray-200 rounded-2xl p-6 animate-pulse">
-                  <div className="h-8 bg-gray-200 rounded w-3/4 mx-auto mb-4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-full mb-6"></div>
-                  <div className="h-12 bg-gray-200 rounded w-2/3 mx-auto mb-6"></div>
-                  <div className="space-y-3">
-                    {[1, 2, 3, 4].map((j) => (
-                      <div key={j} className="h-4 bg-gray-200 rounded w-full"></div>
-                    ))}
-                  </div>
-                  <div className="h-10 bg-gray-200 rounded-full mt-6"></div>
-                </div>
-              ))}
-            </div>
+            <PricingTableSkeleton columns={4} />
           ) : plans.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-gray-600">Unable to load pricing. Please try again.</p>

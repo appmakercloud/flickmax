@@ -15,8 +15,6 @@ const navigation = {
     items: [
       { name: 'Domain Name Search', href: '/domains/search' },
       { name: 'Domain Transfer', href: '/domains/transfer' },
-      { name: 'Domain Pricing', href: '/domains/pricing' },
-      { name: 'WHOIS Lookup', href: '/domains/whois' },
     ]
   },
   hosting: {

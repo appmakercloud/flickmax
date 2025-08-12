@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 // Cache duration: 24 hours (in seconds)
 const CACHE_DURATION = 24 * 60 * 60
 
-// In-memory cache (in production, use Redis or similar)
+// In-memory cache
 let cache: {
   data: any | null
   timestamp: number | null
@@ -15,29 +15,29 @@ let cache: {
 export async function GET(request: NextRequest) {
   try {
     const now = Date.now()
+    const { searchParams } = new URL(request.url)
+    const marketId = searchParams.get('marketId') || 'en-US'
+    const plid = process.env.NEXT_PUBLIC_PLID || '590175'
     
-    // Check if cache is valid (less than 24 hours old)
+    // Check if cache is valid
     if (cache.data && cache.timestamp && (now - cache.timestamp) < (CACHE_DURATION * 1000)) {
-      console.log('Serving legal agreements from cache')
+      console.log('Serving legal agreements list from cache')
       return NextResponse.json({
         success: true,
         data: cache.data,
-        cached: true,
-        cacheAge: Math.floor((now - cache.timestamp) / 1000), // age in seconds
-        nextRefresh: new Date(cache.timestamp + (CACHE_DURATION * 1000)).toISOString()
+        cached: true
       })
     }
     
-    console.log('Fetching fresh legal agreements from API')
+    console.log('Fetching fresh legal agreements list from API')
     
     // Fetch fresh data from GoDaddy API
     const response = await fetch(
-      'https://www.secureserver.net/api/v1/agreements/590175/utos?marketId=en-US',
+      `https://www.secureserver.net/api/v1/agreements/${plid}?marketId=${marketId}`,
       {
         headers: {
           'Accept': 'application/json',
         },
-        // Don't use Next.js cache for this request
         cache: 'no-store'
       }
     )
@@ -48,21 +48,19 @@ export async function GET(request: NextRequest) {
 
     const data = await response.json()
     
+    // Process and categorize agreements
+    const processedData = processAgreementsList(data)
+    
     // Update cache
     cache = {
-      data: data,
+      data: processedData,
       timestamp: now
     }
-    
-    // Process and structure the agreements data
-    const processedData = processAgreements(data)
     
     return NextResponse.json({
       success: true,
       data: processedData,
-      cached: false,
-      cacheAge: 0,
-      nextRefresh: new Date(now + (CACHE_DURATION * 1000)).toISOString()
+      cached: false
     })
   } catch (error) {
     console.error('Error fetching legal agreements:', error)
@@ -74,8 +72,7 @@ export async function GET(request: NextRequest) {
         success: true,
         data: cache.data,
         cached: true,
-        stale: true,
-        error: 'Using cached data due to API error'
+        stale: true
       })
     }
     
@@ -88,91 +85,51 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Process and structure the agreements data
-function processAgreements(data: any) {
-  if (!data || !data.content) {
-    return data
-  }
+// Process and categorize the agreements list
+function processAgreementsList(data: any[]) {
+  const agreements: any[] = []
+  const policies: any[] = []
   
-  // Parse the content if it's a string
-  let content = data.content
-  if (typeof content === 'string') {
-    // Clean up HTML entities and format
-    content = content
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&#39;/g, "'")
-  }
-  
-  return {
-    ...data,
-    content: content,
-    lastUpdated: new Date().toISOString(),
-    sections: extractSections(content)
-  }
-}
-
-// Extract main sections from the content
-function extractSections(content: string): any[] {
-  const sections = []
-  
-  // Common legal document section patterns
-  const sectionPatterns = [
-    { pattern: /<h2[^>]*>(.*?)<\/h2>/gi, type: 'heading' },
-    { pattern: /<h3[^>]*>(.*?)<\/h3>/gi, type: 'subheading' },
-    { pattern: /<strong>(.*?)<\/strong>/gi, type: 'emphasis' }
-  ]
-  
-  // Extract sections based on headings
-  const h2Regex = /<h2[^>]*>(.*?)<\/h2>([\s\S]*?)(?=<h2|$)/gi
-  let match
-  
-  while ((match = h2Regex.exec(content)) !== null) {
-    const title = match[1].replace(/<[^>]*>/g, '').trim()
-    const contentText = match[2].trim()
-    
-    sections.push({
-      title: title,
-      content: contentText,
-      type: 'section'
-    })
-  }
-  
-  // If no sections found, return the content as a single section
-  if (sections.length === 0) {
-    sections.push({
-      title: 'Terms of Service',
-      content: content,
-      type: 'full'
-    })
-  }
-  
-  return sections
-}
-
-// Optional: Add a POST endpoint to manually refresh the cache
-export async function POST(request: NextRequest) {
-  try {
-    // Clear the cache
-    cache = {
-      data: null,
-      timestamp: null
+  data.forEach(item => {
+    const displayName = formatDisplayName(item.key)
+    const processedItem = {
+      ...item,
+      displayName,
+      slug: item.key,
+      url: item.href || null // External URLs for ICANN policies
     }
     
-    // Fetch fresh data
-    const response = await GET(request)
-    
-    return NextResponse.json({
-      success: true,
-      message: 'Cache refreshed successfully'
-    })
-  } catch (error) {
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to refresh cache'
-    }, { status: 500 })
+    if (item.type === 'policy' || item.key.includes('policy')) {
+      policies.push(processedItem)
+    } else {
+      agreements.push(processedItem)
+    }
+  })
+  
+  return {
+    agreements,
+    policies,
+    total: data.length,
+    lastUpdated: new Date().toISOString()
   }
+}
+
+// Format the key into a readable display name
+function formatDisplayName(key: string): string {
+  const specialCases: Record<string, string> = {
+    'universal-terms-of-service-agreement': 'Universal Terms of Service Agreement',
+    'registrant-rights': 'ICANN Registrant Rights',
+    'registrar-transfer-dispute-resolution-policy': 'ICANN Registrar Transfer Dispute Resolution Policy',
+    'uniform-domain-name-dispute-resolution-policy': 'Uniform Domain Name Dispute Resolution Policy',
+    'data-processing-addendum': 'Data Processing Addendum (Customers)',
+  }
+  
+  if (specialCases[key]) {
+    return specialCases[key]
+  }
+  
+  return key
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
 }

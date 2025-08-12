@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Check, X } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { PricingTableSkeleton } from '@/components/ui/PricingSkeleton'
 
 const pricingPlans = {
   hosting: [
@@ -55,9 +56,29 @@ const pricingPlans = {
   ],
 }
 
-export default function PricingTable({ category = 'hosting' }: { category?: keyof typeof pricingPlans }) {
+export default function PricingTable({ category = 'hosting', isLoading = false }: { category?: keyof typeof pricingPlans, isLoading?: boolean }) {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly')
   const plans = pricingPlans[category] || pricingPlans.hosting
+
+  if (isLoading) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              Simple, transparent pricing
+            </h2>
+            <p className="mt-4 text-lg text-gray-600">
+              Choose the perfect plan for your needs. Always flexible to scale.
+            </p>
+          </div>
+          <div className="mt-12">
+            <PricingTableSkeleton columns={3} />
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="py-16 bg-white">

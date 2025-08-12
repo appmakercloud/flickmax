@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { useHostingPlans } from '@/hooks/useHostingProducts'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import ErrorMessage from '@/components/ui/ErrorMessage'
+import { PricingTableSkeleton } from '@/components/ui/PricingSkeleton'
 
 // Fallback plans for when API is unavailable
 const fallbackPlans = [
@@ -127,10 +128,16 @@ export default function HostingPlans() {
     return (
       <section id="plans" className="py-20 bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center justify-center py-20">
-            <LoadingSpinner size="lg" />
-            <p className="mt-4 text-gray-600">Loading hosting plans...</p>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              Choose Your Perfect Hosting Plan
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+              All plans include free domain, SSL certificate, and 24/7 support. 
+              Upgrade or downgrade anytime.
+            </p>
           </div>
+          <PricingTableSkeleton columns={3} />
         </div>
       </section>
     )

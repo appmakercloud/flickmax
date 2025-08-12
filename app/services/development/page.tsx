@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { 
   Code, 
@@ -112,7 +112,7 @@ import {
 } from 'lucide-react'
 import DevelopmentQuoteForm from '@/components/forms/DevelopmentQuoteForm'
 
-export default function DevelopmentServicesPage() {
+function DevelopmentServicesPageContent() {
   const [activeService, setActiveService] = useState(0)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [mounted, setMounted] = useState(false)
@@ -1357,5 +1357,18 @@ export default function DevelopmentServicesPage() {
         <DevelopmentQuoteForm onClose={() => setShowQuoteForm(false)} />
       )}
     </div>
+  )
+}
+
+export default function DevelopmentServicesPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-8 h-8 animate-spin border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4" />
+        <p className="text-gray-600">Loading development services...</p>
+      </div>
+    </div>}>
+      <DevelopmentServicesPageContent />
+    </Suspense>
   )
 }

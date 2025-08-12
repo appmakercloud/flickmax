@@ -8,6 +8,7 @@ import { formatCurrency } from '@/lib/countries'
 import { useCart } from '@/contexts/CartContext'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { PricingTableSkeleton } from '@/components/ui/PricingSkeleton'
 import { 
   Shield, 
   Lock, 
@@ -401,9 +402,7 @@ export default function SSLCertificatesPage() {
 
           {/* SSL Plans Grid */}
           {loading ? (
-            <div className="flex justify-center items-center py-20">
-              <LoadingSpinner size="lg" />
-            </div>
+            <PricingTableSkeleton columns={3} />
           ) : (
             <div className={`grid gap-6 ${
               showAllProducts 

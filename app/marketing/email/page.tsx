@@ -8,6 +8,7 @@ import { formatCurrency } from '@/lib/countries'
 import { useCart } from '@/contexts/CartContext'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { PricingTableSkeleton } from '@/components/ui/PricingSkeleton'
 import { 
   Mail, 
   Users, 
@@ -410,9 +411,7 @@ export default function EmailMarketingPage() {
 
           {/* Plans Grid */}
           {loading ? (
-            <div className="flex justify-center items-center py-20">
-              <LoadingSpinner size="lg" />
-            </div>
+            <PricingTableSkeleton columns={3} />
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {emailPlans.map((plan, index) => {

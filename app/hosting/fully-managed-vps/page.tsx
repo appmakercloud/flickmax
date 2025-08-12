@@ -42,6 +42,7 @@ import {
 } from 'lucide-react'
 import { useCountry } from '@/contexts/CountryContext'
 import { getCurrencySymbol, formatPrice } from '@/lib/utils/currency'
+import { PricingTableSkeleton } from '@/components/ui/PricingSkeleton'
 
 // Fully Managed VPS Plans Data - Standard Performance (FALLBACK ONLY)
 const vpsPlansStandard = [
@@ -1131,9 +1132,7 @@ export default function VPSHostingPage() {
 
           {/* VPS Plans Grid */}
           {isLoading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-            </div>
+            <PricingTableSkeleton columns={4} />
           ) : (
           <div className="relative py-8">
             {/* Plans Container */}

@@ -48,14 +48,15 @@ export function useDomainSearch() {
           currency: currency,
           productId: searchData.exactMatchDomain.productId,
           premium: searchData.exactMatchDomain.premium,
-          disclaimer: searchData.exactMatchDomain.disclaimer
+          disclaimer: searchData.exactMatchDomain.disclaimer,
+          valuation: searchData.exactMatchDomain.valuation
         })
       }
       
       // Set suggestions from the API response
       if (searchData.suggestedDomains && Array.isArray(searchData.suggestedDomains)) {
         const suggestionList = searchData.suggestedDomains
-          .slice(0, 10)
+          .slice(0, 6)
           .map(d => ({
             domain: d.domain,
             available: d.available,

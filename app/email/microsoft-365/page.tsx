@@ -8,6 +8,7 @@ import { formatCurrency } from '@/lib/countries'
 import { useCart } from '@/contexts/CartContext'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { PricingTableSkeleton } from '@/components/ui/PricingSkeleton'
 import { 
   Mail, 
   Users, 
@@ -373,9 +374,7 @@ export default function Microsoft365Page() {
 
           {/* Plans Grid */}
           {loading ? (
-            <div className="flex justify-center items-center py-20">
-              <LoadingSpinner size="lg" />
-            </div>
+            <PricingTableSkeleton columns={3} />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
               {microsoft365Plans.map((plan, index) => {

@@ -8,6 +8,7 @@ import { formatCurrency } from '@/lib/countries'
 import { useCart } from '@/contexts/CartContext'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { CompactPricingSkeleton } from '@/components/ui/PricingSkeleton'
 import { 
   Search,
   TrendingUp,
@@ -489,8 +490,8 @@ export default function SEOPage() {
 
           {/* Pricing Card */}
           {loading ? (
-            <div className="flex justify-center items-center py-20">
-              <LoadingSpinner size="lg" />
+            <div className="max-w-2xl mx-auto">
+              <CompactPricingSkeleton />
             </div>
           ) : seoProduct ? (
             <motion.div

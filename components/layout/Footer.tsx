@@ -52,10 +52,10 @@ const footerLinks = {
   legal: {
     title: 'Legal',
     links: [
-      { name: 'Privacy Policy', href: '/legal/privacy' },
-      { name: 'Terms of Service', href: '/legal/terms' },
-      { name: 'Cookie Policy', href: '/legal/cookies' },
-      { name: 'Disclaimer', href: '/legal/disclaimer' },
+      { name: 'Privacy Policy', href: '/legal/privacy-policy' },
+      { name: 'Terms of Service', href: '/legal/universal-terms-of-service-agreement' },
+      { name: 'Legal Agreements', href: '/legal' },
+      { name: 'Refund Policy', href: '/legal/refund-policy' },
     ]
   }
 }

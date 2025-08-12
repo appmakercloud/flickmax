@@ -38,6 +38,7 @@ import { useCart } from '@/contexts/CartContext'
 import { getCurrencySymbol, formatPrice } from '@/lib/utils/currency'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { PricingTableSkeleton } from '@/components/ui/PricingSkeleton'
 
 // GoDaddy WordPress Hosting Plans (Actual from GoDaddy)
 const godaddyPlans = [
@@ -655,9 +656,7 @@ export default function WordPressHostingPremiumPage() {
 
           {/* Pricing Cards */}
           {isLoading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            </div>
+            <PricingTableSkeleton columns={4} />
           ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
             {plans.map((plan, index) => (

@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { useCPanelPlans } from '@/hooks/useCPanelPlans'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import ErrorMessage from '@/components/ui/ErrorMessage'
+import { PricingTableSkeleton } from '@/components/ui/PricingSkeleton'
 
 // Fallback plans for when API is unavailable
 const fallbackPlans = [
@@ -164,10 +165,15 @@ export default function CPanelPlans() {
     return (
       <section className="py-20 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center justify-center py-20">
-            <LoadingSpinner size="lg" />
-            <p className="mt-4 text-gray-600">Loading cPanel hosting plans...</p>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              cPanel Hosting Plans
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Professional hosting with full cPanel control panel access
+            </p>
           </div>
+          <PricingTableSkeleton columns={4} />
         </div>
       </section>
     )

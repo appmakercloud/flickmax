@@ -10,6 +10,7 @@ import { useCountry } from '@/contexts/CountryContext'
 import { formatCurrency } from '@/lib/countries'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import ErrorMessage from '@/components/ui/ErrorMessage'
+import { PricingTableSkeleton } from '@/components/ui/PricingSkeleton'
 import type { HostingPlan } from '@/types/hosting-plans'
 import { useCart } from '@/contexts/CartContext'
 import toast from 'react-hot-toast'
@@ -412,10 +413,7 @@ export default function TabbedHostingPlans() {
         </motion.div>
 
         {loading && (
-          <div className="flex flex-col items-center justify-center py-20">
-            <LoadingSpinner size="lg" />
-            <p className="mt-4 text-gray-600">Loading hosting plans...</p>
-          </div>
+          <PricingTableSkeleton columns={4} />
         )}
 
         {error && !loading && (
