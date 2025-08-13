@@ -8,6 +8,7 @@ import { Fragment } from 'react'
 import { CountrySelectorCompact } from '@/components/ui/CountrySelector'
 import { useCart } from '@/contexts/CartContext'
 import CartPanel from '@/components/cart/CartPanel'
+import Image from 'next/image'
 
 const navigation = {
   domains: {
@@ -45,9 +46,18 @@ export default function Header() {
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Top">
         <div className="flex w-full items-center justify-between py-4">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center">
-              <span className="text-2xl font-bold text-gray-900">Flickmax</span>
-              <span className="ml-2 text-sm text-gray-500">.com</span>
+            <Link 
+              href="/" 
+              className="flex items-center group transform transition-all duration-300 hover:scale-105"
+            >
+              <Image 
+                src="/flickmax-logo-variant1.svg?v=13" 
+                alt="Flickmax - Domain Registration, Web Hosting & Email Solutions" 
+                width={340}
+                height={80}
+                className="h-10 sm:h-11 w-auto transition-opacity duration-300 group-hover:opacity-90"
+                priority
+              />
             </Link>
           </div>
 

@@ -10,6 +10,7 @@ import CartPanel from '@/components/cart/CartPanel'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCountry } from '@/contexts/CountryContext'
 import { countries } from '@/lib/countries'
+import Image from 'next/image'
 
 const navigation = [
   { name: 'Home', href: '/' },
@@ -111,7 +112,7 @@ export default function ModernHeader() {
 
   return (
     <>
-      <header className={`sticky top-0 z-50 transition-all duration-300 ${
+      <header className={`sticky top-0 z-[100] transition-all duration-300 ${
         scrolled 
           ? 'bg-white/95 backdrop-blur-md shadow-lg' 
           : 'bg-white shadow-sm'
@@ -132,18 +133,18 @@ export default function ModernHeader() {
                 </button>
                 
                 {/* Logo */}
-                <Link href="/" className="flex items-center space-x-2 group">
-                  <div className="relative">
-                    <div className="flex items-center space-x-2">
-                      <div className="relative w-9 h-9">
-                        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-xl opacity-20 group-hover:opacity-30 transition-all duration-200 blur-xl" />
-                        <div className="relative flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-600 to-cyan-500 rounded-xl shadow-md group-hover:shadow-lg transition-all duration-200">
-                          <span className="text-white font-bold text-xl">F</span>
-                        </div>
-                      </div>
-                      <span className="text-[24px] font-bold text-gray-800 tracking-tight">Flickmax</span>
-                    </div>
-                  </div>
+                <Link 
+                  href="/" 
+                  className="flex items-center group transform transition-all duration-300 hover:scale-105"
+                >
+                  <Image 
+                    src="/flickmax-logo-variant1.svg?v=2" 
+                    alt="Flickmax - Domain Registration, Web Hosting & Email Solutions" 
+                    width={340}
+                    height={80}
+                    className="h-9 sm:h-10 lg:h-11 w-auto transition-opacity duration-300 group-hover:opacity-90"
+                    priority
+                  />
                 </Link>
               </div>
 
@@ -172,7 +173,7 @@ export default function ModernHeader() {
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <HeadlessMenu.Items className="absolute right-0 z-50 mt-2 w-72 origin-top-right rounded-xl bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none">
+                    <HeadlessMenu.Items className="absolute right-0 z-[110] mt-2 w-72 origin-top-right rounded-xl bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none">
                       <div className="p-4">
                         <h3 className="text-sm font-semibold text-gray-900 mb-3">Choose your region</h3>
                         <div className="space-y-1 max-h-96 overflow-y-auto">
@@ -221,7 +222,7 @@ export default function ModernHeader() {
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <HeadlessMenu.Items className="absolute right-0 z-50 mt-2 w-[90vw] sm:w-[500px] lg:w-[600px] origin-top-right rounded-xl bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none overflow-hidden">
+                        <HeadlessMenu.Items className="absolute right-0 z-[110] mt-2 w-[90vw] sm:w-[500px] lg:w-[600px] origin-top-right rounded-xl bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none overflow-hidden">
                           <div className="grid grid-cols-1 sm:grid-cols-2 sm:divide-x divide-y sm:divide-y-0 divide-gray-200">
                             {/* New Customer */}
                             <div className="p-6 sm:p-8 bg-gradient-to-br from-gray-50 to-white">
@@ -342,7 +343,7 @@ export default function ModernHeader() {
                                       opacity: { duration: 0.3 },
                                       height: { duration: 0.4 }
                                     }}
-                                    className="fixed inset-x-0 z-40 overflow-hidden"
+                                    className="fixed left-0 right-0 z-[90] overflow-hidden"
                                     style={{ top: 'var(--header-height, 66px)' }}
                                   >
                                   <HeadlessMenu.Items static>
@@ -353,12 +354,12 @@ export default function ModernHeader() {
                                         duration: 0.5,
                                         ease: [0.16, 1, 0.3, 1]
                                       }}
-                                      className="bg-white shadow-2xl">
-                                  <div className="px-8 lg:px-12 py-10">
+                                      className="bg-white shadow-2xl border-t border-gray-100">
+                                  <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
                                     {/* Section Title */}
-                                    <div className="mb-8">
-                                      <h2 className="text-3xl font-bold text-gray-900">{item.name}</h2>
-                                      <p className="mt-2 text-base text-gray-600">
+                                    <div className="mb-6">
+                                      <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">{item.name}</h2>
+                                      <p className="mt-1 text-sm lg:text-base text-gray-600">
                                         {item.name === 'Domains' && 'Register, transfer, and manage your domains'}
                                         {item.name === 'Websites' && 'Build and grow your online presence'}
                                         {item.name === 'Hosting' && 'Reliable hosting solutions for every need'}
@@ -369,12 +370,12 @@ export default function ModernHeader() {
                                     </div>
                                     
                                     <motion.div 
-                                      className={`grid gap-6 ${
-                                        item.items.length <= 2 
-                                          ? 'grid-cols-1 lg:grid-cols-2' 
-                                          : item.items.length <= 3
-                                          ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-                                          : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                                      className={`grid gap-4 lg:gap-6 ${
+                                        item.items.length === 2 
+                                          ? 'grid-cols-1 md:grid-cols-2 max-w-4xl' 
+                                          : item.items.length === 3
+                                          ? 'grid-cols-1 md:grid-cols-3 max-w-5xl'
+                                          : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4 max-w-6xl'
                                       }`}
                                       initial="hidden"
                                       animate="visible"
@@ -393,6 +394,7 @@ export default function ModernHeader() {
                                         <HeadlessMenu.Item key={subItem.name}>
                                           {({ active }) => (
                                             <motion.div
+                                              className="h-full"
                                               variants={{
                                                 hidden: { 
                                                   opacity: 0, 
@@ -422,51 +424,51 @@ export default function ModernHeader() {
                                                     close()
                                                   }}
                                                   className={`
-                                                    group relative block p-6 rounded-xl transition-all duration-200 border-2
+                                                    group relative block h-full p-4 lg:p-5 rounded-xl transition-all duration-200 border
                                                     ${active 
-                                                      ? 'bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-300 shadow-lg transform scale-105' 
-                                                      : 'bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-blue-50 border-gray-200 hover:border-blue-200 hover:shadow-lg hover:transform hover:scale-105'
+                                                      ? 'bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-300 shadow-lg transform scale-[1.02]' 
+                                                      : 'bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-blue-50 border-gray-200 hover:border-blue-200 hover:shadow-lg hover:transform hover:scale-[1.02]'
                                                     }
                                                   `}
                                                 >
-                                                <div className="flex items-start space-x-4">
+                                                <div className="flex items-start space-x-3 h-full">
                                                   <div className="flex-shrink-0">
-                                                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all shadow-lg ${
-                                                      active ? 'bg-gradient-to-br from-blue-600 to-cyan-600 scale-110' : 'bg-gradient-to-br from-blue-500 to-cyan-500 group-hover:from-blue-600 group-hover:to-cyan-600 group-hover:scale-110'
+                                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all shadow-md ${
+                                                      active ? 'bg-gradient-to-br from-blue-600 to-cyan-600 scale-105' : 'bg-gradient-to-br from-blue-500 to-cyan-500 group-hover:from-blue-600 group-hover:to-cyan-600 group-hover:scale-105'
                                                     }`}>
                                                       {/* Icons for each service */}
-                                                      {subItem.name.includes('Domain') && <Globe className="w-7 h-7 text-white" />}
-                                                      {subItem.name.includes('Hosting') && <Server className="w-7 h-7 text-white" />}
+                                                      {subItem.name.includes('Domain') && <Globe className="w-5 h-5 text-white" />}
+                                                      {subItem.name.includes('Hosting') && <Server className="w-5 h-5 text-white" />}
                                                       {subItem.name.includes('WordPress') && (
-                                                        <svg className="w-7 h-7 text-white" viewBox="0 0 512 512" fill="currentColor">
+                                                        <svg className="w-5 h-5 text-white" viewBox="0 0 512 512" fill="currentColor">
                                                           <path d="M256 8C119.3 8 8 119.2 8 256c0 136.7 111.3 248 248 248s248-111.3 248-248C504 119.2 392.7 8 256 8zM33 256c0-32.3 6.9-63 19.3-90.7l106.4 291.4C84.3 420.5 33 344.2 33 256zm223 223c-21.9 0-43-3.2-63-9.1l66.9-194.4 68.5 187.8c.5 1.1 1 2.1 1.5 3.1-23.1 8.1-48 12.6-73.9 12.6zm30.7-327.5c13.4-.7 25.5-2.1 25.5-2.1 12-1.4 10.6-19.1-1.4-18.4 0 0-36.1 2.8-59.4 2.8-21.9 0-58.7-2.8-58.7-2.8-12-.7-13.4 17.7-1.4 18.4 0 0 11.4 1.4 23.4 2.1l34.7 95.2L200.6 393l-81.2-241.5c13.4-.7 25.5-2.1 25.5-2.1 12-1.4 10.6-19.1-1.4-18.4 0 0-36.1 2.8-59.4 2.8-4.2 0-9.1-.1-14.4-.3C109.6 73 178.1 33 256 33c58 0 110.9 22.2 150.6 58.5-1-.1-1.9-.2-2.9-.2-21.9 0-37.4 19.1-37.4 39.6 0 18.4 10.6 33.9 21.9 52.3 8.5 14.8 18.4 33.9 18.4 61.5 0 19.1-7.3 41.2-17 72.1l-22.2 74.3-80.7-239.6zm81.4 297.2l68.1-196.9c12.7-31.8 17-57.2 17-79.9 0-8.2-.5-15.8-1.5-22.9 17.4 31.8 27.3 68.2 27.3 107 0 82.3-44.6 154.1-110.9 192.7z"/>
                                                         </svg>
                                                       )}
-                                                      {subItem.name === 'VPS Hosting' && <Server className="w-7 h-7 text-white" />}
+                                                      {subItem.name === 'VPS Hosting' && <Server className="w-5 h-5 text-white" />}
                                                       {subItem.name === 'Fully Managed VPS' && (
                                                         <div className="relative">
-                                                          <Server className="w-7 h-7 text-white" />
+                                                          <Server className="w-5 h-5 text-white" />
                                                           <Settings className="w-3 h-3 text-white absolute -top-1 -right-1" />
                                                         </div>
                                                       )}
-                                                      {subItem.name.includes('SSL') && <Shield className="w-7 h-7 text-white" />}
-                                                      {subItem.name.includes('Security') && <Shield className="w-7 h-7 text-white" />}
-                                                      {subItem.name.includes('Backup') && <Shield className="w-7 h-7 text-white" />}
-                                                      {subItem.name === 'Professional Email' && <Mail className="w-7 h-7 text-white" />}
-                                                      {subItem.name === 'Microsoft 365' && <Mail className="w-7 h-7 text-white" />}
+                                                      {subItem.name.includes('SSL') && <Shield className="w-5 h-5 text-white" />}
+                                                      {subItem.name.includes('Security') && <Shield className="w-5 h-5 text-white" />}
+                                                      {subItem.name.includes('Backup') && <Shield className="w-5 h-5 text-white" />}
+                                                      {subItem.name === 'Professional Email' && <Mail className="w-5 h-5 text-white" />}
+                                                      {subItem.name === 'Microsoft 365' && <Mail className="w-5 h-5 text-white" />}
                                                       {subItem.name === 'Email Marketing' && (
                                                         <div className="relative">
-                                                          <Mail className="w-7 h-7 text-white" />
-                                                          <TrendingUp className="w-3 h-3 text-white absolute -top-1 -right-1" />
+                                                          <Mail className="w-5 h-5 text-white" />
+                                                          <TrendingUp className="w-2 h-2 text-white absolute -top-0.5 -right-0.5" />
                                                         </div>
                                                       )}
-                                                      {subItem.name.includes('SEO') && <TrendingUp className="w-7 h-7 text-white" />}
-                                                      {subItem.name.includes('Builder') && <Layers className="w-7 h-7 text-white" />}
-                                                      {subItem.name.includes('Development') && <Code className="w-7 h-7 text-white" />}
+                                                      {subItem.name.includes('SEO') && <TrendingUp className="w-5 h-5 text-white" />}
+                                                      {subItem.name.includes('Builder') && <Layers className="w-5 h-5 text-white" />}
+                                                      {subItem.name.includes('Development') && <Code className="w-5 h-5 text-white" />}
                                                       {!subItem.name.includes('Domain') && !subItem.name.includes('Hosting') && !subItem.name.includes('WordPress') && 
                                                        subItem.name !== 'VPS Hosting' && subItem.name !== 'Fully Managed VPS' && !subItem.name.includes('SSL') && !subItem.name.includes('Security') && 
                                                        !subItem.name.includes('Backup') && subItem.name !== 'Professional Email' && subItem.name !== 'Microsoft 365' && subItem.name !== 'Email Marketing' && 
-                                                       !subItem.name.includes('SEO') && !subItem.name.includes('Builder') && !subItem.name.includes('Development') && <Globe className="w-7 h-7 text-white" />}
+                                                       !subItem.name.includes('SEO') && !subItem.name.includes('Builder') && !subItem.name.includes('Development') && <Globe className="w-5 h-5 text-white" />}
                                                     </div>
                                                   </div>
                                                   <div className="flex-1 min-w-0">
@@ -531,46 +533,128 @@ export default function ModernHeader() {
         </nav>
 
         {/* Mobile menu */}
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {mobileMenuOpen && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden bg-white overflow-hidden shadow-lg"
+            <>
+              {/* Backdrop overlay */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[80] lg:hidden"
+                onClick={() => setMobileMenuOpen(false)}
+              />
+              
+              <motion.div 
+              initial={{ opacity: 0, height: 0, y: -20 }}
+              animate={{ 
+                opacity: 1, 
+                height: 'auto',
+                y: 0,
+                transition: {
+                  height: {
+                    duration: 0.4,
+                    ease: [0.16, 1, 0.3, 1]
+                  },
+                  opacity: {
+                    duration: 0.3,
+                    ease: "easeOut"
+                  },
+                  y: {
+                    duration: 0.3,
+                    ease: [0.16, 1, 0.3, 1]
+                  }
+                }
+              }}
+              exit={{ 
+                opacity: 0, 
+                height: 0,
+                y: -10,
+                transition: {
+                  height: {
+                    duration: 0.3,
+                    ease: [0.16, 1, 0.3, 1]
+                  },
+                  opacity: {
+                    duration: 0.2,
+                    ease: "easeIn"
+                  },
+                  y: {
+                    duration: 0.2,
+                    ease: "easeIn"
+                  }
+                }
+              }}
+              className="lg:hidden bg-white overflow-hidden shadow-lg border-t border-gray-100 relative z-[85]"
             >
-              <div className="px-4 py-4 space-y-3 max-h-[calc(100vh-120px)] overflow-y-auto">
-                {navigation.map((item) => (
-                  <div key={item.name}>
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ 
+                  opacity: 1,
+                  transition: { delay: 0.1, duration: 0.3 }
+                }}
+                className="px-4 py-4 space-y-3 max-h-[calc(100vh-120px)] overflow-y-auto">
+                {navigation.map((item, index) => (
+                  <motion.div 
+                    key={item.name}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ 
+                      opacity: 1, 
+                      x: 0,
+                      transition: {
+                        delay: index * 0.05,
+                        duration: 0.3,
+                        ease: [0.16, 1, 0.3, 1]
+                      }
+                    }}
+                  >
                     {item.items ? (
                       <details className="group">
-                        <summary className="flex items-center justify-between py-3 text-base font-medium text-gray-900 cursor-pointer list-none">
+                        <summary className="flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 cursor-pointer list-none hover:bg-gray-50 rounded-lg transition-colors">
                           {item.name}
-                          <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" />
+                          <ChevronDown className="w-4 h-4 transition-transform duration-300 group-open:rotate-180" />
                         </summary>
-                        <div className="pb-2 space-y-1">
-                          {item.items.map((subItem) => (
-                            <Link
+                        <motion.div 
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.2 }}
+                          className="pb-2 space-y-1"
+                        >
+                          {item.items.map((subItem, subIndex) => (
+                            <motion.div
                               key={subItem.name}
-                              href={subItem.href}
-                              className="block py-2 pl-6 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
-                              onClick={() => setMobileMenuOpen(false)}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ 
+                                opacity: 1, 
+                                x: 0,
+                                transition: {
+                                  delay: subIndex * 0.03,
+                                  duration: 0.2
+                                }
+                              }}
                             >
-                              {subItem.name}
-                            </Link>
+                              <Link
+                                href={subItem.href}
+                                className="block py-2 pl-6 pr-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                                onClick={() => setMobileMenuOpen(false)}
+                              >
+                                {subItem.name}
+                              </Link>
+                            </motion.div>
                           ))}
-                        </div>
+                        </motion.div>
                       </details>
                     ) : (
                       <Link
                         href={item.href}
-                        className="block py-3 text-base font-medium text-gray-900"
+                        className="block py-3 px-2 text-base font-medium text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         {item.name}
                       </Link>
                     )}
-                  </div>
+                  </motion.div>
                 ))}
                 
                 <div className="pt-4 border-t border-gray-200 space-y-3">
@@ -596,8 +680,9 @@ export default function ModernHeader() {
                     Create Account
                   </a>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
+            </>
           )}
         </AnimatePresence>
       </header>

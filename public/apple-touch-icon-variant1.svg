@@ -1,0 +1,11 @@
+<svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+  <!-- White background for Apple devices -->
+  <rect width="180" height="180" fill="white"/>
+  
+  <!-- Geometric F Icon centered and scaled -->
+  <g transform="translate(36, 36) scale(0.054, 0.054)">
+    <polygon style="fill:#0066ff;" points="994.774,1404 734.396,1126.173 994.774,1126.173"/>
+    <polygon style="fill:#0099ff;" points="718.439,1126.173 1299.695,1126.173 1023.36,815.272 718.439,805.349"/>
+    <polygon style="fill:#00ccff;" points="718.439,514.293 1023.36,815.272 1299.695,805.349 1299.695,514.293"/>
+  </g>
+</svg>

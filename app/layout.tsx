@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Open_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import ModernHeader from "@/components/layout/ModernHeader";
@@ -10,16 +10,28 @@ import { Toaster } from 'react-hot-toast';
 import { CountryProvider } from "@/contexts/CountryContext";
 import { CartProvider } from "@/contexts/CartContext";
 
-const openSans = Open_Sans({ 
+const inter = Inter({ 
   subsets: ["latin"],
+  weight: ['400', '500', '600', '700', '800', '900'],
   display: 'swap',
-  variable: '--font-open-sans'
+  variable: '--font-inter'
 });
 
 export const metadata: Metadata = {
   title: "Flickmax - Domains, Hosting & Email Solutions",
   description: "Get everything you need to succeed online. Domain registration, web hosting, professional email, and more.",
   keywords: "domain, hosting, email, website, web hosting, domain registration, professional email",
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-16x16.svg', sizes: '16x16', type: 'image/svg+xml' },
+      { url: '/favicon-32x32.svg', sizes: '32x32', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.svg', sizes: '180x180', type: 'image/svg+xml' },
+    ],
+  },
+  manifest: '/site.webmanifest',
 };
 
 export default function RootLayout({
@@ -28,8 +40,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={openSans.variable}>
-      <body className={`${openSans.className} antialiased`} suppressHydrationWarning>
+    <html lang="en" className={inter.variable}>
+      <body className={`${inter.className} antialiased`} suppressHydrationWarning>
         <CountryProvider>
           <CartProvider>
             <Suspense fallback={null}>

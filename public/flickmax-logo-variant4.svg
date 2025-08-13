@@ -1,0 +1,23 @@
+<svg viewBox="0 0 360 70" xmlns="http://www.w3.org/2000/svg">
+  <!-- Variant 4: Tech style with spaced letters -->
+  <defs>
+    <linearGradient id="gradV4" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" style="stop-color:#0080ff;stop-opacity:1" />
+      <stop offset="25%" style="stop-color:#00a0ff;stop-opacity:1" />
+      <stop offset="75%" style="stop-color:#00c0ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00e0ff;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Minimalist F Icon -->
+  <g transform="translate(8, 8) scale(0.026, 0.026)">
+    <polygon style="fill:#0080ff;" points="994.774,1404 734.396,1126.173 994.774,1126.173"/>
+    <polygon style="fill:#00b0ff;" points="718.439,1126.173 1299.695,1126.173 1023.36,815.272 718.439,805.349"/>
+    <polygon style="fill:#00e0ff;" points="718.439,514.293 1023.36,815.272 1299.695,805.349 1299.695,514.293"/>
+  </g>
+  
+  <!-- Tech Font with wide spacing -->
+  <text x="72" y="44" font-family="'Roboto', 'Open Sans', sans-serif" font-size="32" font-weight="500" letter-spacing="4" fill="url(#gradV4)">
+    FLICKMAX
+  </text>
+</svg>

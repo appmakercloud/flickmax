@@ -1,0 +1,21 @@
+<svg viewBox="0 0 360 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define gradients for text -->
+  <defs>
+    <linearGradient id="textGradientV2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#136FFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1FAEFF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Geometric F Icon scaled and positioned -->
+  <g transform="translate(15, 15) scale(0.04, 0.04)">
+    <polygon style="fill:#136FFF;" points="994.774,1404 734.396,1126.173 994.774,1126.173"/>
+    <polygon style="fill:#1FAEFF;" points="718.439,1126.173 1299.695,1126.173 1023.36,815.272 718.439,805.349"/>
+    <polygon style="fill:#97E5FF;" points="718.439,514.293 1023.36,815.272 1299.695,805.349 1299.695,514.293"/>
+  </g>
+  
+  <!-- Professional text with bold weight -->
+  <text x="85" y="52" font-family="Helvetica, Arial, sans-serif" font-size="42" font-weight="700" letter-spacing="2" fill="#136FFF">
+    FLICKMAX
+  </text>
+</svg>

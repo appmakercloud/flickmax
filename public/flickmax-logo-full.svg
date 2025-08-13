@@ -1,0 +1,88 @@
+<svg viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define gradient -->
+  <defs>
+    <linearGradient id="diamondGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0066ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00ccff;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- White background for first version -->
+  <rect width="400" height="100" fill="#ffffff"/>
+  
+  <!-- Diamond Matrix Icon -->
+  <g transform="translate(20, 25)">
+    <!-- 3x3 grid of diamonds forming F shape -->
+    <!-- Row 1 -->
+    <rect x="0" y="0" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 6 6)" opacity="0.3"/>
+    <rect x="17" y="0" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 23 6)" opacity="1"/>
+    <rect x="34" y="0" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 40 6)" opacity="0.3"/>
+    
+    <!-- Row 2 -->
+    <rect x="0" y="17" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 6 23)" opacity="1"/>
+    <rect x="17" y="17" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 23 23)" opacity="1"/>
+    <rect x="34" y="17" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 40 23)" opacity="1"/>
+    
+    <!-- Row 3 -->
+    <rect x="0" y="34" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 6 40)" opacity="0.3"/>
+    <rect x="17" y="34" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 23 40)" opacity="1"/>
+    <rect x="34" y="34" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 40 40)" opacity="0.3"/>
+  </g>
+  
+  <!-- Text - Full gradient on white background -->
+  <text x="90" y="60" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="48" font-weight="400" letter-spacing="7" fill="url(#diamondGradient)">
+    FLICKMAX
+  </text>
+  
+  <!-- Dark background version -->
+  <rect y="120" width="400" height="100" fill="#0a0a0a"/>
+  
+  <!-- Diamond Matrix Icon on dark -->
+  <g transform="translate(20, 145)">
+    <!-- 3x3 grid of diamonds forming F shape -->
+    <!-- Row 1 -->
+    <rect x="0" y="0" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 6 6)" opacity="0.3"/>
+    <rect x="17" y="0" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 23 6)" opacity="1"/>
+    <rect x="34" y="0" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 40 6)" opacity="0.3"/>
+    
+    <!-- Row 2 -->
+    <rect x="0" y="17" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 6 23)" opacity="1"/>
+    <rect x="17" y="17" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 23 23)" opacity="1"/>
+    <rect x="34" y="17" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 40 23)" opacity="1"/>
+    
+    <!-- Row 3 -->
+    <rect x="0" y="34" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 6 40)" opacity="0.3"/>
+    <rect x="17" y="34" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 23 40)" opacity="1"/>
+    <rect x="34" y="34" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 40 40)" opacity="0.3"/>
+  </g>
+  
+  <!-- Text on dark - Full gradient -->
+  <text x="90" y="180" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="48" font-weight="400" letter-spacing="7" fill="url(#diamondGradient)">
+    FLICKMAX
+  </text>
+  
+  <!-- Standalone versions -->
+  <g transform="translate(0, 250)">
+    <!-- Icon only version -->
+    <rect x="10" y="10" width="80" height="80" fill="#1a1a1a" rx="10"/>
+    <g transform="translate(30, 30)">
+      <!-- 3x3 grid scaled up -->
+      <rect x="0" y="0" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 6 6)" opacity="0.3"/>
+      <rect x="17" y="0" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 23 6)" opacity="1"/>
+      <rect x="34" y="0" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 40 6)" opacity="0.3"/>
+      
+      <rect x="0" y="17" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 6 23)" opacity="1"/>
+      <rect x="17" y="17" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 23 23)" opacity="1"/>
+      <rect x="34" y="17" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 40 23)" opacity="1"/>
+      
+      <rect x="0" y="34" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 6 40)" opacity="0.3"/>
+      <rect x="17" y="34" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 23 40)" opacity="1"/>
+      <rect x="34" y="34" width="12" height="12" fill="url(#diamondGradient)" transform="rotate(45 40 40)" opacity="0.3"/>
+    </g>
+    
+    <!-- Text only version - Full gradient -->
+    <text x="120" y="60" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="36" font-weight="400" letter-spacing="5" fill="url(#diamondGradient)">
+      FLICKMAX
+    </text>
+  </g>
+</svg>

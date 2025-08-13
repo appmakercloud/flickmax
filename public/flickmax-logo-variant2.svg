@@ -1,0 +1,25 @@
+<svg viewBox="0 0 380 85" xmlns="http://www.w3.org/2000/svg">
+  <!-- Variant 2: Rounded Modern with larger icon -->
+  <defs>
+    <linearGradient id="gradV2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#006be6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="iconGradV2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0066ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00ccff;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Larger Geometric F Icon -->
+  <g transform="translate(8, 8) scale(0.035, 0.035)">
+    <polygon style="fill:#0056d6;" points="994.774,1404 734.396,1126.173 994.774,1126.173"/>
+    <polygon style="fill:#0099ff;" points="718.439,1126.173 1299.695,1126.173 1023.36,815.272 718.439,805.349"/>
+    <polygon style="fill:#66d9ff;" points="718.439,514.293 1023.36,815.272 1299.695,805.349 1299.695,514.293"/>
+  </g>
+  
+  <!-- Rounded Modern Font - Split colors -->
+  <text x="85" y="54" font-family="'SF Pro Display', -apple-system, 'Segoe UI', sans-serif" font-size="45" font-weight="600" letter-spacing="1">
+    <tspan fill="#0066ff">FLICK</tspan><tspan fill="#00ccff">MAX</tspan>
+  </text>
+</svg>

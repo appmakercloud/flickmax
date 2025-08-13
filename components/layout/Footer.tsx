@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Facebook, Twitter, Youtube, Instagram, Globe, Phone, Mail, Shield } from 'lucide-react'
 import { useCountry } from '@/contexts/CountryContext'
+import Image from 'next/image'
 
 const footerLinks = {
   products: {
@@ -72,18 +73,18 @@ export default function Footer() {
         {/* Top Section with Logo and Newsletter */}
         <div className="lg:flex lg:items-start lg:justify-between lg:gap-8 pb-8 mb-8 border-b border-gray-800">
           <div className="space-y-4 lg:max-w-xl">
-            <div className="flex items-center space-x-2">
-              <div className="relative w-10 h-10">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg blur-md opacity-75" />
-                <div className="relative flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg">
-                  <span className="text-white font-bold text-xl">F</span>
-                </div>
-              </div>
-              <div>
-                <span className="text-2xl font-bold text-white">Flickmax</span>
-                <span className="ml-1 text-sm text-gray-400">.com</span>
-              </div>
-            </div>
+            <Link 
+              href="/" 
+              className="inline-block group transform transition-all duration-300 hover:scale-105"
+            >
+              <Image 
+                src="/flickmax-logo-variant1-dark.svg?v=13" 
+                alt="Flickmax - Your Trusted Domain & Hosting Partner" 
+                width={340}
+                height={80}
+                className="h-11 sm:h-12 w-auto transition-opacity duration-300 group-hover:opacity-90"
+              />
+            </Link>
             <p className="text-sm text-gray-400 max-w-md">
               Empowering your online presence with reliable domains, hosting, and email solutions. 
               Trusted by thousands of businesses worldwide.

@@ -1,0 +1,22 @@
+<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad32" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0066ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00ccff;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Diamond F icon for medium size -->
+  <g transform="translate(5, 5)">
+    <rect x="0" y="0" width="7" height="7" fill="url(#grad32)" transform="rotate(45 3.5 3.5)" opacity="0.5"/>
+    <rect x="10" y="0" width="7" height="7" fill="url(#grad32)" transform="rotate(45 13.5 3.5)" opacity="1"/>
+    <rect x="20" y="0" width="7" height="7" fill="url(#grad32)" transform="rotate(45 23.5 3.5)" opacity="0.5"/>
+    
+    <rect x="0" y="10" width="7" height="7" fill="url(#grad32)" transform="rotate(45 3.5 13.5)" opacity="1"/>
+    <rect x="10" y="10" width="7" height="7" fill="url(#grad32)" transform="rotate(45 13.5 13.5)" opacity="1"/>
+    <rect x="20" y="10" width="7" height="7" fill="url(#grad32)" transform="rotate(45 23.5 13.5)" opacity="1"/>
+    
+    <rect x="0" y="20" width="7" height="7" fill="url(#grad32)" transform="rotate(45 3.5 23.5)" opacity="0.5"/>
+    <rect x="10" y="20" width="7" height="7" fill="url(#grad32)" transform="rotate(45 13.5 23.5)" opacity="1"/>
+    <rect x="20" y="20" width="7" height="7" fill="url(#grad32)" transform="rotate(45 23.5 23.5)" opacity="0.5"/>
+  </g>
+</svg>

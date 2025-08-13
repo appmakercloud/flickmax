@@ -4,8 +4,7 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Server, Zap, Database, Cpu, HardDrive, Gauge, Shield, MousePointer, Activity, Lock, Save, Settings, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useCPanelPlans } from '@/hooks/useCPanelPlans'
-import { useBusinessHosting } from '@/hooks/useBusinessHosting'
+import { useWebHostingPlans } from '@/hooks/useWebHostingPlans'
 import { useCountry } from '@/contexts/CountryContext'
 import { formatCurrency } from '@/lib/countries'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
@@ -250,15 +249,13 @@ export default function TabbedHostingPlans() {
   const { currency, locale } = useCountry()
   const { addProductToCart } = useCart()
   
-  const { plans: standardPlans, loading: standardLoading, error: standardError } = useCPanelPlans()
-  const { plans: businessPlans, loading: businessLoading, error: businessError } = useBusinessHosting()
+  // Use the new combined hook for both cPanel and Business plans
+  const { cpanelPlans, businessPlans, loading, error } = useWebHostingPlans()
 
   // Use API plans if available, otherwise use fallbacks
-  const displayStandardPlans = standardPlans.length > 0 ? standardPlans : fallbackStandardPlans
+  const displayStandardPlans = cpanelPlans.length > 0 ? cpanelPlans : fallbackStandardPlans
   const displayBusinessPlans = businessPlans.length > 0 ? businessPlans : fallbackBusinessPlans
 
-  const loading = activeTab === 'standard' ? standardLoading : businessLoading
-  const error = activeTab === 'standard' ? standardError : businessError
   const plans = activeTab === 'standard' ? displayStandardPlans : displayBusinessPlans
 
   const handleAddToCart = async (plan: HostingPlan) => {

@@ -1,0 +1,21 @@
+<svg viewBox="0 0 320 75" xmlns="http://www.w3.org/2000/svg">
+  <!-- Variant 3: Bold Condensed with vertical gradient -->
+  <defs>
+    <linearGradient id="gradV3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00a8ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0066ff;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Compact F Icon -->
+  <g transform="translate(10, 10) scale(0.025, 0.025)">
+    <polygon style="fill:url(#gradV3);" points="994.774,1404 734.396,1126.173 994.774,1126.173"/>
+    <polygon style="fill:url(#gradV3);" points="718.439,1126.173 1299.695,1126.173 1023.36,815.272 718.439,805.349" opacity="0.8"/>
+    <polygon style="fill:url(#gradV3);" points="718.439,514.293 1023.36,815.272 1299.695,805.349 1299.695,514.293" opacity="0.6"/>
+  </g>
+  
+  <!-- Bold Condensed Font -->
+  <text x="65" y="46" font-family="'Helvetica Neue', 'Arial Narrow', sans-serif" font-size="38" font-weight="900" letter-spacing="0" fill="url(#gradV3)" font-stretch="condensed">
+    FLICKMAX
+  </text>
+</svg>

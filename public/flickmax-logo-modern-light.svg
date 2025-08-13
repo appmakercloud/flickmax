@@ -1,0 +1,19 @@
+<svg viewBox="0 0 320 70" xmlns="http://www.w3.org/2000/svg">
+  <!-- Modern Geometric F Icon -->
+  <g transform="translate(10, 10)">
+    <!-- Scale and position the F icon to fit nicely -->
+    <g transform="scale(0.025, 0.025)">
+      <!-- Bottom triangle - darkest blue -->
+      <polygon style="fill:#0856D6;" points="994.774,1404 734.396,1126.173 994.774,1126.173"/>
+      <!-- Middle parallelogram - medium blue -->
+      <polygon style="fill:#1A8FFF;" points="718.439,1126.173 1299.695,1126.173 1023.36,815.272 718.439,805.349"/>
+      <!-- Top parallelogram - lightest blue -->
+      <polygon style="fill:#5AC3FF;" points="718.439,514.293 1023.36,815.272 1299.695,805.349 1299.695,514.293"/>
+    </g>
+  </g>
+  
+  <!-- Modern Typography -->
+  <text x="65" y="45" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="36" font-weight="600" fill="#0856D6">
+    <tspan font-weight="700">FLICK</tspan><tspan font-weight="500" fill="#1A8FFF">MAX</tspan>
+  </text>
+</svg>
